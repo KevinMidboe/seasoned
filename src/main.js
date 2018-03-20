@@ -2,13 +2,14 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import axios from 'axios'
 import router from './routes'
+import DataTablee from 'vue-data-tablee'
 
 import App from './App.vue'
 
 window.eventHub = new Vue();
 
-
 Vue.use(VueRouter, axios)
+Vue.use(DataTablee)
 
 new Vue({
   el: '#app',

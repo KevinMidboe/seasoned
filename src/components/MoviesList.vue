@@ -4,7 +4,10 @@
       <header class="movies__header">
         <h2 class="movies__title">{{ listTitle }}</h2>
         <span class="movies__results" v-if="!shortList">{{ countResults }}</span>
-        <router-link v-if="shortList" class="movies__link" :to="{name: 'home-category', params: {category: category}}">
+        <router-link v-if="shortList && mode != 'user-requests'" class="movies__link" :to="{name: 'home-category', params: {category: category}}">
+          View All
+        </router-link>
+         <router-link v-if="shortList && mode == 'user-requests'" class="movies__link" :to="{name: 'user-requests'}">
           View All
         </router-link>
       </header>
@@ -16,7 +19,7 @@
       </div>
     </div>
     <i v-if="!listLoaded" class="loader"></i>
-    <section v-if="!movies.length" class="not-found">
+    <section v-if="!movies.length && !shortList" class="not-found">
       <div class="not-found__content">
         <h2 class="not-found__title" v-if="mode == 'search'">Nothing Found</h2>
         <h2 class="not-found__title" v-if="mode == 'favorite'">You haven't added any favorite movies</h2>
@@ -61,13 +64,18 @@ export default {
       return this.$route.params.query || '';
     },
     request(){
+      console.log('todays mode is: ', this.mode);
       if(this.mode == 'search'){
-        return `https://api.themoviedb.org/3/search/movie?api_key=${storage.apiKey}&language=en-US&query=${this.query}&page=${this.currentPage}`;
+        return `https://api.kevinmidboe.com/api/v1/plex/request?query=${this.query}&page=${this.currentPage}`;
+      } else if(this.mode == 'requests' || this.$route.params.category == 'requests') {
+        return `https://api.kevinmidboe.com/api/v1/plex/requests/all?page=${this.currentPage}&status=requested`;
       } else if(this.mode == 'collection') {
-        let caregory = this.$route.params.category || this.category;
-        return `https://api.themoviedb.org/3/movie/${caregory}?api_key=${storage.apiKey}&language=en-US&page=${this.currentPage}`;
-      } else if(this.mode == 'favorite') {
-        return `https://api.themoviedb.org/3/account/${storage.userId}/favorite/movies?api_key=${storage.apiKey}&session_id=${storage.sessionId}&language=en-US&sort_by=created_at.desc&page=${this.currentPage}`;
+        let category = this.$route.params.category || this.category;
+        return `https://api.kevinmidboe.com/api/v1/tmdb/list/${category}?page=${this.currentPage}`;
+      } else if(this.mode == 'history') {
+        return 'https://api.kevinmidboe.com/api/v1/user/history';
+      } else if(this.mode == 'user-requests') {
+        return 'https://api.kevinmidboe.com/api/v1/user/requests';
       }
     },
     countResults(){
@@ -80,9 +88,13 @@ export default {
   },
   methods: {
     fetchCategory(){
-      axios.get(this.request)
+      axios.get(this.request, {
+        headers: {authorization: storage.token},
+      })
       .then(function(resp){
           let data = resp.data;
+          console.log('data: ', data)
+
           if(this.shortList){
             this.movies = data.results.slice(0, 5);
             this.pages = 1;
@@ -144,11 +156,15 @@ export default {
     if(this.mode == 'search'){
       this.listTitle = storage.categories['search'];
       eventHub.$emit('setSearchQuery');
+    } else if(this.mode == 'requests') {
+      this.listTitle = storage.categories['requests'];
     } else if(this.mode == 'collection') {
-      let caregory = this.$route.params.category || this.category;
-      this.listTitle = storage.categories[caregory];
+      let category = this.$route.params.category || this.category;
+      this.listTitle = storage.categories[category]; // <-- this
     } else if(this.mode == 'favorite') {
       this.listTitle = storage.categories['favorite'];
+    } else if(this.mode == 'user-requests') {
+      this.listTitle = storage.categories['user-requests'];
     }
     this.fetchCategory();
     eventHub.$on('updateFavorite', this.updateFavorite);

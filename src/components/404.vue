@@ -39,12 +39,19 @@ export default {
     height: 100%;
     background: rgba($c-light, 0.7);
   }
+  &-shortList{
+    width: 100%;
+  }
   &__content{
     width: 100%;
     padding: 0 20px;
     text-align: center;
     @include tablet-min{
-      padding: 0 40px 40px 0;
+      padding: 20px 0 0 0;
+    }
+    &-shortList {
+      width: 100%;
+
     }
   }
     &__title{

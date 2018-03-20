@@ -1,12 +1,13 @@
 <template>
   <li class="movies-item">
-    <a class="movies-item__link" :class="{'no-image': noImage}" :href="'/movie/' + movie.id" @click.prevent="openMoviePopup(movie.id, true)">
+    <a class="movies-item__link" :class="{'no-image': noImage}" href="" @click.prevent="openMoviePopup(movie.id, movie.type, true)">
       <figure class="movies-item__poster">
         <img v-if="!noImage" class="movies-item__img" src="~assets/placeholder.png" v-img="poster()" alt="">
         <img v-if="noImage" class="movies-item__img is-loaded" src="~assets/no-image.png" alt="">
       </figure>
       <div class="movies-item__content">
         <p class="movies-item__title">{{ movie.title }}</p>
+        <p class="movies-item__title">{{ movie.year }}</p>
       </div>
     </a>
   </li>
@@ -28,13 +29,14 @@ export default {
   methods: {
     poster() {
       if(this.movie.poster_path){
-        return 'https://image.tmdb.org/t/p/w370_and_h556_bestv2' + this.movie.poster_path;
+        return 'https://image.tmdb.org/t/p/w300' + this.movie.poster_path;
       } else {
         this.noImage = true;
       }
     },
-    openMoviePopup(id, event){
-      eventHub.$emit('openMoviePopup', id, event);
+    openMoviePopup(id, type, event){
+      console.log('open:', id, type, event)
+      eventHub.$emit('openMoviePopup', id, type, event);
     }
   }
 }

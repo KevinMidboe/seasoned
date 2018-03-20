@@ -1,34 +1,40 @@
 let storage = {
   apiKey: 'a70dbfe19b800809dfdd3e89e8532c9e',
-  sessionId: localStorage.getItem('session_id') || null,
-  userId: localStorage.getItem('user_id') || null,
+  token: localStorage.getItem('token') || null,
+  username: localStorage.getItem('username') || null,
+  admin: localStorage.getItem('admin') || null,
   pageTitlePostfix: ' — ' + document.title,
   listTypes: [
-    {
-      title: 'Popular Movies',
-      shortTitle: 'Popular',
-      query: 'popular',
-      type: 'collection',
-      isCategory: true
-    },
-    {
-      title: 'Top Rated Movies',
-      shortTitle: 'Top Rated',
-      query: 'top_rated',
-      type: 'collection',
-      isCategory: true
-    },
     {
       title: 'Upcoming Movies',
       shortTitle: 'Upcoming',
       query: 'upcoming',
+      name: 'home-category',
       type: 'collection',
       isCategory: true
     },
     {
+      title: 'Requested Movies & Shows',
+      shortTitle: 'Requested',
+      query: 'requests',
+      name: 'home-category',
+      type: 'requests', // Maybe change to separate group
+      isCategory: true,
+      isProfileContent: true
+    },
+    {
       title: 'Now Playing Movies',
       shortTitle: 'Now Playing',
-      query: 'now_playing',
+      query: 'nowplaying',
+      name: 'home-category',
+      type: 'collection',
+      isCategory: true
+    },
+    {
+      title: 'Popular Movies',
+      shortTitle: 'Popular',
+      query: 'popular',
+      name: 'home-category',
       type: 'collection',
       isCategory: true
     },
@@ -41,6 +47,15 @@ let storage = {
       title: 'Your Favorite Movies',
       query: 'favorite',
       isCategory: false
+    },
+    {
+      title: 'Your Requests',
+      shortTitle: 'User Requests',
+      query: 'user-requests',
+      name: 'user-requests',
+      type: 'user-requests',
+      isProfileContent: true
+      // isCategory: true,
     }
   ],
   categories: {},

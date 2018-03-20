@@ -10,9 +10,16 @@ let routes = [
   },
   {
     name: 'home-category',
-    path: '/movies/:category',
+    path: '/list/:category',
     components: {
       'list-router-view': require('./components/MoviesList.vue')
+    }
+  },
+  {
+    name: 'request',
+    path: '/request/all',
+    components: {
+      'request-router-view': require('./components/MoviesList.vue')
     }
   },
   {
@@ -23,6 +30,13 @@ let routes = [
     }
   },
   {
+    name: 'user-requests',
+    path: '/profile/requests',
+    components: {
+      'user-requests-router-view': require('./components/MoviesList.vue')
+    }
+  },
+  {
     name: 'movie',
     path: '/movie/:id',
     components: {
@@ -30,10 +44,38 @@ let routes = [
     },
     beforeEnter: (to, from, next) => {
       if(history.state && history.state.popup && from.name){
-        eventHub.$emit('openMoviePopup', to.params.id, false);
+        eventHub.$emit('openMoviePopup', to.params.id, 'movie', false);
         return;
       }
       next();
+    }
+  },
+  {
+    name: 'show',
+    path: '/show/:id',
+    components: {
+      'page-router-view': require('./components/MoviePage.vue')
+    },
+    beforeEnter: (to, from, next) => {
+      if(history.state && history.state.popup && from.name){
+        eventHub.$emit('openMoviePopup', to.params.id, 'show', false);
+        return;
+      }
+      next();
+    }
+  },
+  {
+    name: 'register',
+    path: '/register',
+    components: {
+      'search-router-view': require('./components/Register.vue')
+    }
+  },
+  {
+    name: 'signin',
+    path: '/signin',
+    components: {
+      'search-router-view': require('./components/Signin.vue')
     }
   },
   {
@@ -52,12 +94,13 @@ let routes = [
   },
   {
     path: '*',
-    redirect: '/404'
+    redirect: '/'
   }
 ];
 
 const router =  new VueRouter({
   mode: 'history',
+  base: '/request',
   routes,
   linkActiveClass: 'is-active'
 });

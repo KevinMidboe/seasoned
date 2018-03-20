@@ -3,19 +3,20 @@
     <navigation></navigation>
     <header class="header">
       <div class="header__search">
-        <input class="header__search-input" type="text" v-model.trim="searchQuery" @keyup.enter="search" @blur="search" placeholder="Search for a movie...">
+        <input class="header__search-input" type="text" v-model.trim="searchQuery" @keyup.enter="search" @blur="search" placeholder="Search for a movie or show...">
         <svg class="header__search-icon">
           <use xlink:href="#iconSearch"></use>
         </svg>
       </div>
     </header>
 
-      <movie-popup v-if="moviePopupIsVisible" @close="closeMoviePopup" :id="moviePopupId"></movie-popup>
+      <movie-popup v-if="moviePopupIsVisible" @close="closeMoviePopup" :id="moviePopupId" :type="moviePopupType"></movie-popup>
 
     <section class="main">
       <transition name="fade" @after-leave="afterLeave">
         <router-view name="list-router-view" :type="'page'" :mode="'collection'" :key="$route.params.category"></router-view>
         <router-view name="search-router-view" :type="'page'" :mode="'search'" :key="$route.params.query"></router-view>
+        <router-view name="user-requests-router-view" :type="'page'" :mode="'user-requests'"></router-view>
         <router-view name="page-router-view"></router-view>
       </transition>
     </section>
@@ -36,6 +37,7 @@ export default {
       moviePopupIsVisible: false,
       moviePopupHistoryVisible: false,
       moviePopupId: 0,
+      moviePopupType: 'movie',
       searchQuery: ''
     }
   },
@@ -58,17 +60,20 @@ export default {
       }.bind(this));
     },
     setUserStatus(){
-      storage.sessionId = localStorage.getItem('session_id') || null;
-      storage.userId = localStorage.getItem('user_id') || null;
+      storage.token = localStorage.getItem('token') || null;
+      storage.username = localStorage.getItem('username') || null;
+      storage.admin = localStorage.getItem('admin') || null;
     },
     // Movie Popup Methods
-    openMoviePopup(id, newMoviePopup){
+    openMoviePopup(id, type, newMoviePopup){
+      console.log('app openMoviePopup:', type)
       if(newMoviePopup){
         storage.backTitle = document.title;
       }
       storage.createMoviePopup = newMoviePopup;
       this.moviePopupIsVisible = true;
       this.moviePopupId = id;
+      this.moviePopupType = type;
       document.querySelector('body').classList.add('hidden');
     },
     closeMoviePopup(){
@@ -232,8 +237,8 @@ img{
       }
     }
     &-icon{
-      width: 14px;
-      height: 14px;
+      width: 19px;
+      height: 19px;
       fill: rgba($c-dark, 0.5);
       transition: fill 0.5s ease;
       pointer-events: none;
@@ -288,7 +293,11 @@ img{
     font-size: 12px;
     padding: 6px 20px 5px 20px;
   }
-  body:not(.touch) &:hover{
+  &:active, &:hover{
+    background: $c-dark;
+    color: $c-white;
+  }
+  body:not(.touch) &:hover, &:focus{
     background: $c-dark;
     color: $c-white;
   }

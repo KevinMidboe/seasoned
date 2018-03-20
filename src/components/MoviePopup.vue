@@ -1,7 +1,7 @@
 <template>
   <div class="movie-popup" @click="$emit('close')">
     <div class="movie-popup__box" @click.stop>
-      <movie :id="id"></movie>
+      <movie :id="id" :mediaType="type"></movie>
       <button class="movie-popup__close" @click="$emit('close')"></button>
     </div>
     <i class="loader"></i>
@@ -12,7 +12,7 @@
 import Movie from './Movie.vue';
 
 export default {
-  props: ['id'],
+  props: ['id', 'type'],
   components: { Movie },
   created(){
     window.addEventListener('keyup', function(e){

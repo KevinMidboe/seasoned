@@ -10,43 +10,95 @@
           <div class="movie__title">
             <h1 class="movie__title-text">
               {{ movie.title }}
-              <span v-if="movie.tagline">{{ movie.tagline }}</span>
+              <!-- <span>{{ movie.type }}</span> -->
             </h1>
+            <span>
+            </span>
           </div>
         </div>
       </header>
       <div class="movie__main">
         <div class="movie__wrap movie__wrap--main" :class="{'movie__wrap--page': type=='page'}">
-          <div class="movie__actions" v-if="userLoggedIn && favoriteChecked">
-            <a href="#" class="movie__actions-link" :class="{'active' : favorite === true}" @click.prevent="toggleFavorite">
-              <svg class="movie__actions-icon" :class="{'waiting' : favorite === ''}">
-                <use xlink:href="#iconFavorite"></use>
+          <!-- <div class="movie__actions" v-if="userLoggedIn && favoriteChecked"> -->
+          <div class="movie__actions">
+
+            <a class="movie__actions-link" v-if="matched" :class="{'active' : matched}">
+              <svg class="movie__actions-icon">
+                <use xlink:href="#iconExsits"></use>
               </svg>
-              <span class="movie__actions-text" v-if="favorite === ''">Wait...</span>
-              <span class="movie__actions-text" v-else-if="favorite">Marked as Favorite</span>
-              <span class="movie__actions-text" v-else>Mark as Favorite?</span>
+              <span class="movie__actions-text"> Already in plex &nbsp;🎉</span>
+            </a>
+            <a class="movie__actions-link" v-else="matched">
+              <svg class="movie__actions-icon">
+                <use xlink:href="#iconNot_exsits"></use>
+              </svg>
+              <span class="movie__actions-text"> Not in plex yet</span>
+            </a>
+
+            <a class="movie__actions-link" :class="{'active' : requested}" v-if="this.requested">
+              <svg class="movie__actions-icon">
+                <use xlink:href="#iconSent"></use>
+              </svg>
+              <span class="movie__actions-text"> Requested to be downloaded</span>
+            </a>
+            <a class="movie__actions-link" v-else="this.requested"  @click.prevent="sendRequest">
+              <svg class="movie__actions-icon" :class="{'waiting' : requested}">
+                <use xlink:href="#iconUnmatched"></use>
+              </svg>
+              <span class="movie__actions-text"> Request to be downloaded?</span>
+            </a>
+
+            <a class="movie__actions-link" @click="showTorrents=true" v-if="admin==='true'" :class="{'active' : showTorrents}">
+              <svg class="movie__actions-icon">
+                <use xlink:href="#icon_torrents"></use>
+              </svg>
+              <span class="movie__actions-text"> Search for torrents</span>
+            </a>
+
+            <a class="movie__actions-link" @click.prevent="openTmdb">
+              <svg class="movie__actions-icon">
+                <use xlink:href="#icon_info"></use>
+              </svg>
+              <span class="movie__actions-text"> See more info</span>
             </a>
           </div>
           <div class="movie__info">
-            <div v-if="movie.overview" class="movie__description">
-              {{ movie.overview }}
+            <div v-if="movie.summary" class="movie__description">
+              {{ movie.summary }}
             </div>
             <div class="movie__details">
-              <div v-if="movie.genres.length" class="movie__details-block">
+             <!--  <div v-if="movie.genres.length" class="movie__details-block">
                 <h2 class="movie__details-title">
                   Genres
                 </h2>
                 <div class="movie__details-text">
                   {{ nestedDataToString(movie.genres) }}
                 </div>
-              </div>
-              <div v-if="movie.release_date" class="movie__details-block">
+              </div> -->
+              <div v-if="movie.year" class="movie__details-block">
                 <h2 class="movie__details-title">
                   Release Date
                 </h2>
-                <div class="movie__details-text" v-formatDate="movie.release_date"></div>
+                <div class="movie__details-text">
+                  {{ movie.year }}
+                </div>
+              </div>
+              <div v-if="movie.type == 'show'" class="movie__details-block">
+                <h2 class="movie__details-title">
+                  Seasons
+                </h2>
+                <div class="movie__details-text">
+                  10
+                </div>
               </div>
             </div>
+          </div>
+
+          <!-- <TableDemo class="movie__admin">This is it</TableDemo> -->
+        
+          <div class="movie__admin" v-if="admin == 'true' && showTorrents">
+              <h2 class="movie__admin-title">torrents: {{ movie.title }}</h2>
+              <TorrentList :query="movie.title"></TorrentList>
           </div>
         </div>
       </div>
@@ -59,9 +111,11 @@ import axios from 'axios'
 import storage from '../storage.js'
 import img from '../directives/v-image.js'
 import formatDate from '../directives/v-formatDate.js'
+import TorrentList from './TorrentList.vue'
 
 export default {
-  props: ['id', 'type'],
+  props: ['id', 'type', 'mediaType'],
+  components: { TorrentList },
   directives: {
     img: img,
     formatDate: formatDate
@@ -74,30 +128,40 @@ export default {
       movieBackdropSrc: '',
       userLoggedIn: storage.sessionId ? true : false,
       favoriteChecked: false,
-      favorite: ''
+      requested: false,
+      admin: localStorage.getItem('admin'),
+      showTorrents: false
     }
   },
-  // computed: {
-  //   loaded(){
-  //     return this.movieLoaded ? true : false;
-  //   }
-  // },
+  computed: {
+    loaded(){
+      return this.movieLoaded ? true : false;
+    }
+  },
   methods: {
     fetchMovie(id){
-      axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${storage.apiKey}&language=en-US`)
+      this.id = id;
+      (this.mediaType == 'show') ? this.tmdbType = 'show' : this.tmdbType = 'movie'
+      // Fetch from seasoned to get matched status
+      // axios.get(`https://apollo.kevinmidboe.com/api/v1/plex/request/${id}?type=${'show'}&api_key=${storage.apiKey}&language=en-US`)
+      axios.get(`https://api.kevinmidboe.com/api/v1/plex/request/${id}?type=${this.mediaType}`)
+      // axios.get(`http://localhost:31459/api/v1/plex/request/${id}?type=${this.mediaType}&api_key=${storage.apiKey}&language=en-US`)
       .then(function(resp){
           let movie = resp.data;
           this.movie = movie;
           this.poster();
           this.backdrop();
+          this.matched = this.movie.matchedInPlex;
+          this.requested = this.movie.requested;
           if(this.userLoggedIn){
             this.checkIfInFavorites(movie.id);
+            this.movieLoaded = true;
           } else {
             this.movieLoaded = true;
           }
           // Push state
           if(storage.createMoviePopup){
-            storage.moviePath = '/movie/' + id;
+            storage.moviePath = '/request/' + this.mediaType + '/' + id;
             history.pushState({ popup: true }, null, storage.moviePath);
             storage.createMoviePopup = false;
           }
@@ -105,17 +169,19 @@ export default {
           document.title = this.movie.title + storage.pageTitlePostfix;
       }.bind(this))
       .catch(function(error) {
+        console.log(error.response)
         this.$router.push({ name: '404' });
       }.bind(this));
     },
     poster() {
+      // Change the poster resolution
       if(this.movie.poster_path){
-        this.moviePosterSrc = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' + this.movie.poster_path;
+        this.moviePosterSrc = 'https://image.tmdb.org/t/p/w300' + this.movie.poster_path;
       }
     },
     backdrop(){
-      if(this.movie.backdrop_path){
-        this.movieBackdropSrc = 'https://image.tmdb.org/t/p/w500' + this.movie.backdrop_path;
+      if(this.movie.background_path){
+        this.movieBackdropSrc = 'https://image.tmdb.org/t/p/w500' + this.movie.background_path;
       }
     },
     nestedDataToString(data) {
@@ -125,13 +191,15 @@ export default {
       return resultString;
     },
     checkIfInFavorites(id){
-      axios.get(`https://api.themoviedb.org/3/movie/${id}/account_states?api_key=${storage.apiKey}&session_id=${storage.sessionId}`)
+      // Change to check in plex
+      axios.get(`https://api.themoviedb.org/3/${this.tmdbType}/${id}/account_states?api_key=${storage.apiKey}&session_id=${storage.sessionId}`)
       .then(function(resp){
           this.favorite = resp.data.favorite;
           this.favoriteChecked = true;
           this.movieLoaded = true;
       }.bind(this))
     },
+    // Toggle the downloading status if admin
     toggleFavorite(){
       let favoriteInvert = !this.favorite;
       this.favorite = '';
@@ -144,7 +212,28 @@ export default {
         this.favorite = favoriteInvert;
         eventHub.$emit('updateFavorite');
       }.bind(this));
-    }
+    },
+    // Send a request for a specific movie
+    sendRequest(){
+      this.requested = ''
+      axios.post(`https://api.kevinmidboe.com/api/v1/plex/request/${this.id}?type=${this.mediaType}`,
+        { headers: {authorization: storage.token} },
+      )
+      // axios.post(`https://api.kevinmidboe.com/api/v1/plex/request/${this.id}?api_key=${storage.apiKey}&session_id=${storage.sessionId}`, {
+      .then(function(resp){
+        if (resp.data.success)
+          this.requested = true;
+        else
+          this.requested = false;
+      }.bind(this));
+    },
+    openTmdb(){
+      window.location.replace('https://www.themoviedb.org/' + this.tmdbType + '/' + this.id)
+    },
+    // Search torrents by query
+    // searchForTorrents() {
+    //   axios.get(`https://apollo.kevinmidboe.com/api/v1/plex/request/${id}?type=${'movie'}&api_key=${storage.apiKey}&language=en-US`)
+    // },
   },
   watch: {
     id: function(val){
@@ -153,6 +242,7 @@ export default {
   },
   created(){
     this.fetchMovie(this.id);
+    console.log('admin: ', this.admin)
   }
 }
 </script>
@@ -292,19 +382,26 @@ export default {
         &.active{
           color: $c-dark;
         }
+        &.pending{
+          color: #f8bd2d;
+        }
       }
       &-icon{
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         margin: 0 10px 0 0;
         fill: rgba($c-dark, 0.5);
         transition: fill 0.5s ease, transform 0.5s ease;
         &.waiting{
           transform: scale(0.8, 0.8);
         }
+        &.pending{
+          fill: #f8bd2d;
+        }
       }
       &-link:hover &-icon{
         fill: rgba($c-dark, 0.75);
+        cursor: pointer;
       }
       &-link.active &-icon{
         fill: $c-green;
@@ -312,6 +409,7 @@ export default {
       &-text{
         display: block;
         padding-top: 2px;
+        cursor: pointer;
       }
     }
     &__info{
@@ -339,10 +437,15 @@ export default {
         }
       }
       &__details{
+        &-block{
+          float: left;
+        }
         &-block:not(:last-child){
           margin-bottom: 20px;
+          margin-right: 20px;
           @include tablet-min{
             margin-bottom: 30px;
+            margin-right: 30px;
           }
         }
         &-title{
@@ -361,5 +464,28 @@ export default {
           margin-top: 5px;
         }
       }
+    &__admin{
+      width: 100%;
+      padding: 20px;
+      order: 2;
+      @include tablet-min{
+        order: 3;
+        padding: 40px;
+        padding-top: 0px;
+        width: 100%;
+      }
+      &-title{
+          margin: 0;
+          font-weight: 400;
+          text-transform: uppercase;
+          text-align: center;
+          font-size: 14px;
+          color: $c-green;
+          padding-bottom: 20px;
+          @include tablet-min{
+            font-size: 16px;
+          }
+        }
+    }
 }
 </style>

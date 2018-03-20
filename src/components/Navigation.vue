@@ -12,7 +12,7 @@
     </div>
     <ul class="nav__list">
       <li class="nav__item" v-for="item in listTypes" v-if="item.isCategory">
-        <router-link class="nav__link" :to="{name: 'home-category', params: {category: item.query}}">
+        <router-link class="nav__link" :to="{name: item.name, params: {mode: item.type, category: item.query}}">
           <div class="nav__link-wrap">
             <svg class="nav__link-icon">
               <use :xlink:href="'#icon_' + item.query"></use>
@@ -22,14 +22,22 @@
         </router-link>
       </li>
       <li class="nav__item nav__item--profile">
-        <div  class="nav__link nav__link--profile"  @click="requestToken" v-if="!userLoggedIn">
+<!--         <div  class="nav__link nav__link--profile"  @click="requestToken" v-if="!userLoggedIn">
           <div class="nav__link-wrap">
             <svg class="nav__link-icon">
               <use xlink:href="#iconLogin"></use>
             </svg>
             <span class="nav__link-title">Log In</span>
           </div>
-        </div>
+        </div> -->
+         <router-link  class="nav__link nav__link--profile" :to="{name: 'signin'}" v-if="!userLoggedIn">
+          <div class="nav__link-wrap">
+            <svg class="nav__link-icon">
+              <use xlink:href="#iconLogin"></use>
+            </svg>
+            <span class="nav__link-title">Sign in</span>
+          </div>
+        </router-link>
         <router-link  class="nav__link nav__link--profile" :to="{name: 'profile'}" v-if="userLoggedIn">
           <div class="nav__link-wrap">
             <svg class="nav__link-icon">
@@ -50,12 +58,12 @@ export default {
   data(){
     return {
       listTypes: storage.listTypes,
-      userLoggedIn: storage.sessionId ? true : false
+      userLoggedIn: localStorage.getItem('token') ? true : false
     }
   },
   methods: {
     setUserStatus(){
-      this.userLoggedIn = storage.sessionId ? true : false;
+      this.userLoggedIn = localStorage.getItem('token') ? true : false;
     },
     requestToken(){
       eventHub.$emit('requestToken');

@@ -1,17 +1,20 @@
 <template>
   <section class="profile">
-    <div class="profile__content" v-if="userLoggedIn === true">
+    <div class="profile__content" v-if="userLoggedIn">
       <header class="profile__header">
-        <h2 class="profile__title">Hello {{ userName }}</h2>
+        <h2 class="profile__title">{{ emoji }} Welcome {{ userName }}</h2>
         <button class="button" @click="logOut">Log Out</button>
       </header>
-      <movies-list :type="'component'" :mode="'favorite'"></movies-list>
+      <movies-list v-for="item in listTypes" v-if="item.isProfileContent" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list>
+      <!-- <movies-list v-for="item in listTypes" v-if="item.isCategory" :type="'component'" :mode="item.type" :shortList="true"></movies-list> -->
       <!-- <created-lists></created-lists> -->
     </div>
-    <section class="not-found" v-if="userLoggedIn === false">
+    <section class="not-found" v-if="!userLoggedIn">
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
-        <button class="not-found__button button" @click="requestToken">Log In</button>
+        <router-link :to="{name: 'signin'}" exact title="Sign in here">
+          <button class="not-found__button button">Sign In</button>
+        </router-link>
       </div>
     </section>
   </section>
@@ -28,25 +31,12 @@ export default {
   data(){
     return{
       userLoggedIn: '',
-      userName: ''
+      userName: '',
+      emoji: '',
+      listTypes: storage.listTypes
     }
   },
   methods: {
-    requestPermission(){
-      let query = location.search.substring(1);
-      if(query.length){
-        let params = query.split('&');
-        let token = params[0].split('=')[1];
-        let status = params[1].split('=')[0];
-        if(status == 'approved'){
-          this.createSession(token);
-        } else {
-          this.userLoggedIn = false;
-        }
-      } else {
-        this.userLoggedIn = false;
-      }
-    },
     createSession(token){
       axios.get(`https://api.themoviedb.org/3/authentication/session/new?api_key=${storage.apiKey}&request_token=${token}`)
       .then(function(resp){
@@ -60,16 +50,14 @@ export default {
           }
       }.bind(this));
     },
-    getUserInfo(){
-      axios.get(`https://api.themoviedb.org/3/account?api_key=${storage.apiKey}&session_id=${storage.sessionId}`)
+    getNewEmoji(){
+      axios.get(`https://api.kevinmidboe.com/api/v1/emoji`)
       .then(function(resp){
-          let data = resp.data;
-          this.userName = data.username;
-          if (!localStorage.getItem('user_id')) localStorage.setItem('user_id', data.id);
+          this.emoji = resp.data.emoji;
       }.bind(this))
-      .catch(function (error) {
-        this.logOut();
-      }.bind(this));
+    },
+    getUserInfo(){
+      this.userName = localStorage.getItem('username'); 
     },
     requestToken(){
       eventHub.$emit('requestToken');
@@ -83,11 +71,12 @@ export default {
   created(){
     document.title = 'Profile' + storage.pageTitlePostfix;
     storage.backTitle = document.title;
-    if(!storage.sessionId){
-      this.requestPermission();
+    if(!localStorage.getItem('token')){
+      this.userLoggedIn = false;
     } else {
       this.userLoggedIn = true;
       this.getUserInfo();
+      this.getNewEmoji();
     }
   }
 }
@@ -97,14 +86,6 @@ export default {
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
 .profile{
-  &__content{
-    .wrapper{
-      min-height: calc(100vh - 175px);
-      @include tablet-min{
-        min-height: calc(100vh - 171px);
-      }
-    }
-  }
   &__header{
     display: flex;
     align-items: center;
