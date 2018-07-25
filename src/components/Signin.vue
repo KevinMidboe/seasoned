@@ -18,7 +18,7 @@
             <svg class="form__group__input-icon">
               <use xlink:href="#iconKeyhole"></use>
             </svg>
-            <input class="form__group-input" type="password" ref="password" placeholder="Password">
+            <input class="form__group-input" type="password" ref="password" placeholder="Password" v-on:keyup.enter="signin">
           </div>
           
           <transition name="message-fade">

@@ -6,12 +6,13 @@ let storage = {
   pageTitlePostfix: ' — ' + document.title,
   listTypes: [
     {
-      title: 'Upcoming Movies',
-      shortTitle: 'Upcoming',
-      query: 'upcoming',
-      name: 'home-category',
-      type: 'collection',
-      isCategory: true
+      title: 'Your Requests',
+      shortTitle: 'User Requests',
+      query: 'user-requests',
+      name: 'user-requests',
+      type: 'user-requests',
+      isProfileContent: true
+      // isCategory: true,
     },
     {
       title: 'Requested Movies & Shows',
@@ -21,6 +22,14 @@ let storage = {
       type: 'requests', // Maybe change to separate group
       isCategory: true,
       isProfileContent: true
+    },
+    {
+      title: 'Upcoming Movies',
+      shortTitle: 'Upcoming',
+      query: 'upcoming',
+      name: 'home-category',
+      type: 'collection',
+      isCategory: true
     },
     {
       title: 'Now Playing Movies',
@@ -47,15 +56,6 @@ let storage = {
       title: 'Your Favorite Movies',
       query: 'favorite',
       isCategory: false
-    },
-    {
-      title: 'Your Requests',
-      shortTitle: 'User Requests',
-      query: 'user-requests',
-      name: 'user-requests',
-      type: 'user-requests',
-      isProfileContent: true
-      // isCategory: true,
     }
   ],
   categories: {},

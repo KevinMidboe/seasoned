@@ -63,7 +63,7 @@ export default {
       renderName: tablet,
       cols: [
         { label: 'Name', field: 'name', sort: true, hidden: tablet },
-        { label: 'Seeders', field: 'seed', sort: true },
+        { label: 'Seeders', field: 'seed', sort: (a, b) => parseInt(a) - parseInt(b) },
         { label: 'Size', field: 'size', sort: (a, b) => this.sortableSize(a) - this.sortableSize(b) },
         { label: 'Add', align: 'center' }
       ],

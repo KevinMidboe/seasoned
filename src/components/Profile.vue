@@ -3,9 +3,18 @@
     <div class="profile__content" v-if="userLoggedIn">
       <header class="profile__header">
         <h2 class="profile__title">{{ emoji }} Welcome {{ userName }}</h2>
-        <button class="button" @click="logOut">Log Out</button>
+        
+        <div>
+           <router-link class="" :to="{name: 'settings'}">
+          </router-link>
+            <button v-if="showSettings" class="button__active" @click="toggleSettings" style="margin-right: 2em;">Hide settings</button>
+            <button v-else class="button" @click="toggleSettings" style="margin-right: 2em;">Show settings</button>
+          <button class="button" @click="logOut">Log Out</button>
+        </div>
       </header>
-      <movies-list v-for="item in listTypes" v-if="item.isProfileContent" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list>
+      <settings v-if="showSettings"></settings>
+
+      <movies-list v-for="item in listTypes" v-if="!showSettings && item.isProfileContent" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list>
       <!-- <movies-list v-for="item in listTypes" v-if="item.isCategory" :type="'component'" :mode="item.type" :shortList="true"></movies-list> -->
       <!-- <created-lists></created-lists> -->
     </div>
@@ -24,15 +33,17 @@
 import axios from 'axios'
 import storage from '../storage.js'
 import MoviesList from './MoviesList.vue'
+import Settings from './Settings.vue'
 // import CreatedLists from './CreatedLists.vue'
 
 export default {
-  components: { MoviesList },
+  components: { MoviesList, Settings },
   data(){
     return{
       userLoggedIn: '',
       userName: '',
       emoji: '',
+      showSettings: false,
       listTypes: storage.listTypes
     }
   },
@@ -61,6 +72,9 @@ export default {
     },
     requestToken(){
       eventHub.$emit('requestToken');
+    },
+    toggleSettings() {
+      this.showSettings = this.showSettings ? false : true;
     },
     logOut(){
       localStorage.clear();

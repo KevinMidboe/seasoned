@@ -40,20 +40,30 @@ let removed;
 export default {
   props: ['type', 'mode', 'category', 'shortList'],
   components: { MoviesListItem },
-  beforeRouteLeave (to, from, next) {
-    if(from.name == 'search'){
-      eventHub.$emit('setSearchQuery', true);
-    }
-    next();
-  },
+  // beforeRouteLeave (to, from, next) {
+  //   if(from.name == 'search'){
+  //     eventHub.$emit('setSearchQuery', true);
+  //   }
+  //   next();
+  // },
   data() {
     return {
       listTitle: '',
       movies: [],
+      unfiltered_movies: [],
       pages: '',
+      filter: '',
+      filter_query: '',
       results: '',
       currentPage: 1,
-      listLoaded: false
+      listLoaded: false,
+      showFilter: false,
+      filters: {
+        status: {
+          elms: ['all', 'requested', 'downloading', 'downloaded'],
+          selected: 0,
+        }
+      }
     }
   },
   computed: {
@@ -68,7 +78,7 @@ export default {
       if(this.mode == 'search'){
         return `https://api.kevinmidboe.com/api/v1/plex/request?query=${this.query}&page=${this.currentPage}`;
       } else if(this.mode == 'requests' || this.$route.params.category == 'requests') {
-        return `https://api.kevinmidboe.com/api/v1/plex/requests/all?page=${this.currentPage}&status=requested`;
+        return `https://api.kevinmidboe.com/api/v1/plex/requests/all?page=${this.currentPage}&status=${this.filter}`;
       } else if(this.mode == 'collection') {
         let category = this.$route.params.category || this.category;
         return `https://api.kevinmidboe.com/api/v1/tmdb/list/${category}?page=${this.currentPage}`;
@@ -104,6 +114,7 @@ export default {
             this.pages = data.total_pages;
             this.results = data.total_results;
           }
+          this.unfiltered_movies = this.movies;
           this.listLoaded = true;
           // Change Page title
           if(this.type == 'page'){
@@ -123,32 +134,51 @@ export default {
           this.movies = newData;
       }.bind(this));
     },
-    updateFavorite(){
-      if(this.mode == 'favorite'){
-        let promises = [], movies = [], pages, results;
-        for(let i = 1; i <= this.currentPage; i++){
-          promises.push(axios.get(`https://api.themoviedb.org/3/account/${storage.userId}/favorite/movies?api_key=${storage.apiKey}&session_id=${storage.sessionId}&language=en-US&sort_by=created_at.desc&page=${i}`))
-        }
-        axios.all(promises).then(function(results) {
-          results.forEach(function(resp) {
-            let data = resp.data;
-            movies = movies.concat(data.results);
-            pages = data.total_pages;
-            results = data.total_results;
-          });
-          this.movies = movies;
-          this.pages = pages;
-          if(this.currentPage > pages){
-            this.currentPage -= 1;
-          }
-          this.results = results;
-        }.bind(this));
-      }
+    sortt() {
+      console.log(this.showFilters)
+    },
+    toggleFilter(item, index){
+      this.showFilter = this.showFilter ? false : true;
+      // this.results = this.results.filter(result => result.status != 'downloaded')
+    },
+    applyFilter(item, index) {
+      this.filter = item;
+      this.filters.status.selected = index;
+      console.log('applied query filter: ', item, index)
+      this.fetchCategory()
     }
+    // updateFavorite(){
+    //   if(this.mode == 'favorite'){
+    //     let promises = [], movies = [], pages, results;
+    //     for(let i = 1; i <= this.currentPage; i++){
+    //       promises.push(axios.get(`https://api.themoviedb.org/3/account/${storage.userId}/favorite/movies?api_key=${storage.apiKey}&session_id=${storage.sessionId}&language=en-US&sort_by=created_at.desc&page=${i}`))
+    //     }
+    //     axios.all(promises).then(function(results) {
+    //       results.forEach(function(resp) {
+    //         let data = resp.data;
+    //         movies = movies.concat(data.results);
+    //         pages = data.total_pages;
+    //         results = data.total_results;
+    //       });
+    //       this.movies = movies;
+    //       this.pages = pages;
+    //       if(this.currentPage > pages){
+    //         this.currentPage -= 1;
+    //       }
+    //       this.results = results;
+    //     }.bind(this));
+    //   }
+    // }
   },
   watch: {
-    query(value){
-      this.fetchCategory(value);
+    filter_query: function(val, oldVal) {
+      let movies = this.unfiltered_movies;
+      val = val.toLowerCase()
+      if (val.length > 0)
+        movies = movies.filter(movie => movie.title.toLowerCase().startsWith(val))
+
+      if (movies.length > 0)
+        this.movies = movies;
     }
   },
   created(){
@@ -171,7 +201,21 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+  @import "./src/scss/media-queries";
+  .form__group-input {
+    padding: 10px 5px 10px 15px;
+    margin-left: 0;
+    height: 38px;
+    width: 150px;
+    font-size: 15px;
+    @include desktop-min {
+      width: 200px;
+      font-size: 17px;
+    }
+  }
 
+</style>
 <style lang="scss">
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
@@ -188,6 +232,7 @@ export default {
   }
   &__header{
     display: flex;
+    flex-flow: row wrap;
     align-items: center;
     justify-content: space-between;
     padding: 20px 10px;
@@ -207,6 +252,8 @@ export default {
       line-height: 16px;
       color: $c-dark;
       font-weight: 300;
+
+      flex-basis: 50%;
       @include tablet-min{
         font-size: 18px;
         line-height: 18px;
@@ -217,6 +264,12 @@ export default {
       font-weight: 300;
       letter-spacing: 0.5px;
       color: rgba($c-dark, 0.5);
+      
+      text-align: right;
+      flex-basis: 50%;
+      @include mobile-only {
+        display: none;
+      }
     }
     &__link{
       font-size: 12px;
@@ -232,6 +285,71 @@ export default {
         color: $c-dark;
       }
     }
+  &__filters{
+    margin-top: 10px;
+    line-height: 22px;
+    color: $c-dark;
+    font-size: 18px;
+    display: flex;
+    justify-content: flex-end;
+    transition: opacity 1s ease;
+
+    &__button-spacing {
+      @include tablet-min {
+        width: 15px;
+      }
+      @include mobile-only {
+        width: 10px;
+      }
+    }
+    &-list {
+      margin: 0px 10px;
+      padding: 0;
+      list-style: none;
+      border: solid 1px;
+      border-radius: 2px;
+      overflow: hidden;
+      display: flex;
+      transition: color 0.2s ease;
+
+      justify-content: space-evenly;
+
+      @include tablet-min{
+        margin: 0px 15px;
+      }
+      @include tablet-landscape-min {
+        margin: 0px 25px;
+      }
+      @include desktop-min{
+        margin: 0px 30px;
+      }
+      li {
+        padding: 6px 14px;
+        background-color: $c-white;
+        transition: color 0.2s ease;
+        font-size: 13px;
+        font-weight: 200;
+        text-transform: capitalize;
+        text-align: center;
+        width: 100%;
+        &:nth-child(n+2) {
+          border-left: solid 1px;
+        }
+        &.active, &:hover {
+          border-color: transparent;
+          background-color: #091c24;
+          color: $c-white;
+          cursor: pointer;
+        }
+        @include tablet-min {
+          font-size: 16px;
+        }
+      }
+    }
+    &-toggle {
+      margin-left: 15px;
+    }
+  }
   &__list{
     padding: 0;
     margin: 0;
