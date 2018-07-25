@@ -4,18 +4,34 @@
       <header class="movies__header">
         <h2 class="movies__title">{{ listTitle }}</h2>
         <span class="movies__results" v-if="!shortList">{{ countResults }}</span>
+
         <router-link v-if="shortList && mode != 'user-requests'" class="movies__link" :to="{name: 'home-category', params: {category: category}}">
           View All
         </router-link>
          <router-link v-if="shortList && mode == 'user-requests'" class="movies__link" :to="{name: 'user-requests'}">
           View All
         </router-link>
+
+        <span v-if="!shortList && (this.$route.params.category === 'requests' || mode == 'user-requests')" class="movies__filters">
+          <button type="button" class="button" @click="toggleFilter">Filter</button>
+          <span class="movies__filters__button-spacing"></span>
+          <!-- <button type="button" class="button" @click="sort">Sort</button>  -->
+          <span class="movies__filters__button-spacing"></span>
+          <div class="form__group">
+             <input v-model="filter_query" class="form__group-input" placeholder="Filter by search"/>
+          </div>
+        </span>
       </header>
+
+      <ul v-if="showFilter" class="movies__filters-list">
+        <li v-for="(item, index) in filters.status.elms" @click="applyFilter(item, index)" :class="{'active': index === filters.status.selected}">{{ item }}</li>
+      </ul>
+
       <ul class="movies__list">
         <movies-list-item class="movies__item" v-for="(movie, index) in movies" :movie="movie"></movies-list-item>
       </ul>
       <div class="movies__nav" v-if="!shortList" :class="{'is-hidden' : currentPage == pages}">
-        <button @click="loadMore" class="button">Load More</button>
+        <button @click="loadMore" class="button">Load Mores</button>
       </div>
     </div>
     <i v-if="!listLoaded" class="loader"></i>
@@ -134,9 +150,9 @@ export default {
           this.movies = newData;
       }.bind(this));
     },
-    sortt() {
-      console.log(this.showFilters)
-    },
+    // sort() {
+    //   console.log(this.showFilters)
+    // },
     toggleFilter(item, index){
       this.showFilter = this.showFilter ? false : true;
       // this.results = this.results.filter(result => result.status != 'downloaded')
@@ -147,28 +163,6 @@ export default {
       console.log('applied query filter: ', item, index)
       this.fetchCategory()
     }
-    // updateFavorite(){
-    //   if(this.mode == 'favorite'){
-    //     let promises = [], movies = [], pages, results;
-    //     for(let i = 1; i <= this.currentPage; i++){
-    //       promises.push(axios.get(`https://api.themoviedb.org/3/account/${storage.userId}/favorite/movies?api_key=${storage.apiKey}&session_id=${storage.sessionId}&language=en-US&sort_by=created_at.desc&page=${i}`))
-    //     }
-    //     axios.all(promises).then(function(results) {
-    //       results.forEach(function(resp) {
-    //         let data = resp.data;
-    //         movies = movies.concat(data.results);
-    //         pages = data.total_pages;
-    //         results = data.total_results;
-    //       });
-    //       this.movies = movies;
-    //       this.pages = pages;
-    //       if(this.currentPage > pages){
-    //         this.currentPage -= 1;
-    //       }
-    //       this.results = results;
-    //     }.bind(this));
-    //   }
-    // }
   },
   watch: {
     filter_query: function(val, oldVal) {
@@ -236,6 +230,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 20px 10px;
+
     @include tablet-min{
       padding: 23px 15px;
     }
