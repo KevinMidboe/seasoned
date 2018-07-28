@@ -106,8 +106,8 @@ let routes = [
 ];
 
 const router =  new VueRouter({
-  // mode: 'history',
-  base: '/request/',
+  mode: 'history',
+  base: '/',
   routes,
   linkActiveClass: 'is-active'
 });
