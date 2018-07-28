@@ -8,7 +8,7 @@
       <form class="form">
         <div class="form__buffer"></div>
 
-        <div>
+        <div class="center">
           <div class="form__group">
             <svg class="form__group__input-icon">
               <use xlink:href="#iconEmail"></use>
@@ -203,6 +203,9 @@ export default {
   color: #3e7549;
 }
 
+.center {
+  justify-content: center;
+}
 .form{
   z-index: 15;
   background-color: $c-light;
@@ -229,7 +232,6 @@ export default {
       font-weight: 100;
       font-size: 20px;
       border: 1px solid $c-dark;
-      margin-bottom: 1rem;
       margin-left: -2.2rem;
       z-index: 3;
       &:focus, &:hover {

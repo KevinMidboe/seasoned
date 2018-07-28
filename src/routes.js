@@ -86,6 +86,13 @@ let routes = [
     }
   },
   {
+    name: 'settings',
+    path: '/profile/settings',
+    components: {
+      'search-router-view': require('./components/Settings.vue')
+    }
+  },
+  {
     name: '404',
     path: '/404',
     components: {
@@ -99,8 +106,8 @@ let routes = [
 ];
 
 const router =  new VueRouter({
-  mode: 'history',
-  base: '/request',
+  // mode: 'history',
+  base: '/request/',
   routes,
   linkActiveClass: 'is-active'
 });

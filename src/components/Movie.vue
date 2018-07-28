@@ -19,6 +19,9 @@
       </header>
       <div class="movie__main">
         <div class="movie__wrap movie__wrap--main" :class="{'movie__wrap--page': type=='page'}">
+          <!-- <div class="movie__ratings">
+            <p>here</p>
+          </div> -->
           <!-- <div class="movie__actions" v-if="userLoggedIn && favoriteChecked"> -->
           <div class="movie__actions">
 
@@ -76,20 +79,18 @@
                 </div>
               </div> -->
               <div v-if="movie.year" class="movie__details-block">
-                <h2 class="movie__details-title">
-                  Release Date
-                </h2>
-                <div class="movie__details-text">
-                  {{ movie.year }}
-                </div>
+                <h2 class="movie__details-title">Release Date</h2>
+                <div class="movie__details-text">{{ movie.year }}</div>
               </div>
+
+               <!-- <div v-if="movie.score" class="movie__details-block">
+                <h2 class="movie__details-title">Rating</h2>
+                <div class="movie__details-text">{{ rating }}</div>
+              </div> -->
+
               <div v-if="movie.type == 'show'" class="movie__details-block">
-                <h2 class="movie__details-title">
-                  Seasons
-                </h2>
-                <div class="movie__details-text">
-                  10
-                </div>
+                <h2 class="movie__details-title">Seasons</h2>
+                <div class="movie__details-text">{{ movie.seasons }}</div>
               </div>
             </div>
           </div>
@@ -142,10 +143,7 @@ export default {
     fetchMovie(id){
       this.id = id;
       (this.mediaType == 'show') ? this.tmdbType = 'show' : this.tmdbType = 'movie'
-      // Fetch from seasoned to get matched status
-      // axios.get(`https://apollo.kevinmidboe.com/api/v1/plex/request/${id}?type=${'show'}&api_key=${storage.apiKey}&language=en-US`)
       axios.get(`https://api.kevinmidboe.com/api/v1/plex/request/${id}?type=${this.mediaType}`)
-      // axios.get(`http://localhost:31459/api/v1/plex/request/${id}?type=${this.mediaType}&api_key=${storage.apiKey}&language=en-US`)
       .then(function(resp){
           let movie = resp.data;
           this.movie = movie;
@@ -161,7 +159,7 @@ export default {
           }
           // Push state
           if(storage.createMoviePopup){
-            storage.moviePath = '/request/' + this.mediaType + '/' + id;
+            storage.moviePath = this.mediaType + '/' + id;
             history.pushState({ popup: true }, null, storage.moviePath);
             storage.createMoviePopup = false;
           }
@@ -216,9 +214,16 @@ export default {
     // Send a request for a specific movie
     sendRequest(){
       this.requested = ''
-      axios.post(`https://api.kevinmidboe.com/api/v1/plex/request/${this.id}?type=${this.mediaType}`,
-        { headers: {authorization: storage.token} },
-      )
+      axios({
+        method: 'post', //you can set what request you want to be
+        url: `https://api.kevinmidboe.com/api/v1/plex/request/${this.id}?type=${this.mediaType}`,
+        headers: {
+          authorization: storage.token
+        }
+      })
+      // axios.post(`https://api.kevinmidboe.com/api/v1/plex/request/${this.id}?type=${this.mediaType}`, {}, {
+      //   authorization: storage.token
+      // })
       // axios.post(`https://api.kevinmidboe.com/api/v1/plex/request/${this.id}?api_key=${storage.apiKey}&session_id=${storage.sessionId}`, {
       .then(function(resp){
         if (resp.data.success)

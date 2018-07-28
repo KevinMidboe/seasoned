@@ -3,7 +3,7 @@
     <navigation></navigation>
     <header class="header">
       <div class="header__search">
-        <input class="header__search-input" type="text" v-model.trim="searchQuery" @keyup.enter="search" @blur="search" placeholder="Search for a movie or show...">
+        <input class="header__search-input" type="text" v-model.trim="searchQuery" @keyup.enter="search" placeholder="Search for a movie or show...">
         <svg class="header__search-icon">
           <use xlink:href="#iconSearch"></use>
         </svg>
@@ -298,6 +298,11 @@ img{
     color: $c-white;
   }
   body:not(.touch) &:hover, &:focus{
+    background: $c-dark;
+    color: $c-white;
+  }
+  &__active {
+    @extend .button;
     background: $c-dark;
     color: $c-white;
   }

@@ -109,6 +109,20 @@
     <div id="app"></div>
     <script src="dist/build.js"></script>
   </body>
+  <script>
+    (function(w, d){
+      var b = d.getElementsByTagName('body')[0];
+      var s = d.createElement("script"); s.async = true;
+      var v = !("IntersectionObserver" in w) ? "8.7.1" : "10.5.2";
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/" + v + "/lazyload.min.js";
+      w.lazyLoadOptions = {
+      	container: '.movies__list',
+	elements_selector: 'img',
+	threshold: 300,
+      }; // Your options here. See "recipes" for more information about async.
+      b.appendChild(s);
+    }(window, document));
+  </script>
   <script src="https://cdn.jsdelivr.net/vue/2.0.0-rc/vue.min.js"></script>
   <script src="https://cdn.ravenjs.com/3.23.1/vue/raven.min.js" crossorigin="anonymous"></script>
   <script>Raven.config('https://c1fa1a17de3d4b24abcd05161648fe4d@sentry.io/300063').install();</script>
