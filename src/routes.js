@@ -102,12 +102,16 @@ let routes = [
   {
     path: '*',
     redirect: '/'
+  },
+  {
+    path: '/request',
+    redirect: '/'
   }
 ];
 
 const router =  new VueRouter({
   // mode: 'history',
-  base: '/request/',
+  base: '/',
   routes,
   linkActiveClass: 'is-active'
 });
