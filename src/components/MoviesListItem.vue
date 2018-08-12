@@ -1,6 +1,6 @@
 <template>
   <li class="movies-item">
-    <a class="movies-item__link" :class="{'no-image': noImage}" href="" @click.prevent="openMoviePopup(movie.id, movie.type, true)">
+    <a class="movies-item__link" :class="{'no-image': noImage}" href="#" @click.prevent="openMoviePopup(movie.id, movie.type, true)">
       <figure class="movies-item__poster">
         <img v-if="!noImage" class="movies-item__img" src="~assets/placeholder.png" v-img="poster()" alt="">
         <img v-if="noImage" class="movies-item__img is-loaded" src="~assets/no-image.png" alt="">
