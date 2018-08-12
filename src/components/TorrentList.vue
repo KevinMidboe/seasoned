@@ -23,7 +23,7 @@
         <td class="data-tablee-cell -content data-tablee-text" v-on:click="showInfo(row.name)">{{ row.seed }}</td>
         <td class="data-tablee-cell -content data-tablee-text" v-on:click="showInfo(row.name)">{{ row.size }}</td>
         <td class="data-tablee-cell -content data-tablee-text magnet">
-          <button type='button' class="button" @click="sendTorrent(row.magnet)">Add</button>
+          <button type='button' class="button" @click="sendTorrent(row.magnet, row.name)">Add</button>
         </td>
       </template>
     </data-tablee>
@@ -48,7 +48,7 @@ import storage from '../storage.js'
 let tablet = window.innerWidth < 768 ? true : false;
 
 export default {
-  props: ['query'],
+  props: ['query', 'tmdb_id', 'tmdb_type'],
   beforeRouteLeave (to, from, next) {
     if(from.name == 'search'){
       eventHub.$emit('setSearchQuery', true);
@@ -85,9 +85,9 @@ export default {
         this.listLoaded = true;
       });
     },
-    sendTorrent(magnet){
+    sendTorrent(magnet, name){
       axios.post(`https://api.kevinmidboe.com/api/v1/pirate/add`, {
-        magnet: magnet }, { headers: {authorization: storage.token}
+        magnet: magnet, name: name, tmdb_id: this.tmdb_id, type: this.tmdb_type }, { headers: {authorization: storage.token}
       })
       .catch((resp) => { console.log('error:', resp.data) })
       .then((resp) => { console.log('addTorrent resp: ', resp) })

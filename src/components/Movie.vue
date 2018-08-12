@@ -99,7 +99,7 @@
         
           <div class="movie__admin" v-if="admin == 'true' && showTorrents">
               <h2 class="movie__admin-title">torrents: {{ movie.title }}</h2>
-              <TorrentList :query="movie.title"></TorrentList>
+              <TorrentList :query="movie.title" :tmdb_id="movie.id"></TorrentList>
           </div>
         </div>
       </div>
