@@ -87,7 +87,7 @@ export default {
     },
     sendTorrent(magnet, name){
       axios.post(`https://api.kevinmidboe.com/api/v1/pirate/add`, {
-        magnet: magnet, name: name, tmdb_id: this.tmdb_id, type: this.tmdb_type }, { headers: {authorization: storage.token}
+        magnet: magnet, name: name, tmdb_id: this.tmdb_id }, { headers: {authorization: storage.token}
       })
       .catch((resp) => { console.log('error:', resp.data) })
       .then((resp) => { console.log('addTorrent resp: ', resp) })
