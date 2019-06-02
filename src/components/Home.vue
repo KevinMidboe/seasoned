@@ -1,24 +1,25 @@
 <template>
   <section class="home">
-    <header class="home__header" v-bind:style="{ 'background-image': 'url(' + imageFile + ')' }">
-      <div class="home__header-wrap">
-        <h1 class="home__header-title">Request new movies or tv shows for plex</h1>
-        <strong class="home__header-subtitle">Made with Vue.js</strong>
-      </div>
-    </header>
-    <movies-list v-for="item in listTypes" v-if="item.isCategory" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list>
+    <LandingBanner />
+
+    <movies-list v-for="item in homepageLists" :propList="item" :shortList="true">{{item}}</movies-list>
+    <!-- <movies-list v-for="item in homepageLists" v-if="item.isCategory" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list> -->
   </section>
 </template>
 
 <script>
 import axios from 'axios'
 import storage from '../storage.js'
+import LandingBanner from '@/components/LandingBanner.vue'
 import MoviesList from './MoviesList.vue'
 
 export default {
-  components: { MoviesList },
+  name: 'home',
+  components: { LandingBanner, MoviesList },
   data(){
     return {
+      homepageLists: storage.homepageLists,
+
       listTypes: storage.listTypes,
       imageFile: 'dist/pulp-fiction.jpg'
     }
