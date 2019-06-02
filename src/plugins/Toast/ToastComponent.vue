@@ -1,6 +1,4 @@
 <template>
-    <!-- <button @click="show = !show">show/hide</button> -->
-
   <transition name="slide">
       <div
           v-if="show"
