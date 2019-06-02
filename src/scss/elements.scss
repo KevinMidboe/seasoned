@@ -1,0 +1,41 @@
+.filter {
+  // margin: 10px 10px 20px;
+  margin: 1rem;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+  border: 1px solid;
+  border-radius: 2px;
+  // overflow: hidden;
+  display: flex;
+  transition: color .2s ease;
+  // justify-content: space-evenly;
+
+  &-item {
+    padding: 6px 15px;
+    background-color: $c-white;
+    transition: color 0.2s ease;
+    font-size: 13px;
+    font-weight: 200;
+    text-transform: capitalize;
+    text-align: center;
+    width: 100%;
+    white-space:nowrap;
+    // overflow: hidden;
+    &:nth-child(n+2) {
+      border-left: solid 1px;
+    }
+    &.active, &:hover {
+      border-color: transparent;
+      background-color: #091c24;
+      color: $c-green;
+      cursor: pointer;
+    }
+    @include tablet-min {
+      font-size: 16px;
+    }
+  }
+}
+
+// TODO 
+//  - add buttons
