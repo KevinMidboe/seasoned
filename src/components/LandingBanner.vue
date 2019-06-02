@@ -21,7 +21,7 @@ export default {
     }
   },
   beforeMount() {
-    if (this.image.length > 0) {
+    if (this.image && this.image.length > 0) {
       this.imageFile = this.image
     }
   }
