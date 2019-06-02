@@ -44,11 +44,10 @@ header {
   background-position: 50% 50%;
   position: relative;
   background-color: $c-dark;
-  // background-image: url('~assets/arrival.jpg');
-  @include tablet-min{
+  @include tablet-min {
     height: 284px;
   }
-  &:before{
+  &:before {
     content: "";
     position: absolute;
     top: 0;
@@ -58,12 +57,12 @@ header {
     background: rgba($c-light, 0.7);
   }
   
-  .container{
+  .container {
     text-align: center;
     position: relative;
   }
   
-  .title{
+  .title {
     font-weight: 500;
     font-size: 22px;
     text-transform: uppercase;
@@ -75,7 +74,7 @@ header {
     }
   }
 
-  .subtitle{
+  .subtitle {
     display: block;
     font-size: 14px;
     font-weight: 300;
@@ -83,6 +82,30 @@ header {
     margin: 5px 0;
     @include tablet-min{
       font-size: 16px;
+    }
+  }
+
+  .link {
+    text-decoration: none;
+    color: $c-dark;
+    font-size: 13px;
+    font-weight: 300;
+    opacity: 0.7;
+    transition: opacity 0.5s ease;
+    &:hover {
+      opacity: 1;
+    }
+    span {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    &-icon {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 2px;
+      width: 16px;
+      height: 15px;
+      fill: $c-dark;
     }
   }
 }
