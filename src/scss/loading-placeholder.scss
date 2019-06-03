@@ -42,9 +42,12 @@
     margin: 10px;
     animation: pulse 1s infinite ease-in-out;
 
-    &:only-child {
-      margin: 0;
+    &.short {
       width: 60px !important;
+    }
+
+    &.nomargin {
+      margin: 0;
     }
   }
 
