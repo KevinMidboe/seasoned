@@ -1,6 +1,7 @@
 <template>
-  <li class="movies-item">
-    <a class="movies-item__link" :class="{'no-image': noImage}" href="#" @click.prevent="openMoviePopup(movie.id, movie.type, true)">
+  <li class="movies-item" :class="{'shortList': shortList}">
+    <a class="movies-item__link" :class="{'no-image': noImage}" @click.prevent="openMoviePopup(movie.id, movie.type)">
+
       <figure class="movies-item__poster">
         <img v-if="!noImage" class="movies-item__img" src="~assets/placeholder.png" v-img="poster()" alt="">
         <img v-if="noImage" class="movies-item__img is-loaded" src="~assets/no-image.png" alt="">
@@ -17,7 +18,7 @@
 import img from '../directives/v-image.js'
 
 export default {
-  props: ['movie'],
+  props: ['movie', 'shortList'],
   directives: {
     img: img
   },
@@ -28,15 +29,14 @@ export default {
   },
   methods: {
     poster() {
-      if(this.movie.poster_path){
-        return 'https://image.tmdb.org/t/p/w300' + this.movie.poster_path;
+      if(this.movie.poster){
+        return 'https://image.tmdb.org/t/p/w500' + this.movie.poster;
       } else {
         this.noImage = true;
       }
     },
-    openMoviePopup(id, type, event){
-      console.log('open:', id, type, event)
-      eventHub.$emit('openMoviePopup', id, type, event);
+    openMoviePopup(id, type){
+      this.$popup.open(id, type)
     }
   }
 }
@@ -45,7 +45,50 @@ export default {
 <style lang="scss">
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
-.movies-item{
+.movies-item {
+  padding: 10px;
+  width: 50%;
+
+  @include tablet-min{
+    padding: 15px;
+  }
+  @include tablet-landscape-min{
+    padding: 20px;
+    width: 25%;
+  }
+  @include desktop-min{
+    padding: 30px;
+    width: 20%;
+  }
+
+  @include desktop-lg-min{
+    padding: 20px;
+    width: 16.5%;
+  }
+
+  &.shortList {
+    display: none;
+
+    &:nth-child(-n+6) { // show first 6
+      display: block;
+    }
+
+    @include tablet-landscape-min{
+      &:nth-child(-n+8) { // show first 8
+        display: block;
+      }
+    }
+    @include desktop-min{
+      &:nth-child(-n+10) { // show first 10
+        display: block;
+      }
+    }
+
+    @include desktop-lg-min{
+      display: block; // show all
+    }
+  }
+
   &__link{
     text-decoration: none;
     color: rgba($c-dark, 0.5);
@@ -55,7 +98,7 @@ export default {
     padding-top: 15px;
   }
   &__poster{
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    transition: transform 0.5s ease, box-shadow 0.3s ease;
     transform: translateZ(0);
     background: $c-white;
   }
