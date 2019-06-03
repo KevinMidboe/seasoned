@@ -1,54 +1,50 @@
 <template>
-  <nav class="nav">
-    <router-link class="nav__logo" :to="{name: 'home'}" exact title="Vue.js — TMDb App">
-      <svg class="nav__logo-image">
-        <use xlink:href="#svgLogo"></use>
-      </svg>
-    </router-link>
-    <div class="nav__hamburger" @click="toggleNav">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-    </div>
-    <ul class="nav__list">
-      <li class="nav__item" v-for="item in listTypes" v-if="item.isCategory">
-        <router-link class="nav__link" :to="{name: item.name, params: {mode: item.type, category: item.query}}">
-          <div class="nav__link-wrap">
-            <svg class="nav__link-icon">
-              <use :xlink:href="'#icon_' + item.query"></use>
-            </svg>
-            <span class="nav__link-title">{{ item.shortTitle }}</span>
-          </div>
-        </router-link>
-      </li>
-      <li class="nav__item nav__item--profile">
-<!--         <div  class="nav__link nav__link--profile"  @click="requestToken" v-if="!userLoggedIn">
-          <div class="nav__link-wrap">
-            <svg class="nav__link-icon">
-              <use xlink:href="#iconLogin"></use>
-            </svg>
-            <span class="nav__link-title">Log In</span>
-          </div>
-        </div> -->
-         <router-link  class="nav__link nav__link--profile" :to="{name: 'signin'}" v-if="!userLoggedIn">
-          <div class="nav__link-wrap">
-            <svg class="nav__link-icon">
-              <use xlink:href="#iconLogin"></use>
-            </svg>
-            <span class="nav__link-title">Sign in</span>
-          </div>
-        </router-link>
-        <router-link  class="nav__link nav__link--profile" :to="{name: 'profile'}" v-if="userLoggedIn">
-          <div class="nav__link-wrap">
-            <svg class="nav__link-icon">
-              <use xlink:href="#iconLogin"></use>
-            </svg>
-            <span class="nav__link-title">Profile</span>
-          </div>
-        </router-link>
-      </li>
-    </ul>
-  </nav>
+  <div>
+    <nav class="nav">
+      <router-link class="nav__logo" :to="{name: 'home'}" exact title="Vue.js — TMDb App">
+        <svg class="nav__logo-image">
+          <use xlink:href="#svgLogo"></use>
+        </svg>
+      </router-link>
+      <div class="nav__hamburger" @click="toggleNav">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <ul class="nav__list">
+        <li class="nav__item" v-for="item in listTypes">
+          <router-link class="nav__link" :to="'/list/' + item.route">
+            <div class="nav__link-wrap">
+              <!-- <img :src="item.icon" class="nav__link-icon"> -->
+              <svg class="nav__link-icon">
+                <use :xlink:href="'#icon_' + item.route"></use>
+              </svg>
+              <span class="nav__link-title">{{ item.title }}</span>
+            </div>
+          </router-link>
+        </li>
+        <li class="nav__item nav__item--profile">
+           <router-link  class="nav__link nav__link--profile" :to="{name: 'signin'}" v-if="!userLoggedIn">
+            <div class="nav__link-wrap">
+              <svg class="nav__link-icon">
+                <use xlink:href="#iconLogin"></use>
+              </svg>
+              <span class="nav__link-title">Sign in</span>
+            </div>
+          </router-link>
+          <router-link  class="nav__link nav__link--profile" :to="{name: 'profile'}" v-if="userLoggedIn">
+            <div class="nav__link-wrap">
+              <svg class="nav__link-icon">
+                <use xlink:href="#iconLogin"></use>
+              </svg>
+              <span class="nav__link-title">Profile</span>
+            </div>
+          </router-link>
+        </li>
+      </ul>
+    </nav>
+    <div class="spacer"></div>
+  </div>
 </template>
 
 <script>
@@ -57,16 +53,13 @@ import storage from '../storage.js'
 export default {
   data(){
     return {
-      listTypes: storage.listTypes,
+      listTypes: storage.homepageLists,
       userLoggedIn: localStorage.getItem('token') ? true : false
     }
   },
   methods: {
     setUserStatus(){
       this.userLoggedIn = localStorage.getItem('token') ? true : false;
-    },
-    requestToken(){
-      eventHub.$emit('requestToken');
     },
     toggleNav(){
       document.querySelector('.nav__hamburger').classList.toggle('nav__hamburger--active');
@@ -79,34 +72,40 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
-.nav{
+.spacer {
+  @include mobile-only {
+    width: 100%;
+    height: $header-size-mobile;
+  }
+}
+.nav {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 50px;
   background: $c-white;
-  display: flex;
   z-index: 10;
+  display: block;
+
+
   @include tablet-min{
-    display: block;
     width: 95px;
     height: 100vh;
   }
   &__logo{
-    display: block;
     width: 55px;
-    height: 50px;
+    height: $header-size-mobile;
     display: flex;
     align-items: center;
     justify-content: center;
     background: $c-dark;
     @include tablet-min{
       width: 95px;
-      height: 75px;
+      height: $header-size;
     }
     &-image{
       width: 35px;
@@ -231,8 +230,8 @@ export default {
         position: fixed;
         right: 0;
         top: 0;
-        width: 75px;
-        height: 75px;
+        width: $header-size;
+        height: $header-size;
         border-bottom: 0;
         border-left: 1px solid $c-light;
       }
@@ -253,6 +252,12 @@ export default {
     transition: color 0.5s ease, background 0.5s ease;
     position: relative;
     cursor: pointer;
+    &-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     @include mobile-only{
       font-size: 10px;
       padding: 20px 0;
@@ -270,7 +275,6 @@ export default {
     &-icon{
       width: 20px;
       height: 20px;
-      margin-bottom: 3px;
       fill: rgba($c-dark, 0.7);
       transition: fill 0.5s ease;
       @include tablet-min{
@@ -278,8 +282,10 @@ export default {
         height: 20px;
         margin-bottom: 5px;
       }
+
     }
     &-title{
+      margin-top: 5px;
       display: block;
       width: 100%;
     }
