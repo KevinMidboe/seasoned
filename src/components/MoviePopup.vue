@@ -1,8 +1,8 @@
 <template>
-  <div class="movie-popup" @click="$emit('close')">
+  <div class="movie-popup" @click="$popup.close()">
     <div class="movie-popup__box" @click.stop>
-      <movie :id="id" :mediaType="type"></movie>
-      <button class="movie-popup__close" @click="$emit('close')"></button>
+      <movie :id="id" :type="type"></movie>
+      <button class="movie-popup__close" @click="$popup.close()"></button>
     </div>
     <i class="loader"></i>
   </div>
@@ -15,11 +15,12 @@ export default {
   props: ['id', 'type'],
   components: { Movie },
   created(){
+    let that = this
     window.addEventListener('keyup', function(e){
       if (e.keyCode == 27) {
-        this.$emit('close');
+        that.$popup.close()
       }
-    }.bind(this));
+    })
   }
 }
 </script>
@@ -35,7 +36,7 @@ export default {
   z-index: 20;
   width: 100%;
   height: 100vh;
-  background: rgba($c-dark, 0.98);
+  background: rgba($c-dark, 0.93);
   -webkit-overflow-scrolling: touch;
   overflow: auto;
   &__box{

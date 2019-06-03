@@ -10,7 +10,7 @@
       </div>
     </header>
 
-      <movie-popup v-if="moviePopupIsVisible" @close="closeMoviePopup" :id="moviePopupId" :type="moviePopupType"></movie-popup>
+    <movie-popup v-if="moviePopupIsVisible" :id="popupID" :type="popupType"></movie-popup>
 
     <section class="main">
       <transition name="fade" @after-leave="afterLeave">
@@ -120,15 +120,23 @@ export default {
     }
   },
   created(){
-    window.addEventListener('popstate', this.onHistoryState);
-    window.addEventListener('pagehide', this.changeHistoryState);
-    eventHub.$on('openMoviePopup', this.openMoviePopup);
-    eventHub.$on('setSearchQuery', this.setSearchQuery);
-    eventHub.$on('requestToken', this.requestToken);
-    eventHub.$on('setUserStatus', this.setUserStatus);
-    if (this.isTouchDevice()) {
-      document.querySelector('body').classList.add('touch');
+    let that = this
+    Vue.prototype.$popup = {
+      get isOpen() {
+        return that.moviePopupIsVisible
+      },
+      open: (id, type) => {
+        this.popupID = id || this.popupID
+        this.popupType = type || this.popupType
+        this.moviePopupIsVisible = true
+        console.log('opened')
+      },
+      close: () => {
+        this.moviePopupIsVisible = false
+        console.log('closed')
+      }
     }
+    console.log('MoviePopup registered at this.$popup and has state: ', this.$popup.isOpen)
   }
 }
 </script>
