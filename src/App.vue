@@ -20,9 +20,9 @@
 
 <script>
 import Vue from 'vue'
-import Navigation from './components/Navigation.vue'
-import MoviePopup from './components/MoviePopup.vue'
-import SearchInput from './components/search/SearchInput.vue'
+import Navigation from '@/components/Navigation.vue'
+import MoviePopup from '@/components/MoviePopup.vue'
+import SearchInput from '@/components/SearchInput.vue'
 
 export default {
   name: 'app',

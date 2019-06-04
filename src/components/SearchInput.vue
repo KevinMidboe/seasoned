@@ -1,0 +1,289 @@
+<template>
+  <div>
+    
+    <div class="search">
+      <input
+        type="text"
+        placeholder="Search for a movie or show"
+        autocorrect="off"
+        autocapitalize="off"
+        v-model="query" 
+        @input="handleInput" 
+        @click="focus = true"
+        @keydown.escape="handleEscape"
+        @keyup.enter="handleSubmit"
+        @keydown.up="navigateUp"
+        @keydown.down="navigateDown" />
+
+      <svg class="search--icon"><use xlink:href="#iconSearch"></use></svg>
+    </div> 
+
+    <transition name="fade">
+      <div class="dropdown" v-if="focus && query.length > 0">
+        <div class="dropdown--results">
+
+          <ul v-for="(item, index) in elasticSearchResults"
+              @click="$popup.open(item.id, item.type)"
+              :class="{ active: index + 1 === selectedResult}">
+                
+              {{ item.name }}
+          </ul>
+
+        </div>
+
+        <seasoned-button class="end-section" fullWidth="true" 
+          @click="focus = false" :active="elasticSearchResults.length + 1 === selectedResult">
+          close
+        </seasoned-button>
+      </div>
+    </transition>
+</div>
+
+
+</template>
+
+<script>
+import SeasonedButton from '../ui/SeasonedButton.vue'
+import axios from 'axios'
+import queryString from 'query-string'
+
+export default {
+  name: 'SearchInput',
+  components: {
+    SeasonedButton
+  },
+  props: ['value'],
+  data() {
+    return {
+      query: this.value,
+      focus: false,
+      scrollListener: undefined,
+      scrollDistance: 0,
+      elasticSearchResults: '',
+      selectedResult: 0
+    }
+  },
+  watch: {
+    focus: function(val) {
+      if (val === true) {
+        window.addEventListener('scroll', this.disableFocus)
+      } else {
+        window.removeEventListener('scroll', this.disableFocus)
+        this.scrollDistance = 0
+      }
+    }
+  },
+  beforeDestroy() {
+    console.log('scroll eventlistener not removed, destroying!')
+    window.removeEventListener('scroll', this.disableFocus)
+  },
+  methods: {
+    navigateDown() {
+      this.focus = true
+      this.selectedResult++
+    },
+    navigateUp() {
+      this.focus = true
+      this.selectedResult--
+    },
+    handleInput(e){
+      this.selectedResult = 0
+      this.$emit('input', this.query);
+
+      if (! this.focus) {
+        this.focus = true;
+      }
+
+      axios.post('http://localhost:9200/shows,movies/_search', {
+        "sort" : [
+          { "popularity" : {"order" : "desc"}},
+          "_score"
+        ],
+        "query": {
+          "bool": {
+            "should": [{
+              "match_phrase_prefix": {
+                "original_name": this.query
+              }
+            },
+            {
+              "match_phrase_prefix": {
+                "original_title": this.query
+              }
+            }]
+          }
+        },
+        "size": 6
+      })
+      .then(resp => {
+        const data = resp.data.hits.hits
+
+        this.elasticSearchResults = data.map(item => {
+          const index = item._index.slice(0, -1)
+          if (index === 'movie') {
+            return {
+              name: item._source.original_title,
+              id: item._source.id,
+              type: index
+            }
+          } else if (index === 'show') {
+            return {
+              name: item._source.original_name,
+              id: item._source.id,
+              type: index
+            }
+          }
+        })
+        console.log(this.elasticSearchResults)
+      })
+    },
+    handleSubmit() {
+      let searchResults = this.elasticSearchResults
+
+      if (this.selectedResult > searchResults.length) {
+        this.focus = false
+        this.selectedResult = 0
+      } else if (this.selectedResult > 0) {
+        const resultItem = searchResults[this.selectedResult - 1]
+        this.$popup.open(resultItem.id, resultItem.type)
+      } else {
+        const encodedQuery = encodeURI(this.query.replace('/ /g, "+"'))
+        this.$router.push({ name: 'search', query: { query: encodedQuery }});
+        this.focus = false
+        this.selectedResult = 0
+      }
+    },
+    handleEscape() {
+      if (this.$popup.isOpen) {
+        console.log('THIS WAS FUCKOING OPEN!')
+      } else {
+        this.focus = false
+      }
+    },
+    disableFocus(_) {
+      this.focus = false
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import "./src/scss/variables";
+@import "./src/scss/media-queries";
+@import './src/scss/main';
+
+
+.fade-enter-active {
+  transition: opacity .2s;
+}
+.fade-leave-active {
+  transition: opacity .2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.dropdown {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  z-index: 5;
+  min-height: $header-size;
+  right: 0px;
+  background-color: white;
+
+  @include mobile-only {
+    position: fixed;
+    top: 50px;
+    padding-top: 20px;
+    width: calc(100%);
+  }
+
+  &--results {
+    padding-left: 60px;
+    width: 100%;
+
+    @include mobile-only {
+      padding-left: 45px;
+    }
+
+    > ul {
+      font-size: 1.3rem;
+      padding: 0;
+      margin: 0.2rem 0;
+      width: calc(100% - 25px);
+      max-width: fit-content;
+
+      list-style: none;      
+      color: rgba(0, 0, 0, 0.5);
+      text-transform: capitalize;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+
+          white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+      &.active, &:hover, &:active {
+        color: $c-dark;
+        border-bottom: 2px solid black;
+      }
+    }
+  }
+}
+
+.search {
+  height: $header-size-mobile;
+  display: flex;
+  position: fixed;
+  flex-wrap: wrap;
+  z-index: 5;
+
+  // TODO check if this is for mobile
+  width: calc(100% - 110px);
+  // width: 100%;
+  top: 0;
+  right: 55px;
+
+  @include tablet-min{
+    position: relative;
+    height: $header-size;
+    width: 100%;
+    right: 0px;
+  }
+
+  input {
+    // height: 75px;
+    display: block;
+    width: 100%;
+    padding: 13px 20px 13px 45px;
+    outline: none;
+    border: 0;
+    background-color: transparent;
+    color: $c-dark;
+    font-weight: 300;
+    font-size: 19px;
+
+    @include tablet-min {
+      padding: 13px 30px 13px 60px;
+    }
+  }
+
+  &--icon{
+    width: 20px;
+    height: 20px;
+    fill: rgba($c-dark, 0.5);
+    transition: fill 0.5s ease;
+    pointer-events: none;
+    position: absolute;
+    left: 15px;
+    top: 15px;
+
+    @include tablet-min{
+      top: 27px;
+      left: 25px;
+    }
+  }
+}
+</style>
