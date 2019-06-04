@@ -91,5 +91,38 @@ const getEmoji = () => {
 }
 
 
+// - - - ELASTIC SEARCH - - -
+// This elastic index contains titles mapped to ids. Lightning search
+// used for autocomplete
 
-export { getMovie, getShow, getListByName, search, searchTorrents, request, plexAuthenticate, getEmoji }
+const elasticSearchMoviesAndShows = (query) => {
+  const url = `${ELASTIC_URL}shows,movies/_search`
+  const body = {
+    "sort" : [
+      { "popularity" : {"order" : "desc"}},
+      "_score"
+    ],
+    "query": {
+      "bool": {
+        "should": [{
+          "match_phrase_prefix": {
+            "original_name": query
+          }
+        },
+        {
+          "match_phrase_prefix": {
+            "original_title": query
+          }
+        }]
+      }
+    },
+    "size": 6
+  }
+
+  return axios.post(url, body)
+    .catch(error => { console.log(`api error searching elasticsearch: ${query}`); throw error })
+}
+
+
+
+export { getMovie, getShow, getListByName, search, searchTorrents, request, plexAuthenticate, getEmoji, elasticSearchMoviesAndShows }
