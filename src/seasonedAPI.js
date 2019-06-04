@@ -1,4 +1,5 @@
 import axios from 'axios'
+import storage from '@/storage.js'
 
 // const BASE_URL = 'https://api.kevinmidboe.com/api/'
 const BASE_URL = 'http://localhost:31459/api/'
@@ -29,7 +30,9 @@ const getShow = (id, credits) => {
 
 const getListByName = (listPath, page) => {
   const url = `${BASE_URL}${listPath}?page=${page}`
-  return axios.get(url)
+  // TODO - remove. this is temporary fix for user-requests endpoint (also import)
+  const headers = { authorization: storage.token }
+  return axios.get(url, { headers: headers })
     .catch(error => { console.error(`api error getting list: ${listPath}, page: ${page}`); throw error })
 }
 

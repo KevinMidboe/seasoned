@@ -12,10 +12,8 @@
       </header>
       <settings v-if="showSettings"></settings>
 
-      <!-- <movies-list v-for="item in listTypes" v-if="!showSettings && item.isProfileContent" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list> -->
+      <movies-list :propList="user_requestsList"></movies-list>
 
-      <!-- <movies-list v-for="item in listTypes" v-if="item.isCategory" :type="'component'" :mode="item.type" :shortList="true"></movies-list> -->
-      <!-- <created-lists></created-lists> -->
     </div>
 
     <section class="not-found" v-if="!userLoggedIn">
@@ -46,7 +44,7 @@ export default {
       userName: '',
       emoji: '',
       showSettings: false,
-      listTypes: storage.listTypes
+      user_requestsList: storage.user_requestsList
     }
   },
   methods: {
