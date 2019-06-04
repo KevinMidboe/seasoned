@@ -29,26 +29,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
-.home{
-  position: relative;
-  @include desktop-min{
-    padding: 50px 0 0;
-  }
-  
-  .wrapper{
-    min-height: 0;
-  }
-  .movies__list{
-    .movies__item:last-child{
-      display: none;
-      @include desktop-min{
-        display: block;
-      }
-    }
-  }
-}
-</style>
