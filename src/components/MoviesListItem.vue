@@ -28,11 +28,12 @@ export default {
     }
   },
   methods: {
+    // TODO handle missing images better and load diff sizes based on screen size
     poster() {
-      if(this.movie.poster){
-        return 'https://image.tmdb.org/t/p/w500' + this.movie.poster;
+      if (this.movie.poster) {
+        return 'https://image.tmdb.org/t/p/w500' + this.movie.poster
       } else {
-        this.noImage = true;
+        this.noImage = true
       }
     },
     openMoviePopup(id, type){
