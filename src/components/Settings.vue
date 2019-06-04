@@ -42,10 +42,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 import storage from '../storage.js'
 import SeasonedInput from '@/components/ui/SeasonedInput.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+
+import { plexAuthenticate } from '@/seasonedAPI.js'
 
 export default {
   components: { SeasonedInput, SeasonedButton },
@@ -66,31 +67,18 @@ export default {
   changePassword() {
     return
   },
-   authenticatePlex() {
-      let username = this.plexUsername
-      let password = this.plexPassword
-      console.log(username, password)
+  authenticatePlex() {
+    let username = this.plexUsername
+    let password = this.plexPassword
 
-      axios({
-         method: 'POST',
-         url: `https://plex.tv/users/sign_in.json?user[login]=${username}&user[password]=${password}`,
-         headers: {
-            'Content-Type': 'application/json',
-            'X-Plex-Platform': 'Linux',
-            'X-Plex-Version': 'v2.0.24',
-            'X-Plex-Platform-Version': '4.13.0-36-generic',
-            'X-Plex-Device-Name': 'Tautulli',
-            'X-Plex-Client-Identifier': '123'
-         },
-      })
-      .then((resp) => {
-         let data = resp.data;
-         console.log('response from plex:', data.user)
-      })
-      .catch((error) => {
-         console.log('error: ', error)
-      })
-   }
+    plexAuthenticate(username, password)
+    .then((resp) => {
+       let data = resp.data;
+       console.log('response from plex:', data.user)
+    })
+    .catch((error) => {
+       console.log('error: ', error)
+    })
   },
   created(){
     document.title = 'Settings' + storage.pageTitlePostfix;
