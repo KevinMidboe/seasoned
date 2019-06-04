@@ -1,44 +1,35 @@
 <template>
   <section class="profile">
-   <demo-login-modal/>
     <div class="profile__content" v-if="userLoggedIn">
       <section class='settings'>
-         <h3 class='settings__header'>Plex account</h3>
-         <span class="settings__info">Sign in to your plex account to get information about recently added movies and to see your watch history</span>
-         
-         <form class="form">
-            <div class="form__group">
-               <svg class="form__group__input-icon"><use xlink:href="#iconEmail"></use></svg>
-               <input class="form__group-input" type="text" ref="plex_username" placeholder="Plex username"/>
-            </div>
-            <div class="form__group">
-               <svg class="form__group__input-icon"><use xlink:href="#iconKeyhole"></use></svg>
-               <input class="form__group-input" type="password" ref="plex_password" placeholder="Repeat new password">
-            </div>
-         </form>
-         <div class="plex">
-            <button type="button" class="button" @click="authenticatePlex">Link plex account</button>
-         </div>
+        <h3 class='settings__header'>Plex account</h3>
+        <span class="settings__info">Sign in to your plex account to get information about recently added movies and to see your watch history</span>
 
-         <hr class='setting__divider'>
+        <form class="form">
+          <seasoned-input text="plex username" icon="Email"
+                          @inputValue="setValue('plexUsername', $event)"/>
+          <seasoned-input text="plex password" icon="Keyhole" type="password"
+                          @inputValue="setValue('plexPassword', $event)"/>
 
-         <h3 class='settings__header'>Change password</h3>
-         <form class="form">
-            <div class="form__group">
-               <svg class="form__group__input-icon"><use xlink:href="#iconKeyhole"></use></svg>
-               <input class="form__group-input" type="password" ref="password" placeholder="New password"/>
-            </div>
-            <div class="form__group">
-               <svg class="form__group__input-icon"><use xlink:href="#iconKeyhole"></use></svg>
-               <input class="form__group-input" type="password" ref="password_re" placeholder="Repeat new password">
-            </div>
-            <div class="form__group">
-               <button type="button" class="button" @click="$modal.show('demo-login')">Change password</button>
-            </div>
-         </form>
-         <hr class='setting__divider'>
+          <seasoned-button @click="authenticatePlex">link plex account</seasoned-button>
+        </form>
+
+        <hr class='setting__divider'>
+
+        <h3 class='settings__header'>Change password</h3>
+        <form class="form">
+          <seasoned-input text="new password" icon="Keyhole" type="password"
+                          @inputValue="setValue('newPass', $event)"/>
+          <seasoned-input text="repeat new password" icon="Keyhole" type="password"
+                          @inputValue="setValue('newPassConfirm', $event)"/>
+
+          <seasoned-button @click="changePassword">change password</seasoned-button>
+        </form>
+
+        <hr class='setting__divider'>
       </section>
     </div>
+
     <section class="not-found" v-if="!userLoggedIn">
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
@@ -53,20 +44,31 @@
 <script>
 import axios from 'axios'
 import storage from '../storage.js'
-import DemoLoginModal from './demo.vue'
-// import CreatedLists from './CreatedLists.vue'
+import SeasonedInput from '@/components/ui/SeasonedInput.vue'
+import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 
 export default {
-  components: { DemoLoginModal },
+  components: { SeasonedInput, SeasonedButton },
   data(){
     return{
       userLoggedIn: '',
+      plexUsername: undefined,
+      plexPassword: undefined,
+      newPass: undefined,
+      newPassConfirm: undefined
     }
   },
   methods: {
+  setValue(l, t) {
+    console.log('l, t', l, t)
+    this[l] = t
+  },
+  changePassword() {
+    return
+  },
    authenticatePlex() {
-      let username = this.$refs.plex_username.value;
-      let password = this.$refs.plex_password.value;
+      let username = this.plexUsername
+      let password = this.plexPassword
       console.log(username, password)
 
       axios({
@@ -78,7 +80,7 @@ export default {
             'X-Plex-Version': 'v2.0.24',
             'X-Plex-Platform-Version': '4.13.0-36-generic',
             'X-Plex-Device-Name': 'Tautulli',
-            'X-Plex-Client-Identifier': 'f9e0748ec84440dd8d0e759ab598326c'
+            'X-Plex-Client-Identifier': '123'
          },
       })
       .then((resp) => {
@@ -108,25 +110,30 @@ export default {
 a {
    text-decoration: none;
 }
-.plex {
-   margin-top: 20px;
-}
-.form__group{
-   justify-content: unset;
-   &__input-icon {
-      margin-top: 8px;
-      height: 22px;
-      width: 22px;
-   }
-   &-input {
-      padding: 10px 5px 10px 45px;
-      height: 40px;
-      font-size: 17px;
-      width: 75%;
-      @include desktop-min {
-         width: 400px;
-      }
-   }
+
+// DUPLICATE CODE
+.form {
+  > div:last-child {
+    margin-top: 1rem;
+  }
+
+  &__group{
+     justify-content: unset;
+     &__input-icon {
+        margin-top: 8px;
+        height: 22px;
+        width: 22px;
+     }
+     &-input {
+        padding: 10px 5px 10px 45px;
+        height: 40px;
+        font-size: 17px;
+        width: 75%;
+        @include desktop-min {
+           width: 400px;
+        }
+     }
+  }
 }
 .settings {
    padding: 35px;
