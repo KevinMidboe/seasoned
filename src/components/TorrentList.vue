@@ -119,7 +119,7 @@ export default {
         this.$notifications.success({
           title: 'Torrent added 🎉',
           description: this.query,
-          timeout: 3000000
+          timeout: 3000
         })
       })
     },
