@@ -1,0 +1,43 @@
+// TODO move all this to a plugin or something
+
+.message-enter-active {
+  transition: all .3s ease;
+}
+.message-fade-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.message-fade-enter, .message-fade-leave-to {
+  opacity: 0;
+}
+.message{
+  width: 75%;
+  max-width: 35rem;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  padding: 12px 15px 12px 15px;
+  position: relative;
+  &-text{
+    font-weight: 300;
+  }
+  &-dismiss{
+    position: absolute;
+    font-size: 17px;
+    font-weight: 100;
+    top: 0;
+    right: 0;
+    margin-top: 2px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+}
+
+.message-warning{
+  background-color: #f2dede;
+  border: 1px solid #b75b91;
+  color: #b75b91;
+}
+.message-success{
+  background-color: #dff0d9;
+  border: 1px solid #3e7549;
+  color: #3e7549;
+}
