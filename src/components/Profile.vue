@@ -4,20 +4,20 @@
       <header class="profile__header">
         <h2 class="profile__title">{{ emoji }} Welcome {{ userName }}</h2>
         
-        <div>
-           <router-link class="" :to="{name: 'settings'}">
-          </router-link>
-            <button v-if="showSettings" class="button__active" @click="toggleSettings" style="margin-right: 2em;">Hide settings</button>
-            <button v-else class="button" @click="toggleSettings" style="margin-right: 2em;">Show settings</button>
-          <button class="button" @click="logOut">Log Out</button>
+        <div class="button--group">
+          <seasoned-button @click="showSettings = !showSettings">{{ showSettings ? 'hide settings' : 'show settings' }}</seasoned-button>
+
+          <seasoned-button @click="logOut">Log out</seasoned-button>
         </div>
       </header>
       <settings v-if="showSettings"></settings>
 
-      <movies-list v-for="item in listTypes" v-if="!showSettings && item.isProfileContent" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list>
+      <!-- <movies-list v-for="item in listTypes" v-if="!showSettings && item.isProfileContent" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list> -->
+
       <!-- <movies-list v-for="item in listTypes" v-if="item.isCategory" :type="'component'" :mode="item.type" :shortList="true"></movies-list> -->
       <!-- <created-lists></created-lists> -->
     </div>
+
     <section class="not-found" v-if="!userLoggedIn">
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
@@ -39,7 +39,7 @@ import { getEmoji } from '@/seasonedAPI.js'
 // import CreatedLists from './CreatedLists.vue'
 
 export default {
-  components: { MoviesList, Settings },
+  components: { MoviesList, Settings, SeasonedButton },
   data(){
     return{
       userLoggedIn: '',
@@ -91,9 +91,11 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
+
+// DUPLICATE CODE
 .profile{
   &__header{
     display: flex;
@@ -111,16 +113,16 @@ export default {
       padding: 29px 60px;
     }
   }
-    &__title{
-      margin: 0;
-      font-size: 16px;
-      line-height: 16px;
-      color: $c-dark;
-      font-weight: 300;
-      @include tablet-min{
-        font-size: 18px;
-        line-height: 18px;
-      }
+  &__title{
+    margin: 0;
+    font-size: 16px;
+    line-height: 16px;
+    color: $c-dark;
+    font-weight: 300;
+    @include tablet-min{
+      font-size: 18px;
+      line-height: 18px;
     }
+  }
 }
 </style>
