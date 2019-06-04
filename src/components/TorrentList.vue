@@ -112,7 +112,7 @@ export default {
 
       event.target.parentNode.classList.add('active')
 
-      addMagnet(magnet, name, tmdb_id)
+      addMagnet(magnet, name, this.tmdb_id)
       .catch((resp) => { console.log('error:', resp.data) })
       .then((resp) => {
         console.log('addTorrent resp: ', resp)
