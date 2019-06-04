@@ -8,37 +8,37 @@ let storage = {
     {
       title: 'Requests',
       route: 'request',
-      icon: require('@/assets/icons/request.svg'),
+      // icon: require('@/assets/icons/request.svg'),
       path: 'v2/request'
     },
     {
       title: 'Now Playing',
       route: 'now_playing',
-      icon: require('@/assets/icons/now_playing.svg'),
+      // icon: require('@/assets/icons/now_playing.svg'),
       path: 'v2/movie/now_playing'
     },
     {
       title: 'Popular',
       route: 'popular',
-      icon: require('@/assets/icons/popular.svg'),
+      // icon: require('@/assets/icons/popular.svg'),
       path: 'v2/movie/popular'
     },
     {
       title: 'Upcoming',
       route: 'upcoming',
-      icon: require('@/assets/icons/upcoming.svg'),
+      // icon: require('@/assets/icons/upcoming.svg'),
       path: 'v2/movie/upcoming'
     },
   ],
   user_requestsList: {
     title: 'user requests',
     route: 'profile/requests',
-    icon: require('@/assets/icons/upcoming.svg'),
+    // icon: require('@/assets/icons/upcoming.svg'),
     path: 'v1/user/requests'
   },
   assets: {
     icons: {
-      upcoming: require('@/assets/icons/upcoming.svg')
+      // upcoming: require('@/assets/icons/upcoming.svg')
     }
   },
   listTypes: [
