@@ -60,33 +60,34 @@ export default {
     }
   },
   methods: {
-  setValue(l, t) {
-    console.log('l, t', l, t)
-    this[l] = t
-  },
-  changePassword() {
-    return
-  },
-  authenticatePlex() {
-    let username = this.plexUsername
-    let password = this.plexPassword
+    setValue(l, t) {
+      console.log('l, t', l, t)
+      this[l] = t
+    },
+    changePassword() {
+      return
+    },
+    authenticatePlex() {
+      let username = this.plexUsername
+      let password = this.plexPassword
 
-    plexAuthenticate(username, password)
-    .then((resp) => {
-       let data = resp.data;
-       console.log('response from plex:', data.user)
-    })
-    .catch((error) => {
-       console.log('error: ', error)
-    })
-  },
-  created(){
-    document.title = 'Settings' + storage.pageTitlePostfix;
-    storage.backTitle = document.title;
-    if(!localStorage.getItem('token')){
-      this.userLoggedIn = false;
-    } else {
-      this.userLoggedIn = true;
+      plexAuthenticate(username, password)
+      .then((resp) => {
+         let data = resp.data;
+         console.log('response from plex:', data.user)
+      })
+      .catch((error) => {
+         console.log('error: ', error)
+      })
+    },
+    created(){
+      document.title = 'Settings' + storage.pageTitlePostfix;
+      storage.backTitle = document.title;
+      if(!localStorage.getItem('token')){
+        this.userLoggedIn = false;
+      } else {
+        this.userLoggedIn = true;
+      }
     }
   }
 }
