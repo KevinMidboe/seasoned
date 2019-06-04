@@ -46,7 +46,7 @@ import storage from '../storage.js'
 import SeasonedInput from '@/components/ui/SeasonedInput.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 
-import { plexAuthenticate } from '@/seasonedAPI.js'
+import { plexAuthenticate } from '@/api.js'
 
 export default {
   components: { SeasonedInput, SeasonedButton },

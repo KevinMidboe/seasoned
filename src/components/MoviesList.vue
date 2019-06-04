@@ -45,7 +45,7 @@ import MoviesListItem from './MoviesListItem.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 import LoadingPlaceholder from '@/components/ui/LoadingPlaceholder.vue'
 import Loader from '@/components/ui/Loader.vue'
-import { search, getListByName } from '../seasonedAPI'
+import { search, getListByName } from '@/api.js'
 
 export default {
   props: {

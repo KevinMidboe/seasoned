@@ -33,7 +33,7 @@ import MoviesList from './MoviesList.vue'
 import Settings from './Settings.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 
-import { getEmoji } from '@/seasonedAPI.js'
+import { getEmoji } from '@/api.js'
 // import CreatedLists from './CreatedLists.vue'
 
 export default {

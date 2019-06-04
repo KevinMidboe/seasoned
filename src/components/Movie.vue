@@ -129,7 +129,7 @@ import Person from './Person.vue'
 
 import LoadingPlaceholder from './ui/LoadingPlaceholder.vue'
 
-import { getMovie, getShow, request } from '../seasonedAPI.js'
+import { getMovie, getShow, request } from '@/api.js'
 
 export default {
   props: ['id', 'type'],
