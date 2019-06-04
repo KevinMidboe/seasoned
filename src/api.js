@@ -54,10 +54,26 @@ const searchTorrents = (query, filter='all', page, authorization_token) => {
     .catch(error => { console.error(`api error searching torrents: ${query}`); throw error })
 }
 
+const addMagnet = (magnet, name, tmdb_id) => {
+  // const url = `${SEASONED_URL}v1/pirate/add`
+  const url = `https://api.kevinmidboe.com/api/v1/pirate/add`
+
+  const body = {
+    magnet: magnet,
+    name: name,
+    tmdb_id: tmdb_id
+  }
+  const headers = { authorization: storage.token }
+  return axios.post(url, body, { headers: headers })
+    .catch(error => { console.error(`api error adding magnet: ${name}`); throw error })
+}
+
 // - - - Plex/Request - - - 
 
 const request = (id, type, authorization_token) => {
-  const url = `${SEASONED_URL}v1/plex/request/${id}&type=${type}`
+  // const url = `${SEASONED_URL}v1/plex/request/${id}&type=${type}`
+  const url = `https://api.kevinmidboe.com/api/v1/plex/request/${id}&type=${type}`
+
   const headers = { authorization: authorization_token }
   return axios.post(url, { headers: headers })
     .catch(error => { console.error(`api error requesting: ${id}, type: ${type}`); throw error })
@@ -125,4 +141,4 @@ const elasticSearchMoviesAndShows = (query) => {
 
 
 
-export { getMovie, getShow, getListByName, search, searchTorrents, request, plexAuthenticate, getEmoji, elasticSearchMoviesAndShows }
+export { getMovie, getShow, getListByName, search, searchTorrents, addMagnet, request, plexAuthenticate, getEmoji, elasticSearchMoviesAndShows }
