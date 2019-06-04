@@ -28,9 +28,9 @@
 </template>
 
 <script>
-import storage from '../storage.js'
-import MoviesList from './MoviesList.vue'
-import Settings from './Settings.vue'
+import storage from '@/storage.js'
+import MoviesList from '@/components/MoviesList.vue'
+import Settings from '@/components/Settings.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 
 import { getEmoji } from '@/api.js'

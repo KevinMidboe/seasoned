@@ -39,9 +39,8 @@
 </template>
 
 <script>
-import axios from 'axios'
-import storage from '../storage.js'
-import MoviesListItem from './MoviesListItem.vue'
+import storage from '@/storage.js'
+import MoviesListItem from '@/components/MoviesListItem.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 import LoadingPlaceholder from '@/components/ui/LoadingPlaceholder.vue'
 import Loader from '@/components/ui/Loader.vue'

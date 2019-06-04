@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import storage from '../storage.js'
+import storage from '@/storage.js'
 import SeasonedInput from '@/components/ui/SeasonedInput.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 

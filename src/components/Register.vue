@@ -41,7 +41,7 @@
 
 <script>
 import axios from 'axios'
-import storage from '../storage.js'
+import storage from '@/storage.js'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 import SeasonedInput from '@/components/ui/SeasonedInput.vue'
 

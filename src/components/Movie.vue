@@ -122,8 +122,8 @@
 </template>
 
 <script>
-import storage from '../storage.js'
-import img from '../directives/v-image.js'
+import storage from '@/storage.js'
+import img from '@/directives/v-image.js'
 import TorrentList from './TorrentList.vue'
 import Person from './Person.vue'
 
