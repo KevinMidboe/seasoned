@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import storage from '../storage.js'
 import LandingBanner from '@/components/LandingBanner.vue'
 import MoviesList from './MoviesList.vue'
@@ -36,7 +35,9 @@ export default {
 @import "./src/scss/media-queries";
 .home{
   position: relative;
-  padding: 50px 0 0;
+  @include desktop-min{
+    padding: 50px 0 0;
+  }
   
   .wrapper{
     min-height: 0;
