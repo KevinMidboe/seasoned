@@ -62,6 +62,24 @@ const request = (id, type, authorization_token) => {
 }
 
 
+// - - - Authenticate with plex - - -
+
+const plexAuthenticate = (username, password) => {
+  const url = `https://plex.tv/users/sign_in.json?user[login]=${username}&user[password]=${password}`
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Plex-Platform': 'Linux',
+    'X-Plex-Version': 'v2.0.24',
+    'X-Plex-Platform-Version': '4.13.0-36-generic',
+    'X-Plex-Device-Name': 'Tautulli',
+    'X-Plex-Client-Identifier': '123'
+  }
+
+  return axios.post(url, { headers: headers })
+    .catch(error => { console.error(`api error authentication plex: ${username}`); throw error })
+}
+
+
 // - - - Random emoji - - -
 
 const getEmoji = () => {
@@ -72,4 +90,4 @@ const getEmoji = () => {
 
 
 
-export { getMovie, getShow, getListByName, search, searchTorrents, request, getEmoji }
+export { getMovie, getShow, getListByName, search, searchTorrents, request, plexAuthenticate, getEmoji }
