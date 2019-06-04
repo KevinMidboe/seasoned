@@ -56,7 +56,18 @@ const request = (id, type, authorization_token) => {
   const url = `${BASE_URL}v1/plex/request/${id}&type=${type}`
   const headers = { authorization: authorization_token }
   return axios.post(url, { headers: headers })
-    .catch(error => console.log('error while requesting item:', error))
+    .catch(error => { console.error(`api error requesting: ${id}, type: ${type}`); throw error })
 }
 
-export { getMovie, getShow, getListByName, search, searchTorrents, request }
+
+// - - - Random emoji - - -
+
+const getEmoji = () => {
+  const url = `${BASE_URL}v1/emoji`
+  return axios.get(url)
+    .catch(error => { console.log('api error getting emoji'); throw error })
+}
+
+
+
+export { getMovie, getShow, getListByName, search, searchTorrents, request, getEmoji }
