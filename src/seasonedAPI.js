@@ -13,9 +13,9 @@ const getMovie = (id, credits) => {
   if (credits) {
     url += '?credits=true'
   }
-  console.log('uuuurl', url)
+
   return axios.get(url)
-    .catch(error => console.log('error while getting movie:', error))
+    .catch(error => { console.error(`api error getting movie: ${id}`); throw error })
 }
 
 const getShow = (id, credits) => {
@@ -23,21 +23,20 @@ const getShow = (id, credits) => {
   if (credits) {
     url += '?credits=true'
   }
-  console.log('uuuurl', url)
   return axios.get(url)
-    .catch(error => console.log('error while getting show:', error))
+    .catch(error => { console.error(`api error getting show: ${id}`); throw error })
 }
 
 const getListByName = (listPath, page) => {
   const url = `${BASE_URL}${listPath}?page=${page}`
   return axios.get(url)
-    .catch(error => console.log('error while getting list by name:', error))
+    .catch(error => { console.error(`api error getting list: ${listPath}, page: ${page}`); throw error })
 }
 
 const search = (query, page) => {
   const url = `${BASE_URL}v2/search?query=${query}&page=${page}`
   return axios.get(url)
-    .catch(error => console.log('error while searching:', error))
+    .catch(error => { console.error(`api error searching: ${query}, page: ${page}`); throw error })
 }
 
 // - - - Torrents - - - 
@@ -47,7 +46,7 @@ const searchTorrents = (query, filter='all', page, authorization_token) => {
   const url = `https://api.kevinmidboe.com/api/v1/pirate/search?query=${query}&filter=${filter}&page=${page}`
   const headers = { authorization: authorization_token }
   return axios.get(url, { headers: headers })
-    .catch(error => console.log('error while searching for torrents:', error))
+    .catch(error => { console.error(`api error searching torrents: ${query}`); throw error })
 }
 
 // - - - Plex/Request - - - 
