@@ -64,7 +64,7 @@
         <!-- Loading placeholder -->
         <div class="movie__actions text-input__loading" v-else>
           <div class="movie__actions-link" v-for="_ in admin ? Array(4) : Array(3)">
-            <div class="movie__actions-text text-input__loading--line" style="margin:4.4px; margin-left: -3px;"></div>
+            <div class="movie__actions-text text-input__loading--line" style="margin:9px; margin-left: -3px;"></div>
           </div>
         </div>
 
@@ -220,14 +220,14 @@ export default {
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
 
-.movie{
-  &__wrap{
+.movie {
+  &__wrap {
     display: flex;
-    &--header{
+    &--header {
       align-items: center;
       height: 100%;
     }
-    &--main{
+    &--main {
       display: flex;
       flex-wrap: wrap;
       flex-direction: column;
@@ -236,7 +236,7 @@ export default {
       }
     }
   }
-  &__header{
+  &__header {
     height: 250px;
     position: relative;
     background-size: cover;
@@ -259,9 +259,9 @@ export default {
     }
   }
 
-  &__poster{
+  &__poster {
     display: none;
-    @include tablet-min{
+    @include tablet-min {
       background: $c-white;
       height: 0;
       display: block;
@@ -280,7 +280,7 @@ export default {
     transform: scale(0.97) translateZ(0);
     transition: opacity 0.5s ease, transform 0.5s ease;
 
-    &.is-loaded{
+    &.is-loaded {
       opacity: 1;
       transform: scale(1);
     }
@@ -314,7 +314,7 @@ export default {
       margin-top: 10px;
     }
   }
-  &__main{
+  &__main {
     background: $c-light;
     min-height: calc(100vh - 250px);
     @include tablet-min {
@@ -323,20 +323,20 @@ export default {
 
     height: 100%;
   }
-    &__actions{
+    &__actions {
       text-align: center;
       // min-height: 394px;
       width: 100%;
       order: 2;
       padding: 20px;
       border-top: 1px solid rgba($c-dark, 0.05);
-      @include tablet-min{
+      @include tablet-min {
         order: 1;
         width: 45%;
         padding: 185px 0 40px 40px;
         border-top: 0;
       }
-      &-link{
+      &-link {
         display: flex;
         align-items: center;
         text-decoration: none;
@@ -344,107 +344,109 @@ export default {
         color: rgba($c-dark, 0.5);
         transition: color 0.5s ease;
         font-size: 11px;
-        padding: 10px 0;
+        padding: 5px 0;
         border-bottom: 1px solid rgba($c-dark, 0.05);
-        &:hover{
+        &:hover {
           color: rgba($c-dark, 0.75);
         }
-        &.active{
+        &.active {
           color: $c-dark;
         }
-        &.pending{
+        &.pending {
           color: #f8bd2d;
         }
       }
-      &-icon{
+      &-icon {
         width: 18px;
         height: 18px;
         margin: 0 10px 0 0;
         fill: rgba($c-dark, 0.5);
         transition: fill 0.5s ease, transform 0.5s ease;
-        &.waiting{
+        &.waiting {
           transform: scale(0.8, 0.8);
         }
-        &.pending{
+        &.pending {
           fill: #f8bd2d;
         }
       }
-      &-link:hover &-icon{
+      &-link:hover &-icon {
         fill: rgba($c-dark, 0.75);
         cursor: pointer;
       }
-      &-link.active &-icon{
+      &-link.active &-icon {
         fill: $c-green;
       }
-      &-text{
+      &-text {
         display: block;
         padding-top: 2px;
         cursor: pointer;
+        margin:4.4px;
+        margin-left: -3px;
       }
     }
-    &__info{
+    &__info {
       width: 100%;
       padding: 20px;
       order: 1;
-      @include tablet-min{
+      @include tablet-min {
         order: 2;
         padding: 40px;
         width: 55%;
         margin-left: 45%;
       }
     }
-    &__actions + &__info{
+    &__actions + &__info {
       margin-left: 0;
     }
-      &__description{
-        font-weight: 300;
-        font-size: 13px;
-        line-height: 1.8;
+    &__description {
+      font-weight: 300;
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      @include tablet-min {
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+    }
+    &__details {
+      &-block {
+        float: left;
+      }
+      &-block:not(:last-child) {
         margin-bottom: 20px;
-        @include tablet-min{
+        margin-right: 20px;
+        @include tablet-min {
           margin-bottom: 30px;
-          font-size: 14px;
+          margin-right: 30px;
         }
       }
-      &__details{
-        &-block{
-          float: left;
-        }
-        &-block:not(:last-child){
-          margin-bottom: 20px;
-          margin-right: 20px;
-          @include tablet-min{
-            margin-bottom: 30px;
-            margin-right: 30px;
-          }
-        }
-        &-title{
-          margin: 0;
-          font-weight: 400;
-          text-transform: uppercase;
-          font-size: 14px;
-          color: $c-green;
-          @include tablet-min{
-            font-size: 16px;
-          }
-        }
-        &-text{
-          font-weight: 300;
-          font-size: 14px;
-          margin-top: 5px;
+      &-title {
+        margin: 0;
+        font-weight: 400;
+        text-transform: uppercase;
+        font-size: 14px;
+        color: $c-green;
+        @include tablet-min {
+          font-size: 16px;
         }
       }
-    &__admin{
+      &-text {
+        font-weight: 300;
+        font-size: 14px;
+        margin-top: 5px;
+      }
+    }
+    &__admin {
       width: 100%;
       padding: 20px;
       order: 2;
-      @include tablet-min{
+      @include tablet-min {
         order: 3;
         padding: 40px;
         padding-top: 0px;
         width: 100%;
       }
-      &-title{
+      &-title {
           margin: 0;
           font-weight: 400;
           text-transform: uppercase;
@@ -452,7 +454,7 @@ export default {
           font-size: 14px;
           color: $c-green;
           padding-bottom: 20px;
-          @include tablet-min{
+          @include tablet-min {
             font-size: 16px;
           }
         }
