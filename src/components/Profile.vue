@@ -30,10 +30,12 @@
 </template>
 
 <script>
-import axios from 'axios'
 import storage from '../storage.js'
 import MoviesList from './MoviesList.vue'
 import Settings from './Settings.vue'
+import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+
+import { getEmoji } from '@/seasonedAPI.js'
 // import CreatedLists from './CreatedLists.vue'
 
 export default {
@@ -61,17 +63,8 @@ export default {
           }
       }.bind(this));
     },
-    getNewEmoji(){
-      axios.get(`https://api.kevinmidboe.com/api/v1/emoji`)
-      .then(function(resp){
-          this.emoji = resp.data.emoji;
-      }.bind(this))
-    },
     getUserInfo(){
       this.userName = localStorage.getItem('username'); 
-    },
-    requestToken(){
-      eventHub.$emit('requestToken');
     },
     toggleSettings() {
       this.showSettings = this.showSettings ? false : true;
@@ -90,7 +83,9 @@ export default {
     } else {
       this.userLoggedIn = true;
       this.getUserInfo();
-      this.getNewEmoji();
+
+      getEmoji()
+        .then(resp => this.emoji = resp.data.emoji )
     }
   }
 }
