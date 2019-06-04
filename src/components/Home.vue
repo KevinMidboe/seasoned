@@ -1,9 +1,8 @@
 <template>
-  <section class="home">
+  <section>
     <LandingBanner />
 
-    <movies-list v-for="item in homepageLists" :propList="item" :shortList="true">{{item}}</movies-list>
-    <!-- <movies-list v-for="item in homepageLists" v-if="item.isCategory" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list> -->
+    <movies-list v-for="item in homepageLists" :propList="item" :shortList="true"></movies-list>
   </section>
 </template>
 
@@ -18,8 +17,6 @@ export default {
   data(){
     return {
       homepageLists: storage.homepageLists,
-
-      listTypes: storage.listTypes,
       imageFile: 'dist/pulp-fiction.jpg'
     }
   },
