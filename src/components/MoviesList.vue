@@ -1,79 +1,72 @@
 <template>
-  <div class="wrapper" v-if="listLoaded">
-    <div class="movies" v-if="movies.length">
-      <header class="movies__header">
-        <h2 class="movies__title">{{ listTitle }}</h2>
-        <span class="movies__results" v-if="!shortList">{{ countResults }}</span>
+  <div>
+    <div class='movies-list' v-if="!error">
+      <header class='list-header'>
+        <h2 class='header__title'>{{ listTitle }}</h2>
 
-        <router-link v-if="shortList && mode != 'user-requests'" class="movies__link" :to="{name: 'home-category', params: {category: category}}">
-          View All
-        </router-link>
-         <router-link v-if="shortList && mode == 'user-requests'" class="movies__link" :to="{name: 'user-requests'}">
-          View All
-        </router-link>
+        <router-link class='header__view-more'
+                     :to="'/list/' + list.route"
+                     v-if='shortList'>
+                     View All</router-link>
 
-        <span v-if="!shortList && (this.$route.params.category === 'requests' || mode == 'user-requests')" class="movies__filters">
-          <button type="button" class="button" @click="toggleFilter">Filter</button>
-          <span class="movies__filters__button-spacing"></span>
-          <!-- <button type="button" class="button" @click="sort">Sort</button>  -->
-          <span class="movies__filters__button-spacing"></span>
-          <div class="form__group">
-             <input v-model="filter_query" class="form__group-input" placeholder="Filter by search"/>
-          </div>
-        </span>
+        <div v-else style="line-height: 0;">
+          <span class='header__result-count' v-if="totalResults">{{ resultCount }} results</span>
+          <loading-placeholder v-else :count="1" lineClass='short nomargin'></loading-placeholder>
+        </div>
       </header>
 
-      <ul v-if="showFilter" class="movies__filters-list">
-        <li v-for="(item, index) in filters.status.elms" @click="applyFilter(item, index)" :class="{'active': index === filters.status.selected}">{{ item }}</li>
+      <!-- <ul class="filter">
+        <li class="filter-item" v-for="(item, index) in results" @click="applyFilter(item, index)" :class="{'active': item === selectedRelaseType}">{{ item.title }}</li>
+      </ul> -->
+
+      <ul class='results'>
+        <movies-list-item v-for='movie in results' :movie="movie" :shortList="shortList"></movies-list-item>
       </ul>
 
-      <ul class="movies__list">
-        <movies-list-item class="movies__item" v-for="(movie, index) in movies" :movie="movie"></movies-list-item>
-      </ul>
-      <div class="movies__nav" v-if="!shortList" :class="{'is-hidden' : currentPage == pages}">
-        <button @click="loadMore" class="button">Load Mores</button>
+      <loader v-if="loader" />
+
+      <div class='end-section' v-if="!shortList">
+        <seasoned-button v-if="currentPage < totalPages" @click="loadMore">load more</seasoned-button>
       </div>
     </div>
-    <i v-if="!listLoaded" class="loader"></i>
-    <section v-if="!movies.length && !shortList" class="not-found">
-      <div class="not-found__content">
-        <h2 class="not-found__title" v-if="mode == 'search'">Nothing Found</h2>
-        <h2 class="not-found__title" v-if="mode == 'favorite'">You haven't added any favorite movies</h2>
-      </div>
-    </section>
+
+    <div v-else style="display: flex; height: 50vh; width: 100%; justify-content: center; align-items: center;">
+
+      <h1 v-if="error">{{ error }}</h1>
+      <h1 v-else>Unable to load list: {{ listTitle }}</h1>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import numeral from 'numeral'
 import storage from '../storage.js'
 import MoviesListItem from './MoviesListItem.vue'
-
-// Storage for removed favorite item
-let removed;
+import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+import LoadingPlaceholder from '@/components/ui/LoadingPlaceholder.vue'
+import Loader from '@/components/ui/Loader.vue'
+import { search, getListByName } from '../seasonedAPI'
 
 export default {
-  props: ['type', 'mode', 'category', 'shortList'],
-  components: { MoviesListItem },
-  // beforeRouteLeave (to, from, next) {
-  //   if(from.name == 'search'){
-  //     eventHub.$emit('setSearchQuery', true);
-  //   }
-  //   next();
-  // },
+  props: {
+    shortList: {
+      type: Boolean,
+      default: false
+    },
+    propList: Object
+  },
+  components: { MoviesListItem, SeasonedButton, LoadingPlaceholder, Loader },
   data() {
     return {
-      listTitle: '',
-      movies: [],
-      unfiltered_movies: [],
-      pages: '',
-      filter: '',
-      filter_query: '',
-      results: '',
+      listTitle: 'No listname found',
+      results: [],
       currentPage: 1,
-      listLoaded: false,
-      showFilter: false,
+      totalResults: 0,
+      totalPages: -1,
+      fetchingResults: false,
+      error: undefined,
+      loader: false,
+
       filters: {
         status: {
           elms: ['all', 'requested', 'downloading', 'downloaded'],
@@ -83,119 +76,243 @@ export default {
     }
   },
   computed: {
-    pageTitle(){
-      return this.listTitle + storage.pageTitlePostfix;
-    },
-    query(){
-      return this.$route.params.query || '';
-    },
-    request(){
-      console.log('todays mode is: ', this.mode);
-      if(this.mode == 'search'){
-        return `https://api.kevinmidboe.com/api/v1/plex/request?query=${this.query}&page=${this.currentPage}`;
-      } else if(this.mode == 'requests' || this.$route.params.category == 'requests') {
-        return `https://api.kevinmidboe.com/api/v1/plex/requests/all?page=${this.currentPage}&status=${this.filter}`;
-      } else if(this.mode == 'collection') {
-        let category = this.$route.params.category || this.category;
-        return `https://api.kevinmidboe.com/api/v1/tmdb/list/${category}?page=${this.currentPage}`;
-      } else if(this.mode == 'history') {
-        return 'https://api.kevinmidboe.com/api/v1/user/history';
-      } else if(this.mode == 'user-requests') {
-        return 'https://api.kevinmidboe.com/api/v1/user/requests';
-      }
-    },
-    countResults(){
-      if(this.results > 1){
-        return numeral(this.results).format('0,0') + ' results';
-      } else {
-        return numeral(this.results).format('0,0') + ' result';
-      }
+    resultCount() {
+      return this.totalResults.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
     }
   },
-  methods: {
-    fetchCategory(){
-      axios.get(this.request, {
-        headers: {authorization: storage.token},
-      })
-      .then(function(resp){
-          let data = resp.data;
-          console.log('data: ', data)
+  beforeMount() {
+    if (this.propList) {
+      this.list = this.propList
+    }
 
-          if(this.shortList){
-            this.movies = data.results.slice(0, 5);
-            this.pages = 1;
-            this.results = 5;
-          } else {
-            this.movies = data.results;
-            this.pages = data.total_pages;
-            this.results = data.total_results;
-          }
-          this.unfiltered_movies = this.movies;
-          this.listLoaded = true;
-          // Change Page title
-          if(this.type == 'page'){
-            document.title = this.pageTitle;
-          }
-      }.bind(this))
-      .catch(function(error) {
-        this.$router.push({ name: '404' });
-      }.bind(this));
+    this.setPageFromUrlQuery()
+    this.parseURI()
+  },
+  mounted() {
+    setTimeout(() => {
+      if (this.results.length === 0 && this.error === undefined) {
+        this.loader = true
+      }
+    }, 200)
+  },
+  methods: {
+    setPageFromUrlQuery() {
+      if (this.$route.query.page)
+        this.currentPage = this.$route.query.page
+        console.log('url page param found', this.currentPage)
+    },
+    getListByName(name) {
+      return storage.homepageLists.filter(list => list.route === name)[0]
+    },
+    parseURI() {
+      const currentRouteName = this.$route.name
+
+      // route name is list - we are in a list view
+      if (currentRouteName === 'list') {
+        const nameParam = this.$route.params.name
+        if (this.getListByName(nameParam)) {
+          this.list = this.getListByName(nameParam)
+          this.listTitle = this.list.title
+          this.fetchListitems()
+        } else {
+          this.error = `Unable to load list: `
+        }
+      } // route name is search - we are searcing
+      else if (currentRouteName === 'search') {
+        if (this.$route.query.query) {
+          this.query = decodeURIComponent(this.$route.query.query)
+          this.listTitle = 'Search results: ' + this.query
+          this.fetchSearchItems()
+        } else {
+          this.error = 'Search query is not defined, please try again'
+        }
+
+      } // no matched route found - using prop to fetch list items
+      else {
+        this.listTitle = this.list.title
+        this.fetchListitems()
+      }
+
+      document.title = this.listTitle
+    },
+    // TODO these should receive a path not get it from list instance
+    fetchListitems() {
+      getListByName(this.list.path, this.currentPage)
+       .then(this.parseResponse)
+       .catch(error => {
+          console.error(error)
+          this.error = 'Network error'
+       })
+    },
+    fetchSearchItems() {
+      search(this.query, this.currentPage)
+        .then(this.parseResponse)
+    },
+
+    // TODO what parts are modular and what parts do we  want the component to deal with
+    // if we pass in some object and then as we initialize we set to local variables.
+    // This way we call the http-api from outside and pass the response in to the component[0]
+    // Could also parse the response we are requesting then return a clean object we can
+    // pass down[1].
+
+    // [0] if this is done we should also take the page, total pages, total results and
+    //     the list of results. Maybe also the title of the list  or use local title as fallback?
+    // [1] an issue with this that duplicate code will be needed for doing the same with
+    //     url params and paths.
+    //      (What if we eliminated folder based routes and implemented the routes in hashes
+    //       with single page applications today the navigation is simple enought that it
+    //       would maybe not be needed to have a path-route but a hash-local.storage
+    //       implementation; would allow sharing and remembering paths is just silly for most
+    //       Single-Page-Applications that are tightly scoped applications)
+    parseResponse(response) {
+      const data = response.data
+      if (data.page > data.total_pages) {
+        console.error('You have reached the end')
+        this.error = 'You have reached the end'
+        return
+      }
+
+      if (this.results.length) {
+        this.results.push(...data.results)
+      } else {
+        this.results = this.shortList ? data.results.slice(0,12) : data.results
+      }
+      this.page = data.page
+      this.totalPages = data.total_pages
+      this.totalResults = data.total_results || data.results.length
+
+      this.loader = false
+
+      console.info(`Response from list: ${this.listTitle}`, { results: this.results, page: this.page, totalPages: this.totalPages, totalResults: this.totalResults })
     },
     loadMore(){
       this.currentPage++;
-      axios.get(this.request)
-      .then(function(resp){
-          let data = resp.data;
-          let newData = this.movies.concat(data.results);
-          this.movies = newData;
-      }.bind(this));
+
+      console.log('path and name:', this.$route.path, this.$route.name)
+      let url = ''
+
+      if (this.$route.path.includes('list'))
+        url = `/#${this.$route.path}?page=${this.currentPage}`
+      else if (this.$route.path.includes('search'))
+        url = `/#/search?query=${this.query}&page=${this.currentPage}`
+
+      console.log('new url', url)
+      window.history.replaceState({}, 'foo', url)
+
+      this.parseURI()
     },
     // sort() {
     //   console.log(this.showFilters)
     // },
-    toggleFilter(item, index){
-      this.showFilter = this.showFilter ? false : true;
-      // this.results = this.results.filter(result => result.status != 'downloaded')
-    },
-    applyFilter(item, index) {
-      this.filter = item;
-      this.filters.status.selected = index;
-      console.log('applied query filter: ', item, index)
-      this.fetchCategory()
-    }
+    // toggleFilter(item, index){
+    //   this.showFilter = this.showFilter ? false : true;
+    //   // this.results = this.results.filter(result => result.status != 'downloaded')
+    // },
+    // applyFilter(item, index) {
+    //   this.filter = item;
+    //   this.filters.status.selected = index;
+    //   console.log('applied query filter: ', item, index)
+    //   this.fetchCategory()
+    // }
   },
   watch: {
-    filter_query: function(val, oldVal) {
-      let movies = this.unfiltered_movies;
-      val = val.toLowerCase()
-      if (val.length > 0)
-        movies = movies.filter(movie => movie.title.toLowerCase().startsWith(val))
-
-      if (movies.length > 0)
-        this.movies = movies;
+    $route: function () {
+      console.log('updated route')
+      this.results = false
+      this.currentPage = 1
+      this.setPageFromUrlQuery()
+      this.parseURI()
     }
-  },
-  created(){
-    // Set List Title
-    if(this.mode == 'search'){
-      this.listTitle = storage.categories['search'];
-      eventHub.$emit('setSearchQuery');
-    } else if(this.mode == 'requests') {
-      this.listTitle = storage.categories['requests'];
-    } else if(this.mode == 'collection') {
-      let category = this.$route.params.category || this.category;
-      this.listTitle = storage.categories[category]; // <-- this
-    } else if(this.mode == 'favorite') {
-      this.listTitle = storage.categories['favorite'];
-    } else if(this.mode == 'user-requests') {
-      this.listTitle = storage.categories['user-requests'];
-    }
-    this.fetchCategory();
-    eventHub.$on('updateFavorite', this.updateFavorite);
   }
 }
 </script>
 <style lang="scss" scoped>
+@import "./src/scss/variables";
+@import "./src/scss/media-queries";
+@import "./src/scss/elements";
+
+  .movies-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 15px;
+
+    .results {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .list-header {
+      width: 100%;
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 10px;
+
+      @include tablet-min{
+        padding: 23px 15px;
+      }
+      @include tablet-landscape-min{
+        padding: 16px 25px;
+      }
+      @include desktop-min{
+        padding: 8px 30px;
+      }
+
+      .header__title {
+        line-height: 18px;
+        margin: 0;
+        font-size: 18px;
+        color: #081c24;
+        font-weight: 300;
+        // flex-basis: 50%;
+        text-transform: capitalize;
+
+        @include tablet-min{
+          font-size: 18px;
+          line-height: 18px;
+        }
+      }
+
+      .header__result-count {
+        font-size: 12px;
+        font-weight: 300;
+        letter-spacing: .5px;
+        color: rgba(8,28,36,.5);
+        text-align: right;
+      }
+
+      .header__view-more {
+        font-size: 13px;
+        font-weight: 300;
+        letter-spacing: .5px;
+        color: rgba($c-dark, 0.5);
+        text-decoration: none;
+        transition: color .5s ease;
+        cursor: pointer;
+
+        &:after{
+          content: " →";
+        }
+        &:hover{
+          color: $c-dark;
+        }
+      }
+    }
+
+    .end-section {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin: 1rem 0;
+    }
+  }
+
+
   @import "./src/scss/media-queries";
   .form__group-input {
     padding: 10px 5px 10px 15px;
@@ -209,170 +326,4 @@ export default {
     }
   }
 
-</style>
-<style lang="scss">
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
-.movies{
-  padding: 10px;
-  @include tablet-min{
-    padding: 15px;
-  }
-  @include tablet-landscape-min{
-    padding: 25px;
-  }
-  @include desktop-min{
-    padding: 30px;
-  }
-  &__header{
-    display: flex;
-    flex-flow: row wrap;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 10px;
-
-    @include tablet-min{
-      padding: 23px 15px;
-    }
-    @include tablet-landscape-min{
-      padding: 16px 25px;
-    }
-    @include desktop-min{
-      padding: 8px 30px;
-    }
-  }
-    &__title{
-      margin: 0;
-      font-size: 16px;
-      line-height: 16px;
-      color: $c-dark;
-      font-weight: 300;
-
-      flex-basis: 50%;
-      @include tablet-min{
-        font-size: 18px;
-        line-height: 18px;
-      }
-    }
-    &__results{
-      font-size: 12px;
-      font-weight: 300;
-      letter-spacing: 0.5px;
-      color: rgba($c-dark, 0.5);
-      
-      text-align: right;
-      flex-basis: 50%;
-      @include mobile-only {
-        display: none;
-      }
-    }
-    &__link{
-      font-size: 12px;
-      font-weight: 300;
-      letter-spacing: 0.5px;
-      color: rgba($c-dark, 0.5);
-      text-decoration: none;
-      transition: color 0.5s ease;
-      &:after{
-        content: " →";
-      }
-      &:hover{
-        color: $c-dark;
-      }
-    }
-  &__filters{
-    margin-top: 10px;
-    line-height: 22px;
-    color: $c-dark;
-    font-size: 18px;
-    display: flex;
-    justify-content: flex-end;
-    transition: opacity 1s ease;
-
-    &__button-spacing {
-      @include tablet-min {
-        width: 15px;
-      }
-      @include mobile-only {
-        width: 10px;
-      }
-    }
-    &-list {
-      margin: 0px 10px;
-      padding: 0;
-      list-style: none;
-      border: solid 1px;
-      border-radius: 2px;
-      overflow: hidden;
-      display: flex;
-      transition: color 0.2s ease;
-
-      justify-content: space-evenly;
-
-      @include tablet-min{
-        margin: 0px 15px;
-      }
-      @include tablet-landscape-min {
-        margin: 0px 25px;
-      }
-      @include desktop-min{
-        margin: 0px 30px;
-      }
-      li {
-        padding: 6px 14px;
-        background-color: $c-white;
-        transition: color 0.2s ease;
-        font-size: 13px;
-        font-weight: 200;
-        text-transform: capitalize;
-        text-align: center;
-        width: 100%;
-        &:nth-child(n+2) {
-          border-left: solid 1px;
-        }
-        &.active, &:hover {
-          border-color: transparent;
-          background-color: #091c24;
-          color: $c-white;
-          cursor: pointer;
-        }
-        @include tablet-min {
-          font-size: 16px;
-        }
-      }
-    }
-    &-toggle {
-      margin-left: 15px;
-    }
-  }
-  &__list{
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-  }
-    &__item{
-      padding: 10px;
-      width: 50%;
-      @include tablet-min{
-        padding: 15px;
-      }
-      @include tablet-landscape-min{
-        padding: 20px;
-        width: 25%;
-      }
-      @include desktop-min{
-        padding: 30px;
-        width: 20%;
-      }
-    }
-    &__nav{
-      padding: 25px 0;
-      text-align: center;
-      &.is-hidden{
-        display: none;
-      }
-    }
-}
 </style>
