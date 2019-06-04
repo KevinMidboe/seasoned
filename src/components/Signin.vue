@@ -1,25 +1,17 @@
 <template>
   <section class="profile">
     <div class="profile__content">
-      <header class="profile__header">
-        <h2 class="profile__title">Register new user</h2>
-      </header>
+      <h2 class='settings__header'>Sign in</h2>
 
       <form class="form">
         <div class="form__buffer"></div>
-        <div>
-          <div class="form__group">
-            <svg class="form__group__input-icon">
-              <use xlink:href="#iconEmail"></use>
-            </svg>
-            <input class="form__group-input" type="username" ref="username" placeholder="Username" >
-          </div>
-          <div class="form__group">
-            <svg class="form__group__input-icon">
-              <use xlink:href="#iconKeyhole"></use>
-            </svg>
-            <input class="form__group-input" type="password" ref="password" placeholder="Password" v-on:keyup.enter="signin">
-          </div>
+
+          <seasoned-input text="username" icon="Email" type="username"
+                          @inputValue="setValue('username', $event)" />
+          <seasoned-input text="username" icon="Keyhole" type="password"
+                          @inputValue="setValue('password', $event)" />
+
+          <seasoned-button @click="signin">sign in</seasoned-button>
           
           <transition name="message-fade">
               <div class="message" :class="messageClass" v-if="showMessage">
@@ -27,11 +19,6 @@
                 <span class="message-dismiss" @click="showMessage=false">X</span>
               </div>
             </transition>
-          
-          <div class="form__group">
-            <button type="button" class="button" v-on:click="signin">Sign in</button>
-          </div>
-        </div>
       </form>
       
       <div class="form__group">
@@ -40,7 +27,6 @@
         </router-link>
       </div>
 
-      <!-- <created-lists></created-lists> -->
     </div>
   </section>
 </template>
@@ -48,24 +34,28 @@
 <script>
 import axios from 'axios'
 import storage from '../storage.js'
-import MoviesList from './MoviesList.vue'
-// import CreatedLists from './CreatedLists.vue'
+import SeasonedInput from '@/components/ui/SeasonedInput.vue'
+import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 
 export default {
-  components: { MoviesList },
+  components: { SeasonedInput, SeasonedButton },
   data(){
     return{
       userLoggedIn: '',
-      userName: '',
       showMessage: false,
       messageClass: 'message-success',
-      messageText: 'hello world'
+      messageText: 'hello world',
+      username: undefined,
+      password: undefined
     }
   },
   methods: {
+    setValue(l, t) {
+      this[l] = t
+    },
     signin(){
-      let username = this.$refs.username.value;
-      let password = this.$refs.password.value;
+      let username = this.username;
+      let password = this.password;
 
       axios.post(`https://api.kevinmidboe.com/api/v1/user/login`, {
         username: username,
@@ -118,5 +108,51 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "./src/scss/variables";
+@import "./src/scss/message";
+
+// DUPLICATE CODE
+.settings {
+  padding: 35px;
+
+  &__header {
+    margin: 0;
+    line-height: 16px;
+    color: $c-dark;
+    font-weight: 300;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+}
+.profile__content {
+  padding: 35px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.form {
+  > div:last-child {
+    margin-top: 1rem;
+  }
+
+  &__group{
+     justify-content: unset;
+     &__input-icon {
+        margin-top: 8px;
+        height: 22px;
+        width: 22px;
+     }
+     &-input {
+        padding: 10px 5px 10px 45px;
+        height: 40px;
+        font-size: 17px;
+        width: 75%;
+        // @include desktop-min {
+        //    width: 400px;
+        // }
+     }
+  }
+}
 </style>

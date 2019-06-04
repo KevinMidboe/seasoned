@@ -1,43 +1,25 @@
 <template>
   <section class="profile">
     <div class="profile__content">
-      <header class="profile__header">
-        <h2 class="profile__title">Register new user</h2>
-      </header>
+      <h2 class='settings__header'>Register new user</h2>
 
       <form class="form">
-        <div class="form__buffer"></div>
+        <seasoned-input text="username" icon="Email"
+                        @inputValue="setValue('username', $event)"></seasoned-input>
+        <seasoned-input text="password" icon="Keyhole" type="password"
+                        @inputValue="setValue('password', $event)"></seasoned-input>
+        <seasoned-input text="repeat password" icon="Keyhole" type="password"
+                        @inputValue="setValue('passwordRepeat', $event)"></seasoned-input>
 
-        <div class="center">
-          <div class="form__group">
-            <svg class="form__group__input-icon">
-              <use xlink:href="#iconEmail"></use>
-            </svg>
-            <input class="form__group-input" type="username" ref="username" placeholder="Username" >
+        <transition name="message-fade">
+          <div class="message" :class="messageClass" v-if="showMessage">
+            <span class="message-text">{{ messageText }}</span>
+            <span class="message-dismiss" v-on:click="dismissMessage">X</span>
           </div>
-          <div class="form__group">
-            <svg class="form__group__input-icon">
-              <use xlink:href="#iconKeyhole"></use>
-            </svg>
-            <input class="form__group-input" type="password" ref="password" placeholder="Password">
-          </div>
-          <div class="form__group">
-            <svg class="form__group__input-icon">
-              <use xlink:href="#iconKeyhole"></use>
-            </svg>
-            <input class="form__group-input" type="password" ref="password_re" placeholder="Repeat password">
-          </div>
+        </transition>
 
-          <transition name="message-fade">
-            <div class="message" :class="messageClass" v-if="showMessage">
-              <span class="message-text">{{ messageText }}</span>
-              <span class="message-dismiss" v-on:click="dismissMessage">X</span>
-            </div>
-          </transition>
-
-          <div class="form__group">
-            <button type="button" class="button" v-on:click="requestNewUser">Register</button>
-          </div>
+        <div class="form__group">
+          <seasoned-button @click="requestNewUser">Register</seasoned-button>
         </div>
       </form>
       
@@ -47,12 +29,11 @@
         </router-link>
       </div>
 
-      <!-- <created-lists></created-lists> -->
     </div>
     <section class="not-found" v-if="userLoggedIn === false">
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
-        <button class="not-found__button button" @click="requestToken">Log In</button>
+        <button class="not-found__button button">Log In</button>
       </div>
     </section>
   </section>
@@ -61,15 +42,17 @@
 <script>
 import axios from 'axios'
 import storage from '../storage.js'
-import MoviesList from './MoviesList.vue'
-// import CreatedLists from './CreatedLists.vue'
+import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+import SeasonedInput from '@/components/ui/SeasonedInput.vue'
 
 export default {
-  components: { MoviesList },
+  components: { SeasonedButton, SeasonedInput },
   data(){
     return{
       userLoggedIn: '',
-      userName: '',
+      username: undefined,
+      password: undefined,
+      passwordRepeat: undefined,
       showMessage: false,
       messageClass: 'message-success',
       messageText: 'hello world'
@@ -77,9 +60,9 @@ export default {
   },
   methods: {
     requestNewUser(){
-      let username = this.$refs.username.value;
-      let password = this.$refs.password.value;
-      let password_re = this.$refs.password_re.value;
+      let username = this.username
+      let password = this.password
+      let password_re = this.passwordRepeat
 
       let verifyCredentials = this.checkCredentials(username, password, password_re);
       
@@ -142,6 +125,9 @@ export default {
     dismissMessage(){
       this.showMessage = false;
     },
+    setValue(l, t) {
+      this[l] = t
+    },
     logOut(){
       localStorage.clear();
       eventHub.$emit('setUserStatus');
@@ -158,111 +144,58 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
-.message-enter-active {
-  transition: all .3s ease;
-}
-.message-fade-leave-active {
-  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.message-fade-enter, .message-fade-leave-to {
-  opacity: 0;
-}
-.message{
-  width: 75%;
-  max-width: 35rem;
-  margin: 0 auto;
-  margin-bottom: 1rem;
-  padding: 12px 15px 12px 15px;
-  position: relative;
-  &-text{
+@import "./src/scss/message";
+
+// DUPLICATE CODE
+.settings {
+  padding: 35px;
+
+  &__header {
+    margin: 0;
+    line-height: 16px;
+    color: $c-dark;
     font-weight: 300;
+    margin-bottom: 20px;
+    text-transform: uppercase;
   }
-  &-dismiss{
-    position: absolute;
-    font-size: 17px;
-    font-weight: 100;
-    top: 0;
-    right: 0;
-    margin-top: 2px;
-    margin-right: 5px;
-    cursor: pointer;
-  }
+}
+.profile__content {
+  padding: 35px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
-.message-warning{
-  background-color: #f2dede;
-  border: 1px solid #b75b91;
-  color: #b75b91;
-}
-.message-success{
-  background-color: #dff0d9;
-  border: 1px solid #3e7549;
-  color: #3e7549;
-}
 
 .center {
   justify-content: center;
 }
-.form{
-  z-index: 15;
-  background-color: $c-light;
-  display: flex;
-  flex-direction: column;
-  @include tablet-min{
+
+.form {
+  // TODO, fix this. if single child it adds weird margin
+  > div:last-child {
+    margin-top: 1rem;
   }
-  &__buffer{
-    width: 100%;
-    height: 4rem;
-  }
+
   &__group{
-    display: flex;
-    justify-content: center;
-    @include tablet-min{
-    }
-    &-input{
-      width: 75%;
-      max-width: 35rem;
-      padding: 15px 10px 15px 45px;
-      outline: none;
-      background-color: $c-white;
-      color: $c-dark;
-      font-weight: 100;
-      font-size: 20px;
-      border: 1px solid $c-dark;
-      margin-left: -2.2rem;
-      z-index: 3;
-      &:focus, &:hover {
-        border-color: $c-dark;
-      }
-    }
-    &-input[type="username"] {
-      margin-bottom: 3rem;
-    }
-    &__input-icon{
-      width: 24px;
-      height: 24px;
-      fill: rgba($c-dark, 0.5);
-      transition: fill 0.5s ease;
-      pointer-events: none;
-      margin-top: 15px;
-      margin-left: 15px;
-      z-index: 8;
-    }
-    &-link{
-      text-decoration: none;
-      color: black;
-      margin-top: 1rem;
-    }
-    &-signin{
-      text-transform: uppercase;
-      font-weight: 300;
-      font-size: 11px;
-      line-height: 2;
-      letter-spacing: 0.5px;
-    }
+     justify-content: unset;
+     &__input-icon {
+        margin-top: 8px;
+        height: 22px;
+        width: 22px;
+     }
+     &-input {
+        padding: 10px 5px 10px 45px;
+        height: 40px;
+        font-size: 17px;
+        width: 75%;
+        // @include desktop-min {
+        //    width: 400px;
+        // }
+     }
   }
 }
 
