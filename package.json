@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "start": "node server.js",
-    "docs": "documentation build src/api.js -f html -o docs/api"
+    "docs": "documentation build src/api.js -f html -o docs/api && documentation build src/api.js -f md -o docs/api.md"
   },
   "dependencies": {
     "axios": "^0.15.3",
