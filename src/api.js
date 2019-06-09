@@ -10,7 +10,13 @@ const ELASTIC_URL = config.ELASTIC_URL
 
 // - - - TMDB - - - 
 
-const getMovie = (id, credits) => {
+/**
+ * Fetches tmdb movie by id. Can optionally include cast credits in result object.
+ * @param {number} id
+ * @param {boolean} [credits=false] Include credits
+ * @returns {object} Tmdb response
+ */
+const getMovie = (id, credits=false) => {
   let url = SEASONED_URL + 'v2/movie/' + id
   if (credits) {
     url += '?credits=true'
@@ -20,7 +26,13 @@ const getMovie = (id, credits) => {
     .catch(error => { console.error(`api error getting movie: ${id}`); throw error })
 }
 
-const getShow = (id, credits) => {
+/**
+ * Fetches tmdb show by id. Can optionally include cast credits in result object.
+ * @param {number} id
+ * @param {boolean} [credits=false] Include credits
+ * @returns {object} Tmdb response
+ */
+const getShow = (id, credits=false) => {
   let url = SEASONED_URL + 'v2/show/' + id
   if (credits) {
     url += '?credits=true'
@@ -29,7 +41,13 @@ const getShow = (id, credits) => {
     .catch(error => { console.error(`api error getting show: ${id}`); throw error })
 }
 
-const getTmdbListByPath = (listPath, page) => {
+/**
+ * Fetches tmdb list by path.
+ * @param {string} listPath Path of list
+ * @param {number} [page=1]
+ * @returns {object} Tmdb list response
+ */
+const getTmdbListByPath = (listPath, page=1) => {
   const url = `${SEASONED_URL}${listPath}?page=${page}`
   // TODO - remove. this is temporary fix for user-requests endpoint (also import)
   const headers = { authorization: storage.token }
@@ -37,7 +55,13 @@ const getTmdbListByPath = (listPath, page) => {
     .catch(error => { console.error(`api error getting list: ${listPath}, page: ${page}`); throw error })
 }
 
-const searchTmdb = (query, page) => {
+/**
+ * Fetches tmdb movies and shows by query.
+ * @param {string} query
+ * @param {number} [page=1]
+ * @returns {object} Tmdb response
+ */
+const searchTmdb = (query, page=1) => {
   const url = `${SEASONED_URL}v2/search?query=${query}&page=${page}`
   return axios.get(url)
     .catch(error => { console.error(`api error searching: ${query}, page: ${page}`); throw error })
@@ -45,14 +69,27 @@ const searchTmdb = (query, page) => {
 
 // - - - Torrents - - - 
 
-const searchTorrents = (query, filter='all', page, authorization_token) => {
+/**
+ * Search for torrents by query
+ * @param {string} query
+ * @param {boolean} credits Include credits
+ * @returns {object} Torrent response
+ */
+const searchTorrents = (query, authorization_token) => {
   // const url = `${SEASONED_URL}v1/pirate/search?query=${query}&filter=${filter}&page=${page}`
-  const url = `https://api.kevinmidboe.com/api/v1/pirate/search?query=${query}&filter=${filter}&page=${page}`
-  const headers = { authorization: authorization_token }
+  const url = `https://api.kevinmidboe.com/api/v1/pirate/search?query`
+  const headers = { authorization: storage.token }
   return axios.get(url, { headers: headers })
     .catch(error => { console.error(`api error searching torrents: ${query}`); throw error })
 }
 
+/**
+ * Add magnet to download queue.
+ * @param {string} magnet Magnet link
+ * @param {boolean} name Name of torrent
+ * @param {boolean} tmdb_id
+ * @returns {object} Success/Failure response
+ */
 const addMagnet = (magnet, name, tmdb_id) => {
   // const url = `${SEASONED_URL}v1/pirate/add`
   const url = `https://api.kevinmidboe.com/api/v1/pirate/add`
@@ -69,11 +106,19 @@ const addMagnet = (magnet, name, tmdb_id) => {
 
 // - - - Plex/Request - - - 
 
-const request = (id, type, authorization_token) => {
+/**
+ * Request a movie or show from id. If authorization token is included the user will be linked
+ * to the requested item.
+ * @param {number} id Movie or show id
+ * @param {string} type Movie or show type
+ * @param {string} [authorization_token] To identify the requesting user
+ * @returns {object} Success/Failure response
+ */
+const request = (id, type, authorization_token=undefined) => {
   // const url = `${SEASONED_URL}v1/plex/request/${id}&type=${type}`
   const url = `https://api.kevinmidboe.com/api/v1/plex/request/${id}&type=${type}`
 
-  const headers = { authorization: authorization_token }
+  const headers = authorization_token ? { authorization: authorization_token } : {}
   return axios.post(url, { headers: headers })
     .catch(error => { console.error(`api error requesting: ${id}, type: ${type}`); throw error })
 }
@@ -110,6 +155,12 @@ const getEmoji = () => {
 // This elastic index contains titles mapped to ids. Lightning search
 // used for autocomplete
 
+/**
+ * Search elastic indexes movies and shows by query. Doc includes Tmdb daily export of Movies and
+ * Tv Shows. See tmdb docs for more info: https://developers.themoviedb.org/3/getting-started/daily-file-exports
+ * @param {string} query
+ * @returns {object} List of movies and shows matching query
+ */
 const elasticSearchMoviesAndShows = (query) => {
   const url = `${ELASTIC_URL}shows,movies/_search`
   const body = {
