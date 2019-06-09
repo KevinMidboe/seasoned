@@ -8,6 +8,18 @@ A Vue.js project.
 
 [TMDB Vue App](https://tmdb-vue-app.herokuapp.com/)
 
+## Config setup
+Set seasonedShows api endpoint and/or elastic.   
+ - SeasonedShows [can be found here](https://github.com/kevinmidboe/seasonedshows) and is the matching backend to fetch tmdb search results, tmdb lists, request new content, check plex status and lets owner search and add torrents to download.
+ - Elastic is optional and can be used for a instant search feature for all movies and shows registered in tmdb.
+
+```json
+{
+  "SEASONED_URL": "http://localhost:31459/api",
+  "ELASTIC_URL": "http://localhost:9200"        // Set to undefined or false to disable
+}
+```
+
 ## Build Setup
 
 ``` bash
