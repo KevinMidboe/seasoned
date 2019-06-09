@@ -1,10 +1,9 @@
 import axios from 'axios'
 import storage from '@/storage.js'
+import config from '@/config.json'
 
-// const SEASONED_URL = 'https://api.kevinmidboe.com/api/'
-const SEASONED_URL = 'http://localhost:31459/api/'
-
-const ELASTIC_URL = 'http://localhost:9200/'
+const SEASONED_URL = config.SEASONED_URL
+const ELASTIC_URL = config.ELASTIC_URL
 
 // TODO
 //  - Move autorization token and errors here?
