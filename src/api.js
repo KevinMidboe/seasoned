@@ -29,7 +29,7 @@ const getShow = (id, credits) => {
     .catch(error => { console.error(`api error getting show: ${id}`); throw error })
 }
 
-const getListByName = (listPath, page) => {
+const getTmdbListByPath = (listPath, page) => {
   const url = `${SEASONED_URL}${listPath}?page=${page}`
   // TODO - remove. this is temporary fix for user-requests endpoint (also import)
   const headers = { authorization: storage.token }
@@ -37,7 +37,7 @@ const getListByName = (listPath, page) => {
     .catch(error => { console.error(`api error getting list: ${listPath}, page: ${page}`); throw error })
 }
 
-const search = (query, page) => {
+const searchTmdb = (query, page) => {
   const url = `${SEASONED_URL}v2/search?query=${query}&page=${page}`
   return axios.get(url)
     .catch(error => { console.error(`api error searching: ${query}, page: ${page}`); throw error })
@@ -140,4 +140,4 @@ const elasticSearchMoviesAndShows = (query) => {
 
 
 
-export { getMovie, getShow, getListByName, search, searchTorrents, addMagnet, request, plexAuthenticate, getEmoji, elasticSearchMoviesAndShows }
+export { getMovie, getShow, getTmdbListByPath, searchTmdb, searchTorrents, addMagnet, request, plexAuthenticate, getEmoji, elasticSearchMoviesAndShows }

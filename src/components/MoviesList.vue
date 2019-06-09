@@ -44,7 +44,7 @@ import MoviesListItem from '@/components/MoviesListItem.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 import LoadingPlaceholder from '@/components/ui/LoadingPlaceholder.vue'
 import Loader from '@/components/ui/Loader.vue'
-import { search, getListByName } from '@/api.js'
+import { searchTmdb, getTmdbListByPath } from '@/api.js'
 
 export default {
   props: {
@@ -136,7 +136,7 @@ export default {
     },
     // TODO these should receive a path not get it from list instance
     fetchListitems() {
-      getListByName(this.list.path, this.currentPage)
+      getTmdbListByPath(this.list.path, this.currentPage)
        .then(this.parseResponse)
        .catch(error => {
           console.error(error)
@@ -144,7 +144,7 @@ export default {
        })
     },
     fetchSearchItems() {
-      search(this.query, this.currentPage)
+      searchTmdb(this.query, this.currentPage)
         .then(this.parseResponse)
     },
 
