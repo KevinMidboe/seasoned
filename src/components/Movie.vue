@@ -147,7 +147,7 @@ export default {
       userLoggedIn: storage.sessionId ? true : false,
       requested: false,
       admin: localStorage.getItem('admin'),
-      showTorrents: false,
+      showTorrents: false
     }
   },
   methods: {
@@ -159,9 +159,9 @@ export default {
       this.backdrop = movie.backdrop
       this.matched = movie.existsInPlex
       this.checkIfRequested(movie)
-        .then(status => this.requested = status )
+        .then(status => this.requested = status)
 
-      document.title = movie.title + storage.pageTitlePostfix;
+      document.title = movie.title + storage.pageTitlePostfix
     },
     async checkIfRequested(movie) {
       return await getRequestStatus(movie.id, movie.type)
@@ -174,8 +174,9 @@ export default {
     sendRequest(){
       request(this.id, this.type, storage.token)
         .then(resp => {
-          if (resp.data.success)
+          if (resp.data.success) {
             this.requested = true
+          }
         })
     },
     openTmdb(){
