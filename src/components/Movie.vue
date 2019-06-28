@@ -129,7 +129,7 @@ import Person from './Person.vue'
 
 import LoadingPlaceholder from './ui/LoadingPlaceholder.vue'
 
-import { getMovie, getShow, request } from '@/api.js'
+import { getMovie, getShow, request, getRequestStatus } from '@/api.js'
 
 export default {
   props: ['id', 'type'],
@@ -157,12 +157,14 @@ export default {
       this.title = movie.title
       this.poster = movie.poster
       this.backdrop = movie.backdrop
-      this.matched = movie.existsInPlex;
-      // TODO should get a request response, used /plex/:id before
-      // this.requested = movie.requested;
-      this.requested = true
+      this.matched = movie.existsInPlex
+      this.checkIfRequested(movie)
+        .then(status => this.requested = status )
 
       document.title = movie.title + storage.pageTitlePostfix;
+    },
+    async checkIfRequested(movie) {
+      return await getRequestStatus(movie.id, movie.type)
     },
     nestedDataToString(data) {
       let nestedArray = []

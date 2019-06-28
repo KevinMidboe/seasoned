@@ -137,6 +137,28 @@ const request = (id, type, authorization_token=undefined) => {
     .catch(error => { console.error(`api error requesting: ${id}, type: ${type}`); throw error })
 }
 
+/**
+ * Check request status by tmdb id and type
+ * @param {number} tmdb id
+ * @param {string} type
+ * @returns {object} Success/Failure response
+ */
+const getRequestStatus = (id, type, authorization_token=undefined) => {
+  const url = new URL('v2/request', SEASONED_URL)
+  url.pathname = path.join(url.pathname, id.toString())
+  url.searchParams.append('type', type)
+
+  return fetch(url.href)
+    .then(resp => {
+      const status = resp.status;
+      if (status === 200) { return true }
+      else if (status === 404) { return false }
+      else {
+        console.error(`api error getting request status for id ${id} and type ${type}`)
+      }
+    })
+    .catch(err => Promise.reject(err))
+}
 
 // - - - Authenticate with plex - - -
 
@@ -210,4 +232,4 @@ const elasticSearchMoviesAndShows = (query) => {
 
 
 
-export { getMovie, getShow, getTmdbListByPath, searchTmdb, searchTorrents, addMagnet, request, plexAuthenticate, getEmoji, elasticSearchMoviesAndShows }
+export { getMovie, getShow, getTmdbListByPath, searchTmdb, searchTorrents, addMagnet, request, getRequestStatus, plexAuthenticate, getEmoji, elasticSearchMoviesAndShows }
