@@ -5,7 +5,7 @@ import path from 'path'
 
 const SEASONED_URL = config.SEASONED_URL
 const ELASTIC_URL = config.ELASTIC_URL
-const ELASTIC_SEARCH_INDEX = config.ELASTIC_INDEX
+const ELASTIC_INDEX = config.ELASTIC_INDEX
 
 // TODO
 //  - Move autorization token and errors here?
