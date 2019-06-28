@@ -1,0 +1,4 @@
+{
+    "SEASONED_URL": "http://localhost:31459/api",
+    "ELASTIC_URL": "http://localhost:9200"
+}

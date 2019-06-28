@@ -19,7 +19,7 @@
     </div> 
 
     <transition name="fade">
-      <div class="dropdown" v-if="focus && query.length > 0">
+      <div class="dropdown" v-if="!disabled && focus && query.length > 0">
         <div class="dropdown--results">
 
           <ul v-for="(item, index) in elasticSearchResults"
@@ -46,6 +46,7 @@
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 
 import { elasticSearchMoviesAndShows } from '@/api.js'
+import config from '@/config.json'
 
 export default {
   name: 'SearchInput',
@@ -57,6 +58,7 @@ export default {
     return {
       query: this.value,
       focus: false,
+      disabled: false,
       scrollListener: undefined,
       scrollDistance: 0,
       elasticSearchResults: '',
@@ -71,6 +73,12 @@ export default {
         window.removeEventListener('scroll', this.disableFocus)
         this.scrollDistance = 0
       }
+    }
+  },
+  beforeMount() {
+    const elasticUrl = config.ELASTIC_URL
+    if (elasticUrl === undefined || elasticUrl === false || elasticUrl === '') {
+      this.disabled = true
     }
   },
   beforeDestroy() {
