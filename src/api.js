@@ -202,7 +202,7 @@ const getEmoji = () => {
  * @returns {object} List of movies and shows matching query
  */
 const elasticSearchMoviesAndShows = (query) => {
-  const url = path.join(ELASTIC_URL, ELASTIC_INDEX, '/_search')
+  const url = new URL(path.join(ELASTIC_INDEX, '/_search'), ELASTIC_URL)
 
   const body = {
     "sort" : [
