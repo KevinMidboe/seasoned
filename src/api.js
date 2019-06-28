@@ -86,7 +86,7 @@ const searchTmdb = (query, page=1) => {
  * @returns {object} Torrent response
  */
 const searchTorrents = (query, authorization_token) => {
-  const url = new URL('v1/pirate', SEASONED_URL)
+  const url = new URL('v1/pirate/search', SEASONED_URL)
   url.searchParams.append('query', query)
 
   const headers = { authorization: storage.token }
