@@ -4,6 +4,7 @@ import config from '@/config.json'
 
 const SEASONED_URL = config.SEASONED_URL
 const ELASTIC_URL = config.ELASTIC_URL
+const ELASTIC_SEARCH_INDEX = config.ELASTIC_INDEX
 
 // TODO
 //  - Move autorization token and errors here?
@@ -178,7 +179,7 @@ const getEmoji = () => {
  * @returns {object} List of movies and shows matching query
  */
 const elasticSearchMoviesAndShows = (query) => {
-  const url = path.join(ELASTIC_URL, 'shows,movies/_search')
+  const url = path.join(ELASTIC_URL, ELASTIC_INDEX, '/_search')
 
   const body = {
     "sort" : [
