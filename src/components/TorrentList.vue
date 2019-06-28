@@ -74,8 +74,9 @@ export default {
     }
   },
   beforeMount() {
-    console.log('starting torrent search with:', this.query, this.tmdb_id)
-    this.fetchTorrents()
+    if (localStorage.getItem('admin')) {
+      this.fetchTorrents()
+    }
   },
   methods: {
     expand(event, name) {
