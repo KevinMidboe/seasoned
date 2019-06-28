@@ -174,7 +174,7 @@ export default {
     sendRequest(){
       request(this.id, this.type, storage.token)
         .then(resp => {
-          if (resp.data.success) {
+          if (resp.success) {
             this.requested = true
           }
         })

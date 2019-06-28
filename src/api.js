@@ -127,14 +127,26 @@ const addMagnet = (magnet, name, tmdb_id) => {
  * @returns {object} Success/Failure response
  */
 const request = (id, type, authorization_token=undefined) => {
-  const url = new URL('v1/plex/request', SEASONED_URL)
-  url.pathname = path.join(url.pathname, id.toString())
-  url.searchParams.append('type', type)
+  const url = new URL('v2/request', SEASONED_URL)
+//  url.pathname = path.join(url.pathname, id.toString())
+//  url.searchParams.append('type', type)
 
-  const headers = authorization_token ? { authorization: authorization_token } : {}
+  const headers = {
+    'Authorization': authorization_token,
+    'Content-Type': 'application/json'
+  }
+  const body = {
+    id: id,
+    type: type
+  }
 
-  return axios.post(url.href, { headers: headers })
-    .catch(error => { console.error(`api error requesting: ${id}, type: ${type}`); throw error })
+  return fetch(url.href, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body)
+  })
+  .then(resp => resp.json())
+  .catch(error => { console.error(`api error requesting: ${id}, type: ${type}`); throw error })
 }
 
 /**
