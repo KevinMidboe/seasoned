@@ -45,6 +45,7 @@
             :text="'Search for torrents'" :iconRef="'#icon_torrents'"
             :active="showTorrents"></sidebar-action>
           <sidebar-action
+            @click="openTmdb()"
             :iconRef="'#icon_info'" :text="'See more info'"></sidebar-action>
         </div>
 
