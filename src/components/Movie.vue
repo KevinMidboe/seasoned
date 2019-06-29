@@ -32,33 +32,20 @@
         <!-- SIDEBAR ACTIONS -->
         <div class="movie__actions" v-if="movie">
 
-          <a class="movie__actions-link" v-if="matched" :class="{'active' : matched}">
-            <svg class="movie__actions-icon"><use xlink:href="#iconExsits"></use></svg>
-            <span class="movie__actions-text"> Already in plex &nbsp;🎉</span>
-          </a>
-          <a class="movie__actions-link" v-else="matched">
-            <svg class="movie__actions-icon"><use xlink:href="#iconNot_exsits"></use></svg>
-            <span class="movie__actions-text"> Not in plex yet</span>
-          </a>
-
-          <a class="movie__actions-link" :class="{'active' : requested}" v-if="this.requested">
-            <svg class="movie__actions-icon"><use xlink:href="#iconSent"></use></svg>
-            <span class="movie__actions-text"> Requested to be downloaded</span>
-          </a>
-          <a class="movie__actions-link" v-else="this.requested"  @click.prevent="sendRequest">
-            <svg class="movie__actions-icon" :class="{'waiting' : requested}"><use xlink:href="#iconUnmatched"></use></svg>
-            <span class="movie__actions-text"> Request to be downloaded?</span>
-          </a>
-
-          <a class="movie__actions-link" @click="showTorrents=!showTorrents" v-if="admin==='true'" :class="{'active' : showTorrents}">
-            <svg class="movie__actions-icon"><use xlink:href="#icon_torrents"></use></svg>
-            <span class="movie__actions-text"> Search for torrents</span>
-          </a>
-
-          <a class="movie__actions-link" @click.prevent="openTmdb">
-            <svg class="movie__actions-icon"><use xlink:href="#icon_info"></use></svg>
-            <span class="movie__actions-text"> See more info</span>
-          </a>
+          <sidebar-action
+            :text="'Not yet in plex'" :iconRef="'#iconNot_exsits'"
+            :textActive="'Already in plex 🎉'" :iconRefActive="'#iconExists'"
+            :active="matched"></sidebar-action>
+          <sidebar-action
+            :text="'Request to be downloaded?'" :iconRef="'#iconSent'"
+            :textActive="'Requested to be downloaded'"
+            :active="requested"></sidebar-action>
+          <sidebar-action
+            v-if="admin" @click="showTorrents=!showTorrents"
+            :text="'Search for torrents'" :iconRef="'#icon_torrents'"
+            :active="showTorrents"></sidebar-action>
+          <sidebar-action
+            :iconRef="'#icon_info'" :text="'See more info'"></sidebar-action>
         </div>
 
         <!-- Loading placeholder -->
@@ -126,6 +113,7 @@ import storage from '@/storage.js'
 import img from '@/directives/v-image.js'
 import TorrentList from './TorrentList.vue'
 import Person from './Person.vue'
+import SidebarAction from './movie/SidebarAction.vue'
 
 import LoadingPlaceholder from './ui/LoadingPlaceholder.vue'
 
@@ -133,7 +121,7 @@ import { getMovie, getShow, request, getRequestStatus } from '@/api.js'
 
 export default {
   props: ['id', 'type'],
-  components: { TorrentList, Person, LoadingPlaceholder },
+  components: { TorrentList, Person, LoadingPlaceholder, SidebarAction },
   directives: { img: img }, // TODO decide to remove or use
   data(){
     return{
