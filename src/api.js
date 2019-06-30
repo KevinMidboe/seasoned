@@ -103,7 +103,7 @@ const searchTorrents = (query, authorization_token) => {
  * @returns {object} Success/Failure response
  */
 const addMagnet = (magnet, name, tmdb_id) => {
-  const url = path.join(SEASONED_URL, 'v1/pirate/add')
+  const url = new URL('v1/pirate/add', SEASONED_URL)
 
   const body = {
     magnet: magnet,
@@ -112,7 +112,7 @@ const addMagnet = (magnet, name, tmdb_id) => {
   }
   const headers = { authorization: storage.token }
 
-  return axios.post(url, body, { headers: headers })
+  return axios.post(url.href, body, { headers: headers })
     .catch(error => { console.error(`api error adding magnet: ${name}`); throw error })
 }
 
