@@ -30,7 +30,7 @@
       </section>
     </div>
 
-    <section class="not-found" v-if="!userLoggedIn">
+    <section class="not-found" v-else>
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
         <router-link :to="{name: 'signin'}" exact title="Sign in here">
@@ -79,15 +79,13 @@ export default {
       .catch((error) => {
          console.log('error: ', error)
       })
-    },
-    created(){
-      document.title = 'Settings' + storage.pageTitlePostfix;
-      storage.backTitle = document.title;
-      if(!localStorage.getItem('token')){
-        this.userLoggedIn = false;
-      } else {
-        this.userLoggedIn = true;
-      }
+    }
+  },
+  created(){
+    document.title = 'Settings' + storage.pageTitlePostfix;
+    storage.backTitle = document.title;
+    if (localStorage.getItem('token')){
+      this.userLoggedIn = true
     }
   }
 }
