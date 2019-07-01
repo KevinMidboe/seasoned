@@ -37,6 +37,7 @@
             :textActive="'Already in plex 🎉'" :iconRefActive="'#iconExists'"
             :active="matched"></sidebar-action>
           <sidebar-action
+            @click="sendRequest"
             :text="'Request to be downloaded?'" :iconRef="'#iconSent'"
             :textActive="'Requested to be downloaded'"
             :active="requested"></sidebar-action>
