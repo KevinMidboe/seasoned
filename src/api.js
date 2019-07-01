@@ -215,6 +215,9 @@ const getEmoji = () => {
  */
 const elasticSearchMoviesAndShows = (query) => {
   const url = new URL(path.join(ELASTIC_INDEX, '/_search'), ELASTIC_URL)
+  const headers = {
+    'Content-Type': 'application/json'
+  }
 
   const body = {
     "sort" : [
@@ -238,7 +241,12 @@ const elasticSearchMoviesAndShows = (query) => {
     "size": 6
   }
 
-  return axios.post(url, body)
+  return fetch(url.href, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body)
+  })
+    .then(resp => resp.json())
     .catch(error => { console.log(`api error searching elasticsearch: ${query}`); throw error })
 }
 
