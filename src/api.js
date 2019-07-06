@@ -196,9 +196,9 @@ const plexAuthenticate = (username, password) => {
 // - - - Random emoji - - -
 
 const getEmoji = () => {
-  const url = path.join(SEASONED_URL, 'v1/emoji')
+  const url = new URL('v1/emoji', SEASONED_URL)
 
-  return axios.get(url)
+  return axios.get(url.href)
     .catch(error => { console.log('api error getting emoji'); throw error })
 }
 
