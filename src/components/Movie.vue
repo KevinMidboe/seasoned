@@ -2,7 +2,7 @@
   <section class="movie">
 
     <!-- HEADER w/ POSTER -->
-    <header class="movie__header" :style="{ 'background-image': movie && backdrop !== null ? 'url(' + ASSET_URL + ASSET_SIZES[1] + backdrop + ')' : '' }">
+    <header class="movie__header" :style="{ 'background-image': movie && backdrop !== null ? 'url(' + ASSET_URL + ASSET_SIZES[1] + backdrop + ')' : '' }" :class="compact ? 'compact' : ''" @click="compact=!compact">
       <div class="movie__wrap movie__wrap--header">
         <figure class="movie__poster">
           <img v-if="movie && poster === null"
@@ -137,7 +137,8 @@ export default {
       userLoggedIn: storage.sessionId ? true : false,
       requested: false,
       admin: localStorage.getItem('admin'),
-      showTorrents: false
+      showTorrents: false,
+      compact: false
     }
   },
   methods: {
@@ -230,7 +231,11 @@ export default {
     }
   }
   &__header {
+    $duration: 0.2s;
     height: 250px;
+    transform: scaleY(1);
+    transition: height $duration ease;
+    transform-origin: top;
     position: relative;
     background-size: cover;
     background-repeat: no-repeat;
@@ -249,6 +254,9 @@ export default {
       width: 100%;
       height: 100%;
       background: rgba($c-dark, 0.85);
+    }
+    &.compact {
+      height: 100px;
     }
   }
 
