@@ -1,7 +1,9 @@
 <template>
   <div class="movie-popup" @click="$popup.close()">
     <div class="movie-popup__box" @click.stop>
-      <movie :id="id" :type="type"></movie>
+    <!-- <movie :id="id" :type="type"></movie> -->
+
+      <large-movie :id="id" :type="type"></large-movie>
       <button class="movie-popup__close" @click="$popup.close()"></button>
     </div>
     <i class="loader"></i>
@@ -10,10 +12,11 @@
 
 <script>
 import Movie from './Movie.vue';
+import LargeMovie from './LargeMovie.vue';
 
 export default {
   props: ['id', 'type'],
-  components: { Movie },
+  components: { Movie, LargeMovie },
   created(){
     let that = this
     window.addEventListener('keyup', function(e){
@@ -39,18 +42,6 @@ export default {
   background: rgba($c-dark, 0.93);
   -webkit-overflow-scrolling: touch;
   overflow: auto;
-  &__box{
-    width: 100%;
-    max-width: 768px;
-    position: relative;
-    z-index: 5;
-    background: $c-dark;
-    padding-bottom: 50px;
-    @include tablet-min{
-      padding-bottom: 0;
-      margin: 40px auto;
-    }
-  }
   &__close{
     display: block;
     position: absolute;

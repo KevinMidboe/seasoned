@@ -78,6 +78,11 @@ export default {
 @import "./src/scss/main";
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
+
+@font-face {
+  font-family: 'Roboto';
+}
+
 *{
   box-sizing: border-box;
 }
