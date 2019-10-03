@@ -148,7 +148,7 @@ export default {
         padding: 10px 5px 10px 45px;
         height: 40px;
         font-size: 17px;
-        width: 75%;
+        width: 100%;
         // @include desktop-min {
         //    width: 400px;
         // }
