@@ -1,42 +1,92 @@
 <template>
   <div v-if="show">
-    <h2 class="title">torrents: {{ query }}</h2>
+    <h2 class="torrentHeader-text">Searching for: {{ editedSearchQuery || query }}</h2>
+<!--     <div class="torrentHeader">
+      <span class="torrentHeader-text">Searching for:&nbsp;</span>
+
+
+      <span id="search" :contenteditable="editSearchQuery ? true : false" class="torrentHeader-text editable">{{ editedSearchQuery || query }}</span>
+
+
+      <svg v-if="!editSearchQuery" class="torrentHeader-editIcon" @click="toggleEditSearchQuery">
+        <use xlink:href="#icon_radar"></use>
+      </svg>
+
+      <svg v-else class="torrentHeader-editIcon" @click="toggleEditSearchQuery">
+        <use xlink:href="#icon_check"></use>
+      </svg>
+
+    </div> -->
 
     <div v-if="listLoaded">
-      <ul class="filter">
-        <li class="filter-item" v-for="(item, index) in release_types" @click="applyFilter(item, index)" :class="{'active': item === selectedRelaseType}">{{ item }}</li>
-      </ul>
+      <div v-if="torrents.length > 0">
+        <ul class="filter">
+          <li class="filter-item" v-for="(item, index) in release_types" @click="applyFilter(item, index)" :class="{'active': item === selectedRelaseType}">{{ item }}</li>
+        </ul>
 
 
-      <table>
-        <tr class="table__header noselect">
-          <th @click="sortTable('name')">
-            <span>Name</span>
-            <span v-if="prevCol === 'name' && direction">↑</span>
-            <span v-if="prevCol === 'name' && !direction">↓</span>
-          </th>
-          <th @click="sortTable('seed')">
-            <span>Seed</span>
-            <span v-if="prevCol === 'seed' && direction">↑</span>
-            <span v-if="prevCol === 'seed' && !direction">↓</span>
-          </th>
-          <th @click="sortTable('size')">
-            <span>Size</span>
-            <span v-if="prevCol === 'size' && direction">↑</span>
-            <span v-if="prevCol === 'size' && !direction">↓</span>
-          <th>
-            <span>Magnet</span>
-          </th>
-        </tr>
-        <tr v-for="torrent in torrents" class="table__content">
-          <td @click="expand($event, torrent.name)">{{ torrent.name }}</td>
-          <td @click="expand($event, torrent.name)">{{ torrent.seed }}</td>
-          <td @click="expand($event, torrent.name)">{{ torrent.size }}</td>
-          <td @click="sendTorrent(torrent.magnet, torrent.name, $event)" class="download">
-            <svg class="download__icon"><use xlink:href="#iconUnmatched"></use></svg>
-          </td>
-        </tr>
-      </table>
+        <table>
+          <tr class="table__header noselect">
+            <th @click="sortTable('name')">
+              <span>Name</span>
+              <span v-if="prevCol === 'name' && direction">↑</span>
+              <span v-if="prevCol === 'name' && !direction">↓</span>
+            </th>
+            <th @click="sortTable('seed')">
+              <span>Seed</span>
+              <span v-if="prevCol === 'seed' && direction">↑</span>
+              <span v-if="prevCol === 'seed' && !direction">↓</span>
+            </th>
+            <th @click="sortTable('size')">
+              <span>Size</span>
+              <span v-if="prevCol === 'size' && direction">↑</span>
+              <span v-if="prevCol === 'size' && !direction">↓</span>
+            <th>
+              <span>Magnet</span>
+            </th>
+          </tr>
+          <tr v-for="torrent in torrents" class="table__content">
+            <td @click="expand($event, torrent.name)">{{ torrent.name }}</td>
+            <td @click="expand($event, torrent.name)">{{ torrent.seed }}</td>
+            <td @click="expand($event, torrent.name)">{{ torrent.size }}</td>
+            <td @click="sendTorrent(torrent.magnet, torrent.name, $event)" class="download">
+              <svg class="download__icon"><use xlink:href="#iconUnmatched"></use></svg>
+            </td>
+          </tr>
+        </table>
+
+        <div style="
+          display: flex;
+          justify-content: center;
+          margin: 1rem;
+        ">
+          <seasonedButton @click="ostekake">Edit search query</seasonedButton>
+        </div>
+      </div>
+
+    <div v-else style="display: flex;
+                       padding-bottom: 2rem;
+                       justify-content: center;
+                       flex-direction: column;
+                       width: 100%;
+                       align-items: center;">
+      <h2>No results found</h2>
+      <br />
+
+      <div style="display: flex;
+                  width: 70%;
+                  justify-content: center;"
+            v-if="editSearchQuery">
+
+        <seasonedInput text="Torrent query" icon="_torrents" @inputValue="(val) => editedSearchQuery = val"/>
+
+        <div style="height: 45px; width: 5px;"></div>
+
+        <seasonedButton @click="fetchTorrents(editedSearchQuery)">Search</seasonedButton>
+      </div>
+
+      <seasonedButton @click="toggleEditSearchQuery" :active="editSearchQuery ? true : false">Edit search query</seasonedButton>
+    </div>
     </div>
     <i v-else class="torrentloader"></i>
   </div>
