@@ -45,16 +45,8 @@ export default {
     font-size: 12px;
     padding: 6px 20px 5px 20px;
   }
-  &:active, &:hover{
-    background: $c-dark;
-    color: $c-white;
-  }
-  body:not(.touch) &:hover, &:focus{
-    background: $c-dark;
-    color: $c-white;
-  }
-  &.active {
-    @extend .button;
+
+  body:not(.touch) &:hover, &:focus, &:active, &.active {
     background: $c-dark;
     color: $c-white;
   }
