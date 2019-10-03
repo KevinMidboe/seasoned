@@ -73,10 +73,7 @@
       <h2>No results found</h2>
       <br />
 
-      <div style="display: flex;
-                  width: 70%;
-                  justify-content: center;"
-            v-if="editSearchQuery">
+      <div class="editQuery" v-if="editSearchQuery">
 
         <seasonedInput text="Torrent query" icon="_torrents" @inputValue="(val) => editedSearchQuery = val" @enter="fetchTorrents(editedSearchQuery)" />
 
@@ -442,6 +439,19 @@ table {
   }
 
 }
+
+
+
+.editQuery {
+  display: flex;
+  width: 70%;
+  justify-content: center;
+
+  @include mobile-only {
+    width: 90%;
+  }
+}
+
 
 .download {
 
