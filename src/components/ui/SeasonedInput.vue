@@ -81,6 +81,9 @@ export default {
     z-index: 3;
     transition: border-color .5s ease;
 
+    border-radius: 0;
+    -webkit-appearance: none;
+
     &-show {
       position: relative;
       left: -50px;
