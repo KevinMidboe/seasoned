@@ -40,6 +40,7 @@ export default {
 .group{
   display: flex;
   margin-bottom: 1rem;
+  width: 100%;
 
   &:hover, &:focus {
     .group__input {
@@ -62,7 +63,7 @@ export default {
   }
 
   &__input {
-    width: 75%;
+    width: 100%;
     max-width: 35rem;
     padding: 10px 10px 10px 45px;
     // padding: 15px 10px 15px 45px;

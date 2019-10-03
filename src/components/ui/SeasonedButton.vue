@@ -32,6 +32,7 @@ export default {
   font-weight: 300;
   font-size: 11px;
   line-height: 2;
+  height: 45px;
   letter-spacing: 0.5px;
   padding: 5px 20px 4px 20px;
   cursor: pointer;
