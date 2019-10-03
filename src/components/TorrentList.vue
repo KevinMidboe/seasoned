@@ -255,6 +255,7 @@ export default {
     },
     fetchTorrents(query=undefined){
       this.listLoaded = false;
+      this.editSearchQuery = false;
 
       console.log('query: ', query || this.query)
       searchTorrents(query || this.query, 'all', this.currentPage, storage.token)
