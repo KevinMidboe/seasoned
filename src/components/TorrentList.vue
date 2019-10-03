@@ -60,7 +60,7 @@
           justify-content: center;
           margin: 1rem;
         ">
-          <seasonedButton @click="ostekake">Edit search query</seasonedButton>
+          <seasonedButton @click="resetTorrentsAndToggleEditSearchQuery">Edit search query</seasonedButton>
         </div>
       </div>
 
@@ -137,7 +137,7 @@ export default {
     store.dispatch('torrentModule/reset')
   },
   methods: {
-    ostekake() {
+    resetTorrentsAndToggleEditSearchQuery() {
       this.torrents = []
       this.toggleEditSearchQuery()
     },
