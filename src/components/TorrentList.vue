@@ -78,7 +78,7 @@
                   justify-content: center;"
             v-if="editSearchQuery">
 
-        <seasonedInput text="Torrent query" icon="_torrents" @inputValue="(val) => editedSearchQuery = val"/>
+        <seasonedInput text="Torrent query" icon="_torrents" @inputValue="(val) => editedSearchQuery = val" @enter="fetchTorrents(editedSearchQuery)" />
 
         <div style="height: 45px; width: 5px;"></div>
 

@@ -2,7 +2,7 @@
   <div class="group" :class="{ completed: value.length > 0 }">
     <svg class="group__input-icon"><use v-bind="{'xlink:href':'#icon' + icon}"></use></svg>
     <input class="group__input" :type="tempType || type" ref="plex_username" 
-            v-model="value" :placeholder="text" @input="handleInput" />
+            v-model="value" :placeholder="text" @keyup.enter="submit" @input="handleInput" />
     
     <i v-if="value.length > 0 && type === 'password'" @click="toggleShowPassword" class="group__input-show noselect">show</i>
   </div>
@@ -19,6 +19,9 @@ export default {
     return { value: '', tempType: undefined }
   },
   methods: {
+    submit(event) {
+      this.$emit('enter')
+    },
     handleInput(value) {
       console.log('this.value', this.value)
       this.$emit('inputValue', this.value)
