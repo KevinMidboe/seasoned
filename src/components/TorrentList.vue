@@ -44,10 +44,15 @@
 
 <script>
 import storage from '@/storage.js'
+import store from '@/store'
 import { sortableSize } from '@/utils.js'
 import { searchTorrents, addMagnet } from '@/api.js'
 
+import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+import SeasonedInput from '@/components/ui/SeasonedInput.vue'
+
 export default {
+  components: { SeasonedButton, SeasonedInput },
   props: {
     query: {
       type: String,
@@ -64,21 +69,31 @@ export default {
   data() {
     return {
       listLoaded: false,
-      torrents: undefined,
+      torrents: [],
       torrentResponse: undefined,
       currentPage: 0,
       prevCol: '',
       direction: false,
       release_types: ['all'],
-      selectedRelaseType: 'all'
+      selectedRelaseType: 'all',
+      editSearchQuery: false,
+      editedSearchQuery: ''
     }
   },
   beforeMount() {
     if (localStorage.getItem('admin')) {
       this.fetchTorrents()
     }
+    store.dispatch('torrentModule/reset')
   },
   methods: {
+    ostekake() {
+      this.torrents = []
+      this.toggleEditSearchQuery()
+    },
+    toggleEditSearchQuery() {
+      this.editSearchQuery = !this.editSearchQuery;
+    },
     expand(event, name) {
       const existingExpandedElement = document.getElementsByClassName('expanded')[0]
 
@@ -184,8 +199,16 @@ export default {
       this.torrents = torrents.filter(torrent => torrent.release_type.includes(item))
       this.sortTable(this.prevCol, true)
     },
-    fetchTorrents(){
-      searchTorrents(this.query, 'all', this.currentPage, storage.token)
+    updateResultCountInStore() {
+      store.dispatch('torrentModule/setResults', this.torrents)
+      store.dispatch('torrentModule/setResultCount', this.torrentResponse.length)
+    },
+    fetchTorrents(query=undefined){
+      this.listLoaded = false;
+
+      console.log('query: ', query || this.query)
+      searchTorrents(query || this.query, 'all', this.currentPage, storage.token)
+//      Promise.resolve({"success":true,"results":[]})
       .then(resp => {
           let data = resp.data;
           console.log('data results', data.results);
@@ -194,6 +217,7 @@ export default {
           this.listLoaded = true;
       })
       .then(this.findRelaseTypes)
+      .then(this.updateResultCountInStore)
       .catch(e => {
         const error = e.toString()
         this.errorMessage = error.indexOf('401') != -1 ? 'Permission denied' : 'Nothing found';
@@ -227,16 +251,39 @@ export default {
 @import "./src/scss/media-queries";
 @import "./src/scss/elements";
 
-.title {
-  margin: 0;
-  font-weight: 400;
-  text-transform: uppercase;
-  text-align: center;
-  font-size: 14px;
-  color: $c-green;
+.torrentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding-bottom: 20px;
-  @include tablet-min{
-    font-size: 16px;
+
+
+  &-text {
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 14px;
+    color: $c-green;
+    text-align: center;
+
+    @include tablet-min {
+      font-size: 16px
+    }
+
+    &.editable {
+      cursor: pointer;
+    }
+  }
+
+  &-editIcon {
+    margin-left: 10px;
+    margin-top: -3px;
+    width: 22px;
+    height: 22px;
+
+    &:hover {
+      fill: $c-green;
+      cursor: pointer;
+    }
   }
 }
 

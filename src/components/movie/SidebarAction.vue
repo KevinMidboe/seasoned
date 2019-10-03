@@ -6,11 +6,19 @@
         <use v-else :xlink:href="iconRef"></use>
       </svg>
       <span class="action-text">{{ active && textActive ? textActive : text }}</span> 
+      <div v-if="torrentResults"
+            style="display: flex;
+                   flex-grow: 2;
+                   width: 2rem;
+                   ">
+        <span style="width: 100%; text-align: right;" v-if="getTorrentResultCount !== null">{{ getTorrentResultCount }} results</span></div>
     </a>
   </div>
 </template>
 
 <script>
+import store from '@/store'
+
 export default {
   props: {
     iconRef: {
@@ -32,6 +40,14 @@ export default {
     textActive: {
       type: String,
       required: false
+    }
+  },
+  computed: {
+    torrentResults() {
+      return this.text.toLowerCase().includes('torrents')
+    },
+    getTorrentResultCount() {
+      return store.getters['torrentModule/resultCount']
     }
   }
 }
