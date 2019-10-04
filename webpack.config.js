@@ -12,13 +12,20 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-            'scss': 'vue-style-loader!css-loader!sass-loader',
-            'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
+        use: [
+          {
+            loader: 'vue-loader',
+            options: {
+              loaders: {
+                'scss': 'vue-style-loader!css-loader!sass-loader',
+                'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
+              }
+            }
+          },
+          {
+            loader: 'vue-svg-inline-loader'
           }
-        }
+        ]
       },
       {
         test: /\.js$/,
