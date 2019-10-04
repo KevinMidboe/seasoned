@@ -32,22 +32,25 @@
         <!-- SIDEBAR ACTIONS -->
         <div class="movie__actions" v-if="movie">
 
-          <sidebar-action
-            :text="'Not yet in plex'" :iconRef="'#iconNot_exsits'"
-            :textActive="'Already in plex 🎉'" :iconRefActive="'#iconExists'"
-            :active="matched"></sidebar-action>
-          <sidebar-action
-            @click="sendRequest"
-            :text="'Request to be downloaded?'" :iconRef="'#iconSent'"
-            :textActive="'Requested to be downloaded'"
-            :active="requested"></sidebar-action>
-          <sidebar-action
-            v-if="admin" @click="showTorrents=!showTorrents"
-            :text="'Search for torrents'" :iconRef="'#icon_torrents'"
-            :active="showTorrents"></sidebar-action>
-          <sidebar-action
-            @click="openTmdb()"
-            :iconRef="'#icon_info'" :text="'See more info'"></sidebar-action>
+          <sidebar-list-element :iconRef="'#iconNot_exsits'" :active="matched"
+            :iconRefActive="'#iconExists'" :textActive="'Already in plex 🎉'">
+
+            Not yet in plex
+          </sidebar-list-element>
+          <sidebar-list-element @click="sendRequest" :iconRef="'#iconSent'"
+            :active="requested" :textActive="'Requested to be downloaded'">
+
+            Request to be downloaded?
+          </sidebar-list-element>
+          <sidebar-list-element v-if="admin" @click="showTorrents=!showTorrents"
+            :iconRef="'#icon_torrents'" :active="showTorrents"
+            :supplementaryText="'23 results'">
+
+            Search for torrents
+          </sidebar-list-element>
+          <sidebar-list-element @click="openTmdb" :iconRef="'#icon_info'">
+            See more info
+          </sidebar-list-element>
         </div>
 
         <!-- Loading placeholder -->
@@ -115,7 +118,7 @@ import storage from '@/storage.js'
 import img from '@/directives/v-image.js'
 import TorrentList from './TorrentList.vue'
 import Person from './Person.vue'
-import SidebarAction from './movie/SidebarAction.vue'
+import SidebarListElement from './ui/sidebarListElem.vue'
 
 import LoadingPlaceholder from './ui/LoadingPlaceholder.vue'
 
@@ -123,7 +126,7 @@ import { getMovie, getShow, request, getRequestStatus } from '@/api.js'
 
 export default {
   props: ['id', 'type'],
-  components: { TorrentList, Person, LoadingPlaceholder, SidebarAction },
+  components: { TorrentList, Person, LoadingPlaceholder, SidebarListElement },
   directives: { img: img }, // TODO decide to remove or use
   data(){
     return{
