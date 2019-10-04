@@ -13,7 +13,6 @@ export default {
   },
   methods: {
     emit() {
-      console.log('emitted')
       this.$emit('click')
     }
   }

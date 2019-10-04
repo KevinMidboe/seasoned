@@ -23,7 +23,6 @@ export default {
       this.$emit('enter')
     },
     handleInput(value) {
-      console.log('this.value', this.value)
       this.$emit('inputValue', this.value)
     },
     toggleShowPassword() {
