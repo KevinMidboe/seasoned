@@ -17,6 +17,8 @@ Vue.use(Toast)
 Vue.use(DataTablee)
 Vue.use(VModal, { dialog: true })
 
+store.dispatch('darkmodeModule/findAndSetDarkmodeSupported')
+
 new Vue({
   el: '#app',
   router,
