@@ -44,7 +44,7 @@
           </sidebar-list-element>
           <sidebar-list-element v-if="admin" @click="showTorrents=!showTorrents"
             :iconRef="'#icon_torrents'" :active="showTorrents"
-            :supplementaryText="'23 results'">
+            :supplementaryText="numberOfTorrentResults">
 
             Search for torrents
           </sidebar-list-element>
@@ -119,7 +119,7 @@ import img from '@/directives/v-image.js'
 import TorrentList from './TorrentList.vue'
 import Person from './Person.vue'
 import SidebarListElement from './ui/sidebarListElem.vue'
-
+import store from '@/store.js'
 import LoadingPlaceholder from './ui/LoadingPlaceholder.vue'
 
 import { getMovie, getShow, request, getRequestStatus } from '@/api.js'
@@ -185,6 +185,12 @@ export default {
       } else {
         this.fetchShow(val)
       }
+    }
+  },
+  computed: {
+    numberOfTorrentResults: () => {
+      let numTorrents = store.getters['torrentModule/resultCount']
+      return numTorrents ? numTorrents + ' results' : null
     }
   },
   beforeDestroy() {
