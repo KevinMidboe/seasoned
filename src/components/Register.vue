@@ -1,41 +1,18 @@
 <template>
-  <section class="profile">
-    <div class="profile__content">
-      <h2 class='settings__header'>Register new user</h2>
+  <section>
+    <h1>Register new user</h1>
 
-      <form class="form">
-        <seasoned-input text="username" icon="Email"
-                        @inputValue="setValue('username', $event)"></seasoned-input>
-        <seasoned-input text="password" icon="Keyhole" type="password"
-                        @inputValue="setValue('password', $event)"></seasoned-input>
-        <seasoned-input text="repeat password" icon="Keyhole" type="password"
-                        @inputValue="setValue('passwordRepeat', $event)"></seasoned-input>
+    <seasoned-input text="username" icon="Email" type="username"
+                    @inputValue="setValue('username', $event)" />
+    <seasoned-input text="password" icon="Keyhole" type="password"
+                    @inputValue="setValue('password', $event)" @enter="requestNewUser"/>
+    <seasoned-input text="repeat password" icon="Keyhole" type="password"
+                    @inputValue="setValue('password', $event)" @enter="requestNewUser"/>
 
-        <transition name="message-fade">
-          <div class="message" :class="messageClass" v-if="showMessage">
-            <span class="message-text">{{ messageText }}</span>
-            <span class="message-dismiss" v-on:click="dismissMessage">X</span>
-          </div>
-        </transition>
+    <seasoned-button @click="requestNewUser">Register</seasoned-button>
 
-        <div class="form__group">
-          <seasoned-button @click="requestNewUser">Register</seasoned-button>
-        </div>
-      </form>
-      
-      <div class="form__group">
-        <router-link class="form__group-link" :to="{name: 'signin'}" exact title="Sign in here">
-          <span class="form__group-signin">Sign in here</span>
-        </router-link>
-      </div>
-
-    </div>
-    <section class="not-found" v-if="userLoggedIn === false">
-      <div class="not-found__content">
-        <h2 class="not-found__title">Authentication Request Failed</h2>
-        <button class="not-found__button button">Log In</button>
-      </div>
-    </section>
+    <router-link class="link" to="/signin">Have a user? Sign in here</router-link>
+    <seasoned-messages :messages.sync="messages"></seasoned-messages>
   </section>
 </template>
 
@@ -44,18 +21,16 @@ import axios from 'axios'
 import storage from '@/storage.js'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 import SeasonedInput from '@/components/ui/SeasonedInput.vue'
+import SeasonedMessages from '@/components/ui/SeasonedMessages.vue'
 
 export default {
-  components: { SeasonedButton, SeasonedInput },
+  components: { SeasonedButton, SeasonedInput, SeasonedMessages },
   data(){
     return{
-      userLoggedIn: '',
+      messages: [],
       username: undefined,
       password: undefined,
-      passwordRepeat: undefined,
-      showMessage: false,
-      messageClass: 'message-success',
-      messageText: 'hello world'
+      passwordRepeat: undefined
     }
   },
   methods: {
@@ -71,10 +46,9 @@ export default {
           username: username,
           password: password
         })
-        .then(function(resp) {
+        .then(resp => {
           let data = resp.data;
           if (data.success){
-            this.msg(data.message, 'success');
             localStorage.setItem('token', data.token);
             localStorage.setItem('username', username);
             localStorage.setItem('admin', data.admin)
@@ -82,13 +56,13 @@ export default {
             eventHub.$emit('setUserStatus');
             this.$router.push({ name: 'profile' })
           }
-        }.bind(this))
-        .catch(function(error){
-          this.msg(error.response.data.error, 'warning')
-        }.bind(this));
+        })
+        .catch(error => {
+          this.messages.push({ type: 'error', title: 'Unexpected error', message: error.response.data.error })
+        });
       } 
       else {
-        this.msg(verifyCredentials.reason, 'warning');
+        this.messages.push({ type: 'warning', title: 'Parse error', message: verifyCredentials.reason })
       }
     },
     checkCredentials(username, password, password_re) {
@@ -110,20 +84,6 @@ export default {
           reason: 'Verified credentials'
         }
       }
-    },
-    msg(text, status){
-      if (status === 'warning')
-        this.messageClass = 'message-warning';
-      else if (status === 'success')
-        this.messageClass = 'message-success';
-      else
-        this.messageClass = 'message-info';
-      this.messageText = text;
-      this.showMessage = true;
-      // setTimeout(() => this.showMessage = false, 3500);
-    },
-    dismissMessage(){
-      this.showMessage = false;
     },
     setValue(l, t) {
       this[l] = t

@@ -34,7 +34,6 @@ import Settings from '@/components/Settings.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 
 import { getEmoji } from '@/api.js'
-// import CreatedLists from './CreatedLists.vue'
 
 export default {
   components: { MoviesList, Settings, SeasonedButton },

@@ -1,50 +1,34 @@
 <template>
-  <section class="profile">
-    <div class="profile__content">
-      <h2 class='settings__header'>Sign in</h2>
+  <section>
+    <h1>Sign in</h1>
 
-      <form class="form">
-        <div class="form__buffer"></div>
+    <seasoned-input text="username" icon="Email" type="username"
+                    @inputValue="setValue('username', $event)" />
+    <seasoned-input text="password" icon="Keyhole" type="password"
+                    @inputValue="setValue('password', $event)" @enter="signin"/>
 
-          <seasoned-input text="username" icon="Email" type="username"
-                          @inputValue="setValue('username', $event)" />
-          <seasoned-input text="username" icon="Keyhole" type="password"
-                          @inputValue="setValue('password', $event)" />
+    <seasoned-button @click="signin">sign in</seasoned-button>
 
-          <seasoned-button @click="signin">sign in</seasoned-button>
-          
-          <transition name="message-fade">
-              <div class="message" :class="messageClass" v-if="showMessage">
-                <span class="message-text">{{ messageText }}</span>
-                <span class="message-dismiss" @click="showMessage=false">X</span>
-              </div>
-            </transition>
-      </form>
-      
-      <div class="form__group">
-        <router-link class="form__group-link" :to="{name: 'register'}" exact title="Sign in here">
-          <span class="form__group-signin">Don't have a user? Register here</span>
-        </router-link>
-      </div>
+    <router-link class="link" to="/register">Don't have a user? Register here</router-link>
+    <seasoned-messages :messages.sync="messages"></seasoned-messages>
 
-    </div>
   </section>
 </template>
+
+
 
 <script>
 import axios from 'axios'
 import storage from '../storage.js'
 import SeasonedInput from '@/components/ui/SeasonedInput.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+import SeasonedMessages from '@/components/ui/SeasonedMessages.vue'
 
 export default {
-  components: { SeasonedInput, SeasonedButton },
+  components: { SeasonedInput, SeasonedButton, SeasonedMessages },
   data(){
     return{
-      userLoggedIn: '',
-      showMessage: false,
-      messageClass: 'message-success',
-      messageText: 'hello world',
+      messages: [],
       username: undefined,
       password: undefined
     }
@@ -61,49 +45,30 @@ export default {
         username: username,
         password: password
       })
-      .then(function (resp){
+      .then(resp => {
         let data = resp.data;
         if (data.success){
           localStorage.setItem('token', data.token);
           localStorage.setItem('username', username);
           localStorage.setItem('admin', data.admin);
-          this.userLoggedIn = true;
           
           eventHub.$emit('setUserStatus');
           this.$router.push({ name: 'profile' })
         }
-      }.bind(this))
-      .catch(function (error){
-        if (error.message.endsWith('401'))
-          this.msg('Incorrect username or password ', 'warning')
-        else
-          this.msg(error.message, 'warning')
-      }.bind(this));
-    },
-    msg(text, status){
-      if (status === 'warning')
-        this.messageClass = 'message-warning';
-      else if (status === 'success')
-        this.messageClass = 'message-success';
-      else
-        this.messageClass = 'message-info';
-      this.messageText = text;
-      this.showMessage = true;
-      // setTimeout(() => this.showMessage = false, 3500);
-    },
-    toggleView(){
-      this.register = false;
-    },
+      })
+      .catch(error => {
+        if (error.message.endsWith('401')) {
+          this.messages.push({ type: 'warning', title: 'Access denied', message: 'Incorrect username or password' })
+        }
+        else {
+          this.messages.push({ type: 'error', title: 'Unexpected error', message: error.message })
+        }
+      });
+    }
   },
   created(){
     document.title = 'Sign in' + storage.pageTitlePostfix;
     storage.backTitle = document.title;
-    if (this.userLoggedIn == true) {
-      this.$router.push({ name: 'profile' })
-    }
-  },
-  mounted(){
-    // this.$refs.email.focus();
   }
 }
 </script>
