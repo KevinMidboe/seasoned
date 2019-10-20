@@ -12,6 +12,9 @@
     <!-- Movie popup that will show above existing rendered content -->
     <movie-popup v-if="moviePopupIsVisible" :id="popupID" :type="popupType"></movie-popup>
 
+
+    <darkmode-toggle />
+
     <!-- Display the component assigned to the given route (default: home) -->
     <router-view class="content"></router-view>
 
@@ -23,13 +26,15 @@ import Vue from 'vue'
 import Navigation from '@/components/Navigation.vue'
 import MoviePopup from '@/components/MoviePopup.vue'
 import SearchInput from '@/components/SearchInput.vue'
+import DarkmodeToggle from '@/components/ui/darkmodeToggle.vue'
 
 export default {
   name: 'app',
   components: {
     Navigation,
     MoviePopup,
-    SearchInput
+    SearchInput,
+    DarkmodeToggle
   },
   data() {
     return {
