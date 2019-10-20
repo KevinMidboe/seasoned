@@ -38,6 +38,11 @@ let routes = [
     component: (resolve) => require(['./components/Register.vue'], resolve)
   },
   {
+    name: 'settings',
+    path: '/settings',
+    component: (resolve) => require(['./components/Settings.vue'], resolve)
+  },
+  {
     name: 'signin',
     path: '/signin',
     component: (resolve) => require(['./components/Signin.vue'], resolve)
