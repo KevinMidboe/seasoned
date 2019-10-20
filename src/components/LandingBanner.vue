@@ -43,7 +43,7 @@ header {
   background-repeat: no-repeat;
   background-position: 50% 50%;
   position: relative;
-  background-color: $c-dark;
+
   @include tablet-min {
     height: 284px;
   }
@@ -54,7 +54,7 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba($c-light, 0.7);
+    background: $background-70;
   }
   
   .container {
@@ -67,7 +67,7 @@ header {
     font-size: 22px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: $c-dark;
+    color: $text-color;
     margin: 0;
     @include tablet-min{
       font-size: 28px;
@@ -78,34 +78,10 @@ header {
     display: block;
     font-size: 14px;
     font-weight: 300;
-    color: $c-dark;
+    color: $text-color-70;
     margin: 5px 0;
     @include tablet-min{
       font-size: 16px;
-    }
-  }
-
-  .link {
-    text-decoration: none;
-    color: $c-dark;
-    font-size: 13px;
-    font-weight: 300;
-    opacity: 0.7;
-    transition: opacity 0.5s ease;
-    &:hover {
-      opacity: 1;
-    }
-    span {
-      display: inline-block;
-      vertical-align: middle;
-    }
-    &-icon {
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 2px;
-      width: 16px;
-      height: 15px;
-      fill: $c-dark;
     }
   }
 }

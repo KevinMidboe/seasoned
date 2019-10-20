@@ -17,29 +17,26 @@
   align-items: center;
 
   &--icon{
-    border: 2px solid rgba($c-dark, 0.9);
+    border: 2px solid $text-color-70;
     border-radius: 50%;
     display: block;
     height: 40px;
-    // left: 50%;
-    // margin: -1.5em;
     position: absolute;
     width: 40px;
 
     &-spinner {
-    // border: 2px solid transparent;
-    display: block;
+      display: block;
       animation: load 1s linear infinite;
-    height: 35px;
-    width: 35px;
-&:after {
-      border: 7px solid rgba($c-green, 0.9);
-      border-radius: 50%;
-      content: '';
-      left: 8px;
-      position: absolute;
-      top: 22px;
-    }
+      height: 35px;
+      width: 35px;
+      &:after {
+        border: 7px solid rgba($green, 0.9);
+        border-radius: 50%;
+        content: '';
+        left: 8px;
+        position: absolute;
+        top: 22px;
+      }
     }
   }
   @keyframes load {

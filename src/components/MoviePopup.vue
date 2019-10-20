@@ -36,7 +36,7 @@ export default {
   z-index: 20;
   width: 100%;
   height: 100vh;
-  background: rgba($c-dark, 0.93);
+  background: rgba($dark, 0.93);
   -webkit-overflow-scrolling: touch;
   overflow: auto;
   &__box{
@@ -44,7 +44,7 @@ export default {
     max-width: 768px;
     position: relative;
     z-index: 5;
-    background: $c-dark;
+    background: $background-color-secondary;
     padding-bottom: 50px;
     @include tablet-min{
       padding-bottom: 0;
@@ -71,7 +71,7 @@ export default {
       left: 10px;
       width: 20px;
       height: 2px;
-      background: $c-white;
+      background: $white;
     }
     &:before{
       transform: rotate(45deg);
@@ -80,7 +80,7 @@ export default {
       transform: rotate(-45deg);
     }
     &:hover{
-      background: $c-green;
+      background: $green;
     }
   }
 }

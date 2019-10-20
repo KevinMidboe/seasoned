@@ -1,12 +1,127 @@
 // Colors
-$c-green: #01d277;
-$c-dark: #081c24;
-$c-white: #ffffff;
-$c-light: #f8f8f8;
-$c-green-light: #dff0d9;
-$c-green-dark: #3e7549;
-$c-red-light: #f2dede;
-$c-red-dark: #b75b91;
+// @import "./media-queries";
+@import "./src/scss/media-queries";
 
-$header-size: 75px;
-$header-size-mobile: 50px;
+:root {
+  color-scheme: light;
+  --text-color: #081c24;
+  --text-color-70: rgba(8, 28, 36, 0.7);
+  --text-color-50: rgba(8, 28, 36, 0.5);
+  --text-color-5: rgba(8, 28, 36, 0.05);
+  --text-color-secondary: orange;
+  --background-color: #f8f8f8;
+  --background-color-secondary: #ffffff;
+  --background-95: rgba(255, 255, 255, 0.95);
+  --background-70: rgba(255, 255, 255, 0.7);
+  --background-40: rgba(255, 255, 255, 0.4);
+  --background-nav-logo: #081c24;
+  
+  --color-green: #01d277;
+  --color-teal: #091c24;
+  --color-black: #081c24;
+  --white: #fff;
+  --white-70: rgba(255,255,255,0.7);
+
+  --color-warning: #fff5cd;
+  --color-warning-text: #081c24;
+  --color-warning-light: rgb(255, 203, 5);
+  --color-success: rgba(0, 100, 66, 0.8);
+  --color-success-text: #fff;
+  --color-success-highlight: rgb(0, 100, 66);
+  --color-error: rgba(220, 48, 35, 0.8);
+  --color-error-highlight: #DC3023;
+  --color-error-text: #fff;
+
+  --header-size: 75px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light dark;
+    --text-color: #fff;
+    --text-color-70: rgba(255, 255, 255, 0.7);
+    --text-color-50: rgba(255, 255, 255, 0.5);
+    --text-color-5: rgba(255, 255, 255, 0.05);
+    --text-color-secondary: orange;
+    --background-color: #1e1f22;
+    --background-color-secondary: #111111;
+    --background-95: rgba(30, 31, 34, 0.95);
+    --background-70: rgba(30, 31, 34, 0.8);
+    --background-40: rgba(30, 31, 34, 0.4);
+    --color-teal: #091c24;
+  }
+}
+
+@include mobile-only {
+  :root {
+    --header-size: 50px;
+  }
+}
+
+$header-size: var(--header-size);
+
+$dark: rgb(30, 31, 34);
+$green: var(--color-green);
+$teal: #091c24;
+$black: #081c24;
+$black-80: rgba(0,0,0,0.8);
+$white: #fff;
+$white-80: rgba(255,255,255,0.8);
+
+$text-color: var(--text-color) !default;
+$text-color-70: var(--text-color-70) !default;
+$text-color-50: var(--text-color-50) !default;
+$text-color-5: var(--text-color-5) !default;
+$text-color-secondary: var(--text-color-secondary) !default;
+$background-color: var(--background-color) !default;
+$background-color-secondary: var(--background-color-secondary) !default;
+$background-95: var(--background-95) !default;
+$background-70: var(--background-70) !default;
+$background-40: var(--background-40) !default;
+$background-dark-85: rgba($dark, 0.85) !default;
+$background-nav-logo: var(--background-nav-logo) !default;
+$color-warning: var(--color-warning) !default;
+$color-warning-text: var(--color-warning-text) !default;
+$color-warning-light: var(--color-warning-light) !default;
+$color-success: var(--color-success) !default;
+$color-success-highlight: var(--color-success-highlight) !default;
+$color-error: var(--color-error) !default;
+$color-error-highlight: var(--color-error-highlight) !default;
+$color-error-text: var(--color-error-text) !default;
+$color-error-light: var(--color-error) !default;
+
+.halloween {
+  --text-color: #6a318c;
+  --text-color-secondary: #fb5a33;
+  --background-color: #80c350;
+  --background-color-secondary: #ff9234;
+}
+
+.dark {
+  --text-color: #fff;
+  --text-color-70: rgba(255, 255, 255, 0.7);
+  --text-color-50: rgba(255, 255, 255, 0.5);
+  --text-color-5: rgba(255, 255, 255, 0.05);
+  --text-color-secondary: orange;
+  --background-color: #1e1f22;
+  --background-color-secondary: #111111;
+  --background-95: rgba(30, 31, 34, 0.95);
+  --background-70: rgba(30, 31, 34, 0.7);
+  --color-teal: #091c24;
+}
+
+.light {
+  --text-color: #081c24;
+  --text-color-70: rgba(8, 28, 36, 0.7);
+  --text-color-50: rgba(8, 28, 36, 0.5);
+  --text-color-5: rgba(8, 28, 36, 0.05);
+  --text-color-inverted: #fff;
+  --text-color-secondary: orange;
+  --background-color: #f8f8f8;
+  --background-color-secondary: #ffffff;
+  --background-95: rgba(255, 255, 255, 0.95);
+  --background-70: rgba(255, 255, 255, 0.7);
+  --background-nav-logo: #081c24;
+  --color-green: #01d277;
+  --color-teal: #091c24;
+}

@@ -128,7 +128,7 @@ a {
    &__header {
       margin: 0;
       line-height: 16px;
-      color: $c-dark;
+      color: $text-color;
       font-weight: 300;
       margin-bottom: 20px;
       text-transform: uppercase;

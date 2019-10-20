@@ -49,50 +49,28 @@ export default {
 .movies-item {
   padding: 10px;
   width: 50%;
+  background-color: $background-color;
 
   @include tablet-min{
     padding: 15px;
   }
   @include tablet-landscape-min{
-    padding: 20px;
+    padding: 15px;
     width: 25%;
   }
   @include desktop-min{
-    padding: 30px;
+    padding: 15px;
     width: 20%;
   }
 
   @include desktop-lg-min{
     padding: 20px;
-    width: 16.5%;
-  }
-
-  &.shortList {
-    display: none;
-
-    &:nth-child(-n+6) { // show first 6
-      display: block;
-    }
-
-    @include tablet-landscape-min{
-      &:nth-child(-n+8) { // show first 8
-        display: block;
-      }
-    }
-    @include desktop-min{
-      &:nth-child(-n+10) { // show first 10
-        display: block;
-      }
-    }
-
-    @include desktop-lg-min{
-      display: block; // show all
-    }
+    width: 12.5%;
   }
 
   &__link{
     text-decoration: none;
-    color: rgba($c-dark, 0.5);
+    color: $text-color-70;
     font-weight: 300;
   }
   &__content{
@@ -101,7 +79,6 @@ export default {
   &__poster{
     transition: transform 0.5s ease, box-shadow 0.3s ease;
     transform: translateZ(0);
-    background: $c-white;
   }
   &__img{
     width: 100%;
@@ -115,13 +92,14 @@ export default {
   }
   &__link:not(.no-image):hover &__poster{
     transform: scale(1.03);
-    box-shadow: 0 0 10px rgba($c-dark, 0.1);
+    box-shadow: 0 0 10px rgba($dark, 0.1);
   }
   &__title{
     margin: 0;
     font-size: 11px;
     letter-spacing: 0.5px;
     transition: color 0.5s ease;
+    cursor: pointer;
     @include mobile-ls-min{
       font-size: 12px;
     }
@@ -130,7 +108,7 @@ export default {
     }
   }
   &__link:hover &__title{
-    color: $c-dark;
+    color: $text-color;
   }
 }
 </style>

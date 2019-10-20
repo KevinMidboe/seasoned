@@ -226,103 +226,161 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
-@import "./src/scss/elements";
+@import './src/scss/media-queries';
+@import './src/scss/variables';
 
-  .movies-list {
-    list-style: none;
+.movies-list {
+  & ul:last-of-type {
+    padding-bottom: 1.5rem;
+  }
+
+  &:first-of-type header {
+    padding-top: 1.75rem;
+  }
+
+  header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+
+    &.sticky {
+      background-color: $background-color-secondary;
+
+      position: sticky;
+      position: -webkit-sticky;
+      top: $header-size;
+      z-index: 4;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 300;
+      text-transform: capitalize;
+      line-height: 18px;
+      margin: 0;
+      color: $text-color;
+    }
+
+    .view-more {
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: .5px;
+      color: $text-color-70;
+      text-decoration: none;
+      transition: color .5s ease;
+      cursor: pointer;
+
+      &:after{
+        content: " →";
+      }
+      &:hover{
+        color: $text-color;
+      }
+    }
+
+    .result-count {
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: .5px;
+      color: $text-color;
+      text-decoration: none;
+    }
+  }
+
+  .results {
     display: flex;
     flex-wrap: wrap;
-    padding: 15px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
-    .results {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-    }
+    &.shortList > li {
+      display: none;
 
-    .list-header {
-      width: 100%;
-      display: flex;
-      flex-flow: row wrap;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 10px;
-
-      @include tablet-min{
-        padding: 23px 15px;
-      }
-      @include tablet-landscape-min{
-        padding: 16px 25px;
-      }
-      @include desktop-min{
-        padding: 8px 30px;
-      }
-
-      .header__title {
-        line-height: 18px;
-        margin: 0;
-        font-size: 18px;
-        color: #081c24;
-        font-weight: 300;
-        // flex-basis: 50%;
-        text-transform: capitalize;
-
-        @include tablet-min{
-          font-size: 18px;
-          line-height: 18px;
-        }
-      }
-
-      .header__result-count {
-        font-size: 12px;
-        font-weight: 300;
-        letter-spacing: .5px;
-        color: rgba(8,28,36,.5);
-        text-align: right;
-      }
-
-      .header__view-more {
-        font-size: 13px;
-        font-weight: 300;
-        letter-spacing: .5px;
-        color: rgba($c-dark, 0.5);
-        text-decoration: none;
-        transition: color .5s ease;
-        cursor: pointer;
-
-        &:after{
-          content: " →";
-        }
-        &:hover{
-          color: $c-dark;
-        }
+      &:nth-child(-n+4) {
+        display: block;
       }
     }
 
-    .end-section {
-      display: flex;
-      justify-content: center;
+    .fullwidth-button {
       width: 100%;
       margin: 1rem 0;
+      display: flex;
+      justify-content: center;
     }
   }
 
 
-  @import "./src/scss/media-queries";
-  .form__group-input {
-    padding: 10px 5px 10px 15px;
-    margin-left: 0;
-    height: 38px;
-    width: 150px;
-    font-size: 15px;
-    @include desktop-min {
-      width: 200px;
-      font-size: 17px;
+  @include tablet-min {
+    header {
+      padding-left: 1.25rem;
+    }
+    .results.shortList > li:nth-child(-n+6) {
+      display: block;
     }
   }
+  @include tablet-landscape-min {
+    header {
+      padding-left: 1.5rem;
+    }
+    .results.shortList > li:nth-child(-n+8) {
+      display: block;
+    }
+  }
+  @include desktop-min {
+    .results.shortList > li:nth-child(-n+12) {
+      display: block;
+    }
+  }
+
+  @include desktop-lg-min {
+    header {
+      padding-left: 1.75rem;
+    }
+    .results.shortList > li:nth-child(-n+16) {
+      display: block;
+    }
+  }
+}
+// .shutter {
+//   $height: 36px;
+//   height: $height;
+//   width: 100%;
+//   background-color: $background-color-secondary;
+//   position: absolute;
+//   margin-bottom: -$height;
+
+//   position: -webkit-sticky; /* Safari */
+//   position: sticky;
+//   top: $header-size;
+//   z-index: 4;
+
+//   @include tablet-min{
+//     background-color: blue;
+//     height: 23px 15px;
+//   }
+//   @include tablet-landscape-min{
+//     background-color: orange;
+//     height: 30px;
+//   }
+//   @include desktop-min{
+//     background-color: navajowhite;
+//     height: 34px;
+//   }
+// }
+
+
+.form__group-input {
+  padding: 10px 5px 10px 15px;
+  margin-left: 0;
+  height: 38px;
+  width: 150px;
+  font-size: 15px;
+  @include desktop-min {
+    width: 200px;
+    font-size: 17px;
+  }
+}
 
 </style>

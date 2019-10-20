@@ -63,12 +63,6 @@ export default {
     activeClassIfActive() {
       return this.active ? 'active' : ''
     }
-    // torrentResults() {
-    //   return this.text.toLowerCase().includes('torrents')
-    // },
-    // getTorrentResultCount() {
-    //   return store.getters['torrentModule/resultCount']
-    // }
   }
 }
 </script>
@@ -82,18 +76,18 @@ li {
   align-items: center;
   text-decoration: none;
   text-transform: uppercase;
-  color: rgba($c-dark, 0.5);
+  color: $text-color-50;
   transition: color 0.5s ease;
   font-size: 11px;
   padding: 10px 0;
-  border-bottom: 1px solid rgba($c-dark, 0.05);
+  border-bottom: 1px solid $text-color-5;
 
   &:hover {
-    color: rgba($c-dark, 0.80);
+    color: $text-color-70;
     cursor: pointer;
   }
   .active {
-    color: $c-dark;
+    color: $text-color;
   }
   .pending {
     color: #f8bd2d;
@@ -108,7 +102,7 @@ li {
     width: 18px;
     height: 18px;
     margin: 0 7px 0 0;
-    fill: rgba($c-dark, 0.5);
+    fill: $text-color-50;
     transition: fill 0.5s ease, transform 0.5s ease;
     &.waiting {
       transform: scale(0.8, 0.8);
@@ -117,15 +111,11 @@ li {
       fill: #f8bd2d;
     }
     &:hover &-icon {
-      fill: rgba($c-dark, 0.75);
+      fill: $text-color-70;
       cursor: pointer;
     }
-    &.active {
-      color: $c-green;
-
-      > svg {
-        fill: $c-green;
-      }
+    &.active > svg {
+      fill: $green;
     }
   }
 }

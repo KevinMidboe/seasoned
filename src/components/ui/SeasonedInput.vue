@@ -46,20 +46,20 @@ export default {
 
   &:hover, &:focus {
     .group__input {
-      border-color: $c-dark;
+      border-color: $text-color;
 
       &-icon {
-        fill: $c-dark;
+        fill: $text-color;
       }      
     }
   }
 
   &.completed {
     .group__input {
-      border-color: $c-dark;
+      border-color: $text-color;
 
       &-icon {
-        fill: $c-dark;
+        fill: $text-color;
       }      
     }
   }
@@ -70,12 +70,13 @@ export default {
     padding: 10px 10px 10px 45px;
     // padding: 15px 10px 15px 45px;
     outline: none;
-    background-color: $c-white;
-    color: $c-dark;
+    background-color: $background-color-secondary;
+    color: $text-color;
     font-weight: 100;
     font-size: 1.2rem;
-    border: 1px solid rgba($c-dark, 0.5);
-    margin-left: -2.2rem;
+    border: 1px solid $text-color-50;
+    margin: 0;
+    margin-left: -2.2rem !important;
     // margin-bottom: 1rem;
     z-index: 3;
     transition: border-color .5s ease;
@@ -91,14 +92,14 @@ export default {
       height: 100%;
       font-size: 0.9rem;
       cursor: pointer;
-      color: rgba($c-dark, 0.5);
+      color: $text-color-50;
     }
   }
 
   &__input-icon {
     width: 24px;
     height: 24px;
-    fill: rgba($c-dark, 0.5);
+    fill: $text-color-50;
     transition: fill 0.5s ease;
     pointer-events: none;
     margin-top: 10px;

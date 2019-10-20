@@ -58,7 +58,7 @@
         <div style="
           display: flex;
           justify-content: center;
-          margin: 1rem;
+          padding: 1rem;
         ">
           <seasonedButton @click="resetTorrentsAndToggleEditSearchQuery">Edit search query</seasonedButton>
         </div>
@@ -276,15 +276,15 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "./src/scss/variables";
 .expanded {
   display: flex;
   margin: 0 1rem;
   max-width: 100%;
-  border-left: 1px solid rgba($c-dark, 0.5);
-  border-right: 1px solid rgba($c-dark, 0.5);
-  border-bottom: 1px solid rgba($c-dark, 0.5);
+  border-left: 1px solid $text-color;
+  border-right: 1px solid $text-color;
+  border-bottom: 1px solid $text-color;
 
   td {
     // border-left: 1px solid $c-dark;
@@ -299,6 +299,10 @@ export default {
 @import "./src/scss/media-queries";
 @import "./src/scss/elements";
 
+.container {
+  background-color: $background-color;
+}
+
 .torrentHeader {
   display: flex;
   align-items: center;
@@ -310,8 +314,9 @@ export default {
     font-weight: 400;
     text-transform: uppercase;
     font-size: 14px;
-    color: $c-green;
+    color: $green;
     text-align: center;
+    margin: 0;
 
     @include tablet-min {
       font-size: 16px
@@ -329,7 +334,7 @@ export default {
     height: 22px;
 
     &:hover {
-      fill: $c-green;
+      fill: $green;
       cursor: pointer;
     }
   }
@@ -345,9 +350,9 @@ table {
   display: flex;
   padding: 0;
   margin: 0 1rem;
-  border-left: 1px solid rgba($c-dark, 0.8);
-  border-right: 1px solid rgba($c-dark, 0.8);
-  border-bottom: 1px solid rgba($c-dark, 0.8);
+  border-left: 1px solid $text-color;
+  border-right: 1px solid $text-color;
+  border-bottom: 1px solid $text-color;
 
   th, td {
     display: flex;
@@ -359,6 +364,7 @@ table {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    min-width: 75px;
   }
 
   th:first-child, td:first-child {
@@ -392,7 +398,7 @@ table {
 
 .table__content {
   td:not(:last-child) {
-    border-right: 1px solid rgba($c-dark, 0.8);
+    border-right: 1px solid $text-color;
   }
 }
 
@@ -404,12 +410,12 @@ table {
 }
 
 .table__header {
-  background-color: white;
-  color: $c-dark;
+  color: $text-color;
   text-transform: uppercase;
   cursor: pointer;
+  background-color: $background-color-secondary;
 
-  border-top: 1px solid rgba($c-dark, 0.8);
+  border-top: 1px solid $text-color;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 
@@ -435,7 +441,7 @@ table {
   }
 
   th:not(:last-child) {
-    border-right: 1px solid rgba($c-dark, 0.8);
+    border-right: 1px solid $text-color;
   }
 
 }
@@ -456,36 +462,42 @@ table {
 .download {
 
   &__icon {
-    fill: rgba($c-dark, 0.6);
+    fill: $text-color-70;
     height: 1.2rem;
 
     &:hover {
-      fill: $c-dark;
+      fill: $text-color;
       cursor: pointer;
     }
   }
 
   &.active &__icon {
-    fill: $c-green;
+    fill: $green;
   }
 }
 
-.torrentloader{
-  animation: load 1s linear infinite;
-  border: 2px solid $c-dark;
-  border-radius: 50%;
-  display: block;
-  height: 30px;
-  left: 50%;
-  margin: 2rem auto;
-  width: 30px;
-  &:after {
-    border: 5px solid $c-green;
+.torrentloader {
+  width: 100%;
+  padding: 2rem 0;
+
+  i {
+    animation: load 1s linear infinite;
+    border: 2px solid $text-color;
     border-radius: 50%;
-    content: '';
-    left: 10px;
-    position: absolute;
-    top: 16px;
+    display: block;
+    height: 30px;
+    left: 50%;
+    margin: 0 auto;
+    width: 30px;
+
+    &:after {
+      border: 5px solid $green;
+      border-radius: 50%;
+      content: '';
+      left: 10px;
+      position: absolute;
+      top: 16px;
+    }
   }
 }
 @keyframes load {

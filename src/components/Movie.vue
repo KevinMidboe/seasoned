@@ -231,6 +231,9 @@ export default {
       @include tablet-min{
         flex-direction: row;
       }
+
+      background-color: $background-color;
+      color: $text-color;
     }
   }
   &__header {
@@ -243,7 +246,7 @@ export default {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 50% 50%;
-    background-color: $c-dark;
+    background-color: $background-color;
     @include tablet-min {
       height: 350px;
     }
@@ -256,7 +259,7 @@ export default {
       z-index: 0;
       width: 100%;
       height: 100%;
-      background: rgba($c-dark, 0.85);
+      background: $background-dark-85;
     }
     &.compact {
       height: 100px;
@@ -266,7 +269,7 @@ export default {
   &__poster {
     display: none;
     @include tablet-min {
-      background: $c-white;
+      background: $background-color;
       height: 0;
       display: block;
       position: absolute;
@@ -293,7 +296,7 @@ export default {
   &__title {
     position: relative;
     padding: 20px;
-    color: $c-green;
+    color: $green;
     text-align: center;
     width: 100%;
     @include tablet-min {
@@ -310,16 +313,8 @@ export default {
         font-size: 30px;
       }
     }
-    span {
-      display: block;
-      font-size: 14px;
-      font-weight: 300;
-      color: rgba($c-white, 0.7);
-      margin-top: 10px;
-    }
   }
   &__main {
-    background: $c-light;
     min-height: calc(100vh - 250px);
     @include tablet-min {
       min-height: 0;
@@ -329,63 +324,15 @@ export default {
   }
     &__actions {
       text-align: center;
-      // min-height: 394px;
       width: 100%;
       order: 2;
       padding: 20px;
-      border-top: 1px solid rgba($c-dark, 0.05);
+      border-top: 1px solid $text-color-5;
       @include tablet-min {
         order: 1;
         width: 45%;
         padding: 185px 0 40px 40px;
         border-top: 0;
-      }
-      &-link {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        text-transform: uppercase;
-        color: rgba($c-dark, 0.5);
-        transition: color 0.5s ease;
-        font-size: 11px;
-        padding: 5px 0;
-        border-bottom: 1px solid rgba($c-dark, 0.05);
-        &:hover {
-          color: rgba($c-dark, 0.75);
-        }
-        &.active {
-          color: $c-dark;
-        }
-        &.pending {
-          color: #f8bd2d;
-        }
-      }
-      &-icon {
-        width: 18px;
-        height: 18px;
-        margin: 0 10px 0 0;
-        fill: rgba($c-dark, 0.5);
-        transition: fill 0.5s ease, transform 0.5s ease;
-        &.waiting {
-          transform: scale(0.8, 0.8);
-        }
-        &.pending {
-          fill: #f8bd2d;
-        }
-      }
-      &-link:hover &-icon {
-        fill: rgba($c-dark, 0.75);
-        cursor: pointer;
-      }
-      &-link.active &-icon {
-        fill: $c-green;
-      }
-      &-text {
-        display: block;
-        padding-top: 2px;
-        cursor: pointer;
-        margin:4.4px;
-        margin-left: -3px;
       }
     }
     &__info {
@@ -399,7 +346,7 @@ export default {
         margin-left: 45%;
       }
     }
-    &__actions + &__info {
+    &__info {
       margin-left: 0;
     }
     &__description {
@@ -429,7 +376,7 @@ export default {
         font-weight: 400;
         text-transform: uppercase;
         font-size: 14px;
-        color: $c-green;
+        color: $green;
         @include tablet-min {
           font-size: 16px;
         }
@@ -456,7 +403,7 @@ export default {
           text-transform: uppercase;
           text-align: center;
           font-size: 14px;
-          color: $c-green;
+          color: $green;
           padding-bottom: 20px;
           @include tablet-min {
             font-size: 16px;

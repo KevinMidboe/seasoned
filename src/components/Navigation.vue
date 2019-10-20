@@ -75,10 +75,16 @@ export default {
 <style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
+
+.icon {
+  width: 30px;
+}
+
+
 .spacer {
   @include mobile-only {
     width: 100%;
-    height: $header-size-mobile;
+    height: $header-size;
   }
 }
 .nav {
@@ -87,41 +93,40 @@ export default {
   left: 0;
   width: 100%;
   height: 50px;
-  background: $c-white;
   z-index: 10;
   display: block;
-
+  color: $text-color;
+  background-color: $background-color-secondary;
 
   @include tablet-min{
     width: 95px;
     height: 100vh;
   }
-  &__logo{
+  &__logo {
     width: 55px;
-    height: $header-size-mobile;
+    height: $header-size;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: $c-dark;
+    background: $background-nav-logo;
     @include tablet-min{
       width: 95px;
-      height: $header-size;
     }
     &-image{
       width: 35px;
       height: 31px;
-      fill: $c-green;
+      fill: $green;
       transition: transform 0.5s ease;
       @include tablet-min{
         width: 45px;
         height: 40px;
       }
     }
-    &:hover &-image{
+    &:hover &-image {
       transform: scale(1.04);
     }
   }
-  &__hamburger{
+  &__hamburger {
     display: block;
     position: fixed;
     width: 55px;
@@ -129,23 +134,22 @@ export default {
     top: 0;
     right: 0;
     cursor: pointer;
-    background: $c-white;
     z-index: 10;
-    border-left: 1px solid $c-light;
+    border-left: 1px solid $background-color;
     @include tablet-min{
       display: none;
     }
-    .bar{
+    .bar {
       position: absolute;
       width: 23px;
       height: 1px;
-      background: rgba($c-dark, 0.5);
+      background-color: $text-color-70;
       transition: all 300ms ease;
-      &:nth-child(1){
+      &:nth-child(1) {
         left: 16px;
         top: 17px;
       }
-      &:nth-child(2){
+      &:nth-child(2) {
         left: 16px;
         top: 25px;
         &:after {
@@ -155,16 +159,15 @@ export default {
           top: 0px;
           width: 23px;
           height: 1px;
-          background: transparent;
           transition: all 300ms ease;
         }
       }
-      &:nth-child(3){
+      &:nth-child(3) {
         right: 15px;
         top: 33px;
       }
     }
-    &--active{
+    &--active {
       .bar{
         &:nth-child(1),
         &:nth-child(3){
@@ -175,12 +178,13 @@ export default {
         }
         &:nth-child(2):after {
           transform: rotate(-90deg);
-          background: rgba($c-dark, 0.5);
+          // background: rgba($c-dark, 0.5);
+          background-color: $text-color-70;
         }
       }
     }
   }
-  &__list{
+  &__list {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -189,13 +193,14 @@ export default {
     position: fixed;
     left: 0;
     top: 50px;
-    background: rgba($c-white, 0.98);
-    border-top: 1px solid $c-light;
-    @include mobile-only{
+    border-top: 1px solid $background-color;
+    @include mobile-only {
+      display: flex;
+      flex-wrap: wrap;
       font-size: 0;
       opacity: 0;
       visibility: hidden;
-      height: calc(100vh - 50px);
+      background-color: $background-95;
       transition: all 0.5s ease;
       text-align: left;
       &--active{
@@ -203,9 +208,8 @@ export default {
         visibility: visible;
       }
     }
-    @include tablet-min{
+    @include tablet-min {
       display: flex;
-      background: transparent;
       position: relative;
       display: block;
       width: 100%;
@@ -213,31 +217,43 @@ export default {
       top: 0;
     }
   }
-  &__item{
-    @include mobile-only{
-      display: inline-block;
+  &__item {
+    background-color: $background-color-secondary;
+    color: $text-color-70;
+
+    @include mobile-only {
+      flex: 0 0 50%;
       text-align: center;
-      width: 50%;
-      border-bottom: 1px solid $c-light;
+      border-bottom: 1px solid $background-color;
       &:nth-child(odd){
-        border-right: 1px solid $c-light;
+        border-right: 1px solid $background-color;
+
+        &:last-child {
+          // flex: 0 0 100%;
+        }
       }
     }
-    @include tablet-min{
+    @include tablet-min {
       width: 100%;
-      border-bottom: 1px solid $c-light;
-      &--profile{
+      border-bottom: 1px solid $text-color-5;
+
+      &--profile {
         position: fixed;
         right: 0;
         top: 0;
         width: $header-size;
         height: $header-size;
         border-bottom: 0;
-        border-left: 1px solid $c-light;
+        border-left: 1px solid $background-color;
       }
     }
+    &:hover, .is-active {
+      color: $text-color;
+      background-color: $background-color;
+    }
   }
-  &__link{
+  &__link {
+    background-color: inherit; // a elements have a transparent background
     width: 100%;
     display: flex;
     flex-wrap: wrap;
@@ -248,7 +264,6 @@ export default {
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: rgba($c-dark, 0.7);
     transition: color 0.5s ease, background 0.5s ease;
     position: relative;
     cursor: pointer;
@@ -258,49 +273,38 @@ export default {
       align-items: center;
     }
 
-    @include mobile-only{
+    @include mobile-only {
       font-size: 10px;
       padding: 20px 0;
     }
-    @include tablet-min{
+    @include tablet-min {
       width: 95px;
       height: 95px;
       font-size: 9px;
-      &--profile{
+      &--profile {
         width: 75px;
         height: 75px;
-        background: $c-white;
       }
     }
-    &-icon{
+    &-icon {
       width: 20px;
       height: 20px;
-      fill: rgba($c-dark, 0.7);
+      fill: $text-color-70;
       transition: fill 0.5s ease;
-      @include tablet-min{
+      @include tablet-min {
         width: 20px;
         height: 20px;
         margin-bottom: 5px;
       }
 
     }
-    &-title{
+    &-title {
       margin-top: 5px;
       display: block;
       width: 100%;
     }
-    &:hover{
-      color: $c-dark;
-    }
-    &:hover &-icon{
-      fill: $c-dark;
-    }
-    &.is-active{
-      color: $c-dark;
-      background: $c-light;
-    }
-    &.is-active &-icon{
-      fill: $c-dark;
+    &:hover &-icon, &.is-active &-icon {
+      fill: $text-color;
     }
   }
 }

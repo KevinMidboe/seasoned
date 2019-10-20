@@ -137,66 +137,33 @@ export default {
   created(){
     document.title = 'Profile' + storage.pageTitlePostfix;
     storage.backTitle = document.title;
-  },
-  mounted(){
-    // this.$refs.email.focus();
   }
 }
 </script>
 
 <style lang="scss" scoped>
 @import "./src/scss/variables";
-@import "./src/scss/media-queries";
-@import "./src/scss/message";
 
-// DUPLICATE CODE
-.settings {
-  padding: 35px;
+section {
+  padding: 1.3rem;
 
-  &__header {
+  @include tablet-min {
+    padding: 4rem;
+  }
+
+  h1 {
     margin: 0;
     line-height: 16px;
-    color: $c-dark;
+    color: $text-color;
     font-weight: 300;
     margin-bottom: 20px;
     text-transform: uppercase;
   }
-}
-.profile__content {
-  padding: 35px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
 
-
-.center {
-  justify-content: center;
-}
-
-.form {
-  // TODO, fix this. if single child it adds weird margin
-  > div:last-child {
+  .link {
+    display: block;
+    width: max-content;
     margin-top: 1rem;
   }
-
-  &__group{
-     justify-content: unset;
-     &__input-icon {
-        margin-top: 8px;
-        height: 22px;
-        width: 22px;
-     }
-     &-input {
-        padding: 10px 5px 10px 45px;
-        height: 40px;
-        font-size: 17px;
-        width: 75%;
-        // @include desktop-min {
-        //    width: 400px;
-        // }
-     }
-  }
 }
-
 </style>

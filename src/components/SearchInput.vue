@@ -15,7 +15,7 @@
         @keydown.up="navigateUp"
         @keydown.down="navigateDown" />
 
-      <svg class="search--icon"><use xlink:href="#iconSearch"></use></svg>
+      <svg class="search--icon" fill="currentColor"><use xlink:href="#iconSearch"></use></svg>
     </div> 
 
     <transition name="fade">
@@ -179,7 +179,7 @@ export default {
   z-index: 5;
   min-height: $header-size;
   right: 0px;
-  background-color: white;
+  background-color: $background-color-secondary;
 
   @include mobile-only {
     position: fixed;
@@ -209,47 +209,45 @@ export default {
       cursor: pointer;
       border-bottom: 2px solid transparent;
 
-          white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      color: $text-color-50;
 
       &.active, &:hover, &:active {
-        color: $c-dark;
-        border-bottom: 2px solid black;
+        color: $text-color;
+        border-bottom: 2px solid $text-color;
       }
     }
   }
 }
 
 .search {
-  height: $header-size-mobile;
+  height: $header-size;
   display: flex;
   position: fixed;
   flex-wrap: wrap;
   z-index: 5;
+  background-color: $background-color-secondary;
 
   // TODO check if this is for mobile
   width: calc(100% - 110px);
-  // width: 100%;
   top: 0;
   right: 55px;
 
   @include tablet-min{
     position: relative;
-    height: $header-size;
     width: 100%;
     right: 0px;
   }
 
   input {
-    // height: 75px;
     display: block;
     width: 100%;
     padding: 13px 20px 13px 45px;
     outline: none;
     border: 0;
     background-color: transparent;
-    color: $c-dark;
     font-weight: 300;
     font-size: 19px;
 
@@ -261,7 +259,7 @@ export default {
   &--icon{
     width: 20px;
     height: 20px;
-    fill: rgba($c-dark, 0.5);
+    fill: $text-color-50;
     transition: fill 0.5s ease;
     pointer-events: none;
     position: absolute;

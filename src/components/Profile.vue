@@ -93,6 +93,10 @@ export default {
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
 
+.button--group {
+  display: flex;
+}
+
 // DUPLICATE CODE
 .profile{
   &__header{
@@ -100,7 +104,17 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 20px;
-    border-bottom: 1px solid rgba($c-dark, 0.05);
+    border-bottom: 1px solid $text-color-5;
+
+    @include mobile-only {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .button--group {
+        padding-top: 2rem;
+      }
+    }
+
     @include tablet-min{
       padding: 29px 30px;
     }
@@ -115,7 +129,7 @@ export default {
     margin: 0;
     font-size: 16px;
     line-height: 16px;
-    color: $c-dark;
+    color: $text-color;
     font-weight: 300;
     @include tablet-min{
       font-size: 18px;
