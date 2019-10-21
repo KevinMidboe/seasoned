@@ -20,7 +20,8 @@
         </figure>
 
         <div class="movie__title">
-          <h1>{{ title }}</h1>
+          <h1 v-if="movie">{{ movie.title }}</h1>
+          <loading-placeholder v-else :count="1" />
         </div>
       </div>
     </header>
