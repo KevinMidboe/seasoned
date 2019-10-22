@@ -115,15 +115,15 @@
 </template>
 
 <script>
-import storage from '@/storage.js'
-import img from '@/directives/v-image.js'
-import TorrentList from './TorrentList.vue'
-import Person from './Person.vue'
-import SidebarListElement from './ui/sidebarListElem.vue'
+import storage from '@/storage'
+import img from '@/directives/v-image'
+import TorrentList from './TorrentList'
+import Person from './Person'
+import SidebarListElement from './ui/sidebarListElem'
 import store from '@/store'
-import LoadingPlaceholder from './ui/LoadingPlaceholder.vue'
+import LoadingPlaceholder from './ui/LoadingPlaceholder'
 
-import { getMovie, getShow, request, getRequestStatus } from '@/api.js'
+import { getMovie, getShow, request, getRequestStatus } from '@/api'
 
 export default {
   props: ['id', 'type'],

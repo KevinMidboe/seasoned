@@ -44,12 +44,12 @@
 </template>
 
 <script>
-import storage from '@/storage.js'
-import SeasonedInput from '@/components/ui/SeasonedInput.vue'
-import SeasonedButton from '@/components/ui/SeasonedButton.vue'
-import SeasonedMessages from '@/components/ui/SeasonedMessages.vue'
+import storage from '@/storage'
+import SeasonedInput from '@/components/ui/SeasonedInput'
+import SeasonedButton from '@/components/ui/SeasonedButton'
+import SeasonedMessages from '@/components/ui/SeasonedMessages'
 
-import { plexAuthenticate } from '@/api.js'
+import { plexAuthenticate } from '@/api'
 
 export default {
   components: { SeasonedInput, SeasonedButton, SeasonedMessages },

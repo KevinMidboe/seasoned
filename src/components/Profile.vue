@@ -29,14 +29,14 @@
 </template>
 
 <script>
-import storage from '@/storage.js'
-import store from '@/store.js'
-import ListHeader from '@/components/ListHeader.vue'
-import ResultsList from '@/components/ResultsList.vue'
-import Settings from '@/components/Settings.vue'
-import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+import storage from '@/storage'
+import store from '@/store'
+import ListHeader from '@/components/ListHeader'
+import ResultsList from '@/components/ResultsList'
+import Settings from '@/components/Settings'
+import SeasonedButton from '@/components/ui/SeasonedButton'
 
-import { getEmoji, getUserRequests } from '@/api.js'
+import { getEmoji, getUserRequests } from '@/api'
 
 export default {
   components: { ListHeader, ResultsList, Settings, SeasonedButton },

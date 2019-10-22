@@ -25,10 +25,10 @@
 
 <script>
 import Vue from 'vue'
-import Navigation from '@/components/Navigation.vue'
-import MoviePopup from '@/components/MoviePopup.vue'
-import SearchInput from '@/components/SearchInput.vue'
-import DarkmodeToggle from '@/components/ui/darkmodeToggle.vue'
+import Navigation from '@/components/Navigation'
+import MoviePopup from '@/components/MoviePopup'
+import SearchInput from '@/components/SearchInput'
+import DarkmodeToggle from '@/components/ui/darkmodeToggle'
 
 export default {
   name: 'app',

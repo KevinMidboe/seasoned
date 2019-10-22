@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import storage from '@/storage.js'
+import storage from '@/storage'
 
 export default {
   data(){

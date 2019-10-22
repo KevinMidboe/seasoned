@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Movie from './Movie.vue';
+import Movie from './Movie';
 
 export default {
   props: {

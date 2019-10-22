@@ -1,5 +1,5 @@
 import axios from 'axios'
-import storage from '@/storage.js'
+import storage from '@/storage'
 import config from '@/config.json'
 import path from 'path'
 

@@ -90,13 +90,13 @@
 </template>
 
 <script>
-import storage from '@/storage.js'
+import storage from '@/storage'
 import store from '@/store'
-import { sortableSize } from '@/utils.js'
-import { searchTorrents, addMagnet } from '@/api.js'
+import { sortableSize } from '@/utils'
+import { searchTorrents, addMagnet } from '@/api'
 
-import SeasonedButton from '@/components/ui/SeasonedButton.vue'
-import SeasonedInput from '@/components/ui/SeasonedInput.vue'
+import SeasonedButton from '@/components/ui/SeasonedButton'
+import SeasonedInput from '@/components/ui/SeasonedInput'
 
 export default {
   components: { SeasonedButton, SeasonedInput },

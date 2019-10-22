@@ -43,9 +43,9 @@
 </template>
 
 <script>
-import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+import SeasonedButton from '@/components/ui/SeasonedButton'
 
-import { elasticSearchMoviesAndShows } from '@/api.js'
+import { elasticSearchMoviesAndShows } from '@/api'
 import config from '@/config.json'
 
 export default {

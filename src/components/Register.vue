@@ -19,9 +19,9 @@
 
 <script>
 import axios from 'axios'
-import SeasonedButton from '@/components/ui/SeasonedButton.vue'
-import SeasonedInput from '@/components/ui/SeasonedInput.vue'
-import SeasonedMessages from '@/components/ui/SeasonedMessages.vue'
+import SeasonedButton from '@/components/ui/SeasonedButton'
+import SeasonedInput from '@/components/ui/SeasonedInput'
+import SeasonedMessages from '@/components/ui/SeasonedMessages'
 
 export default {
   components: { SeasonedButton, SeasonedInput, SeasonedMessages },

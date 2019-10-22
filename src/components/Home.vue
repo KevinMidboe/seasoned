@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import LandingBanner from '@/components/LandingBanner.vue'
-import ListHeader from '@/components/ListHeader.vue'
-import ResultsList from '@/components/ResultsList.vue'
-import Loader from '@/components/ui/Loader.vue'
+import LandingBanner from '@/components/LandingBanner'
+import ListHeader from '@/components/ListHeader'
+import ResultsList from '@/components/ResultsList'
+import Loader from '@/components/ui/Loader'
 
 import { getTmdbMovieListByName, getRequests } from '@/api'
 

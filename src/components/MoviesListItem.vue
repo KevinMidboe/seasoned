@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import img from '../directives/v-image.js'
+import img from '../directives/v-image'
 
 export default {
   props: ['movie', 'shortList'],

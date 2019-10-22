@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import torrentModule from './modules/torrentModule.js'
-import darkmodeModule from './modules/darkmodeModule.js'
-import documentTitle from './modules/documentTitle.js'
+import torrentModule from './modules/torrentModule'
+import darkmodeModule from './modules/darkmodeModule'
+import documentTitle from './modules/documentTitle'
 
 Vue.use(Vuex)
 
