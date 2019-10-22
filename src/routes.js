@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router';
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -18,19 +19,19 @@ let routes = [
   {
     name: 'list',
     path: '/list/:name',
-    component: (resolve) => require(['./components/MoviesList.vue'], resolve)
+    component: (resolve) => require(['./components/ListPage.vue'], resolve)
   },
   {
     name: 'request',
     path: '/request/all',
     components: {
-      'request-router-view': require('./components/MoviesList.vue')
+      'request-router-view': require('./components/ListPage.vue')
     }
   },
   {
     name: 'search',
     path: '/search',
-    component: (resolve) => require(['./components/MoviesList.vue'], resolve)
+    component: (resolve) => require(['./components/Search.vue'], resolve)
   },
   {
     name: 'register',
@@ -46,13 +47,6 @@ let routes = [
     name: 'signin',
     path: '/signin',
     component: (resolve) => require(['./components/Signin.vue'], resolve)
-  },
-  {
-    name: 'settings',
-    path: '/profile/settings',
-    components: {
-      'search-router-view': require('./components/Settings.vue')
-    }
   },
   // {
   //   name: 'user-requests',
@@ -84,6 +78,8 @@ const router =  new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  store.dispatch('documentTitle/updateTitle', to.name)
+
   // Toggle mobile nav
   if(document.querySelector('.nav__hamburger--active')){
     document.querySelector('.nav__hamburger').classList.remove('nav__hamburger--active');
