@@ -1,8 +1,6 @@
 <template>
   <section class="not-found">
-    <div class="not-found__content">
-      <h1 class="not-found__title">Page Not Found</h1>
-    </div>
+    <h1 class="not-found__title">Page Not Found</h1>
   </section>
 </template>
 
@@ -28,23 +26,21 @@ export default {
 
   &:before {
     background: $background-40;
-    height: 100%;
+    height: calc(100vh - var(--header-size));
     width: 100%;
     content: "";
     position: absolute;
   }
-  &__content {
-    padding-top: 30%;
-  }
-    &__title{
-      font-size: 2rem;
-      font-weight: 500;
-      color: $text-color;
-      position: relative;
-      margin: 0;
-      @include tablet-min{
-        font-size: 2.3rem;
-      }
+  &__title{
+   padding-top: 40vh;
+    font-size: 2rem;
+    font-weight: 500;
+    color: $text-color;
+    position: relative;
+    margin: 0;
+    @include tablet-min{
+      font-size: 2.3rem;
     }
+  }
 }
 </style>
