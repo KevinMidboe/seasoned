@@ -3,17 +3,18 @@
     <div class="profile__content" v-if="userLoggedIn">
       <header class="profile__header">
         <h2 class="profile__title">{{ emoji }} Welcome {{ userName }}</h2>
-        
+
         <div class="button--group">
           <seasoned-button @click="showSettings = !showSettings">{{ showSettings ? 'hide settings' : 'show settings' }}</seasoned-button>
 
           <seasoned-button @click="logOut">Log out</seasoned-button>
         </div>
       </header>
+
       <settings v-if="showSettings"></settings>
 
-      <movies-list :propList="user_requestsList"></movies-list>
-
+      <list-header title="User requests" :info="resultCount"/>
+      <results-list v-if="results" :results="results" />
     </div>
 
     <section class="not-found" v-if="!userLoggedIn">
@@ -29,21 +30,34 @@
 
 <script>
 import storage from '@/storage.js'
-import MoviesList from '@/components/MoviesList.vue'
+import store from '@/store.js'
+import ListHeader from '@/components/ListHeader.vue'
+import ResultsList from '@/components/ResultsList.vue'
 import Settings from '@/components/Settings.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
 
-import { getEmoji } from '@/api.js'
+import { getEmoji, getUserRequests } from '@/api.js'
 
 export default {
-  components: { MoviesList, Settings, SeasonedButton },
+  components: { ListHeader, ResultsList, Settings, SeasonedButton },
   data(){
     return{
       userLoggedIn: '',
       userName: '',
       emoji: '',
-      showSettings: false,
-      user_requestsList: storage.user_requestsList
+      results: undefined,
+      totalResults: undefined,
+      showSettings: false
+    }
+  },
+  computed: {
+    resultCount() {
+      if (this.results === undefined)
+        return
+
+      const loadedResults = this.results.length
+      const totalResults = this.totalResults < 10000 ? this.totalResults : '∞'
+      return `${loadedResults} of ${totalResults} results`
     }
   },
   methods: {
