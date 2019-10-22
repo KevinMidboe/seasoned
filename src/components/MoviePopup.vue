@@ -12,16 +12,31 @@
 import Movie from './Movie.vue';
 
 export default {
-  props: ['id', 'type'],
+  props: {
+    id: {
+      type: Number,
+      required: true
+    },
+    type: {
+      type: String,
+      required: true
+    }
+  },
   components: { Movie },
-  created(){
-    let that = this
-    window.addEventListener('keyup', function(e){
-      if (e.keyCode == 27) {
-        that.$popup.close()
+  methods: {
+    checkEventForEscapeKey(event) {
+      if (event.keyCode == 27) {
+        this.$popup.close()
       }
-    })
+    }
+  },
+  created(){
+    window.addEventListener('keyup', this.checkEventForEscapeKey)
+  },
+  beforeDestroy() {
+    window.removeEventListener('keyup', this.checkEventForEscapeKey)
   }
+
 }
 </script>
 
