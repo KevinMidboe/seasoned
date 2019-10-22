@@ -27,17 +27,17 @@
 
         <table>
           <tr class="table__header noselect">
-            <th @click="sortTable('name')">
+            <th @click="sortTable('name')" :class="selectedSortableClass('name')">
               <span>Name</span>
               <span v-if="prevCol === 'name' && direction">↑</span>
               <span v-if="prevCol === 'name' && !direction">↓</span>
             </th>
-            <th @click="sortTable('seed')">
+            <th @click="sortTable('seed')" :class="selectedSortableClass('seed')">
               <span>Seed</span>
               <span v-if="prevCol === 'seed' && direction">↑</span>
               <span v-if="prevCol === 'seed' && !direction">↓</span>
             </th>
-            <th @click="sortTable('size')">
+            <th @click="sortTable('size')" :class="selectedSortableClass('size')">
               <span>Size</span>
               <span v-if="prevCol === 'size' && direction">↑</span>
               <span v-if="prevCol === 'size' && !direction">↓</span>
@@ -85,7 +85,7 @@
       <seasonedButton @click="toggleEditSearchQuery" :active="editSearchQuery ? true : false">Edit search query</seasonedButton>
     </div>
     </div>
-    <i v-else class="torrentloader"></i>
+    <div v-else class="torrentloader"><i></i></div>
   </div>
 </template>
 
@@ -134,6 +134,9 @@ export default {
     store.dispatch('torrentModule/reset')
   },
   methods: {
+    selectedSortableClass(headerName) {
+      return headerName === this.prevCol ? 'active' : ''
+    },
     resetTorrentsAndToggleEditSearchQuery() {
       this.torrents = []
       this.toggleEditSearchQuery()
@@ -254,23 +257,19 @@ export default {
       this.listLoaded = false;
       this.editSearchQuery = false;
 
-      console.log('query: ', query || this.query)
       searchTorrents(query || this.query, 'all', this.currentPage, storage.token)
-//      Promise.resolve({"success":true,"results":[]})
-      .then(resp => {
-          let data = resp.data;
-          console.log('data results', data.results);
-          this.torrentResponse = data.results;
-          this.torrents = data.results;
+        .then(data => {
+            this.torrentResponse = [...data.results];
+            this.torrents = data.results;
+            this.listLoaded = true;
+        })
+        .then(this.updateResultCountInStore)
+        .then(this.findRelaseTypes)
+        .catch(e => {
+          const error = e.toString()
+          this.errorMessage = error.indexOf('401') != -1 ? 'Permission denied' : 'Nothing found';
           this.listLoaded = true;
-      })
-      .then(this.findRelaseTypes)
-      .then(this.updateResultCountInStore)
-      .catch(e => {
-        const error = e.toString()
-        this.errorMessage = error.indexOf('401') != -1 ? 'Permission denied' : 'Nothing found';
-        this.listLoaded = true;
-      });
+        });
     },
   }
 }
