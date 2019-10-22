@@ -2,6 +2,7 @@
   <li class="movies-item" :class="{'shortList': shortList}">
     <a class="movies-item__link" :class="{'no-image': noImage}" @click.prevent="openMoviePopup(movie.id, movie.type)">
 
+      <!-- TODO change to picture element -->
       <figure class="movies-item__poster">
         <img v-if="!noImage" class="movies-item__img" src="~assets/placeholder.png" v-img="poster()" alt="">
         <img v-if="noImage" class="movies-item__img is-loaded" src="~assets/no-image.png" alt="">

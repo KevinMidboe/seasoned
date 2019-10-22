@@ -5,6 +5,8 @@
     <navigation></navigation>
 
     <!-- Header with search field -->
+
+    <!-- TODO move this to the navigation component -->
     <header class="header">
       <search-input v-model="query"></search-input>
     </header>
@@ -16,7 +18,7 @@
     <darkmode-toggle />
 
     <!-- Display the component assigned to the given route (default: home) -->
-    <router-view class="content"></router-view>
+    <router-view class="content" :key="$route.fullPath"></router-view>
 
   </div>
 </template>
