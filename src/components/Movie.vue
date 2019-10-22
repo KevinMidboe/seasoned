@@ -120,7 +120,7 @@ import img from '@/directives/v-image.js'
 import TorrentList from './TorrentList.vue'
 import Person from './Person.vue'
 import SidebarListElement from './ui/sidebarListElem.vue'
-import store from '@/store.js'
+import store from '@/store'
 import LoadingPlaceholder from './ui/LoadingPlaceholder.vue'
 
 import { getMovie, getShow, request, getRequestStatus } from '@/api.js'
@@ -156,7 +156,7 @@ export default {
       this.checkIfRequested(movie)
         .then(status => this.requested = status)
 
-      document.title = movie.title + storage.pageTitlePostfix
+      store.dispatch('documentTitle/updateTitle', movie.title)
     },
     async checkIfRequested(movie) {
       return await getRequestStatus(movie.id, movie.type)
@@ -195,10 +195,10 @@ export default {
     }
   },
   beforeDestroy() {
-    document.title = this.prevDocumentTitle
+    store.dispatch('documentTitle/updateTitle', this.prevDocumentTitle)
   },
   created(){
-    this.prevDocumentTitle = document.title
+    this.prevDocumentTitle = store.getters['documentTitle/title']
 
     if (this.type === 'movie') {
       getMovie(this.id)
