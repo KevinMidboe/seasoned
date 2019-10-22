@@ -54,9 +54,7 @@ export default {
       searchTmdb(query, page)
         .then(this.parseResponse)
     },
-    parseResponse(response) {
-      const data = response.data
-
+    parseResponse(data) {
       if (this.results.length > 0) {
         this.results.push(...data.results)
       } else {

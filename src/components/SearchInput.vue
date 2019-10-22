@@ -104,7 +104,7 @@ export default {
 
       elasticSearchMoviesAndShows(this.query)
       .then(resp => {
-        const data = resp.data.hits.hits
+        const data = resp.hits.hits
 
         this.elasticSearchResults = data.map(item => {
           const index = item._index.slice(0, -1)

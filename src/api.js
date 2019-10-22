@@ -25,7 +25,8 @@ const getMovie = (id, credits=false) => {
     url.searchParams.append('credits', true)
   }
 
-  return axios.get(url.href)
+  return fetch(url.href)
+    .then(resp => resp.json())
     .catch(error => { console.error(`api error getting movie: ${id}`); throw error })
 }
 
@@ -42,24 +43,51 @@ const getShow = (id, credits=false) => {
     url.searchParams.append('credits', true)
   }
 
-  return axios.get(url.href)
+  return fetch(url.href)
+    .then(resp => resp.json())
     .catch(error => { console.error(`api error getting show: ${id}`); throw error })
 }
 
 /**
- * Fetches tmdb list by path.
- * @param {string} listPath Path of list
+ * Fetches tmdb list by name.
+ * @param {string} name List the fetch
  * @param {number} [page=1]
  * @returns {object} Tmdb list response
  */
-const getTmdbListByPath = (listPath, page=1) => {
-  const url = new URL(listPath, SEASONED_URL)
+const getTmdbMovieListByName = (name, page=1) => {
+  const url = new URL('v2/movie/' + name, SEASONED_URL)
   url.searchParams.append('page', page)
-  // TODO - remove. this is temporary fix for user-requests endpoint (also import)
   const headers = { authorization: storage.token }
 
-  return axios.get(url.href, { headers: headers })
-    .catch(error => { console.error(`api error getting list: ${listPath}, page: ${page}`); throw error })
+  return fetch(url.href, { headers: headers })
+    .then(resp => resp.json())
+    // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error })
+}
+
+/**
+ * Fetches requested items.
+ * @param {number} [page=1]
+ * @returns {object} Request response
+ */
+const getRequests = (page=1) => {
+  const url = new URL('v2/request', SEASONED_URL)
+  url.searchParams.append('page', page)
+  const headers = { authorization: storage.token }
+
+  return fetch(url.href, { headers: headers })
+    .then(resp => resp.json())
+    // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error })
+}
+
+
+const getUserRequests = (page=1) => {
+  const url = new URL('v1/user/requests', SEASONED_URL)
+  url.searchParams.append('page', page)
+
+  const headers = { authorization: localStorage.getItem('token') }
+
+  return fetch(url.href, { headers })
+    .then(resp => resp.json())
 }
 
 /**
@@ -73,7 +101,8 @@ const searchTmdb = (query, page=1) => {
   url.searchParams.append('query', query)
   url.searchParams.append('page', page)
 
-  return axios.get(url.href)
+  return fetch(url.href)
+    .then(resp => resp.json())
     .catch(error => { console.error(`api error searching: ${query}, page: ${page}`); throw error })
 }
 
@@ -86,12 +115,13 @@ const searchTmdb = (query, page=1) => {
  * @returns {object} Torrent response
  */
 const searchTorrents = (query, authorization_token) => {
-  const url = new URL('v1/pirate/search', SEASONED_URL)
+  const url = new URL('/api/v1/pirate/search', SEASONED_URL)
   url.searchParams.append('query', query)
 
   const headers = { authorization: storage.token }
 
-  return axios.get(url.href, { headers: headers })
+  return fetch(url.href, { headers: headers })
+    .then(resp => resp.json())
     .catch(error => { console.error(`api error searching torrents: ${query}`); throw error })
 }
 
@@ -112,8 +142,9 @@ const addMagnet = (magnet, name, tmdb_id) => {
   }
   const headers = { authorization: storage.token }
 
-  return axios.post(url.href, body, { headers: headers })
-    .catch(error => { console.error(`api error adding magnet: ${name}`); throw error })
+  return fetch(url.href, { method: 'POST', headers, body })
+    .then(resp => resp.json())
+    .catch(error => { console.error(`api error adding magnet: ${name} ${error}`); throw error })
 }
 
 // - - - Plex/Request - - - 
@@ -175,9 +206,7 @@ const getRequestStatus = (id, type, authorization_token=undefined) => {
 // - - - Authenticate with plex - - -
 
 const plexAuthenticate = (username, password) => {
-  const url = new URL('https://plex.tv/users/sign_in.json')
-  url.searchParams.append('user[login]', username)
-  url.searchParams.append('user[password]', password)
+  const url = new URL('https://plex.tv/api/v2/users/signin')
 
   const headers = {
     'Content-Type': 'application/json',
@@ -188,7 +217,17 @@ const plexAuthenticate = (username, password) => {
     'X-Plex-Client-Identifier': '123'
   }
 
-  return axios.post(url.href, { headers: headers })
+  let formData = new FormData()
+  formData.set('login', username)
+  formData.set('password', password)
+  formData.set('rememberMe', false)
+
+  return axios({
+      method: 'POST',
+      url: url.href,
+      headers: headers,
+      data: formData
+    })
     .catch(error => { console.error(`api error authentication plex: ${username}`); throw error })
 }
 
@@ -198,7 +237,8 @@ const plexAuthenticate = (username, password) => {
 const getEmoji = () => {
   const url = new URL('v1/emoji', SEASONED_URL)
 
-  return axios.get(url.href)
+  return fetch(url.href)
+    .then(resp => resp.json())
     .catch(error => { console.log('api error getting emoji'); throw error })
 }
 
@@ -252,4 +292,18 @@ const elasticSearchMoviesAndShows = (query) => {
 
 
 
-export { getMovie, getShow, getTmdbListByPath, searchTmdb, searchTorrents, addMagnet, request, getRequestStatus, plexAuthenticate, getEmoji, elasticSearchMoviesAndShows }
+export {
+  getMovie,
+  getShow,
+  getTmdbMovieListByName,
+  searchTmdb,
+  getUserRequests,
+  getRequests,
+  searchTorrents,
+  addMagnet,
+  request,
+  getRequestStatus,
+  plexAuthenticate,
+  getEmoji,
+  elasticSearchMoviesAndShows
+}

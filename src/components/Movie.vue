@@ -146,8 +146,7 @@ export default {
     }
   },
   methods: {
-    parseResponse(resp) {
-      let movie = resp.data;
+    parseResponse(movie) {
       this.movie = { ...movie }
       this.title = movie.title
       this.poster = movie.poster

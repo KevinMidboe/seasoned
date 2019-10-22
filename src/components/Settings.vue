@@ -75,12 +75,15 @@ export default {
       let password = this.plexPassword
 
       plexAuthenticate(username, password)
-      .then((resp) => {
-        let data = resp.data;
+      .then(resp => {
+        const data = resp.data
         this.messages.push({ type: 'success', title: 'Authenticated with plex', message: 'Successfully linked plex account with seasoned request' })
-        // console.log('response from plex:', data.user)
+
+        console.log('response from plex:', data.username)
       })
-      .catch((error) => {
+      .catch(error => {
+        console.error(error);
+
         this.messages.push({ type: 'error', title: 'Something went wrong', message: error.message })
       })
     }
