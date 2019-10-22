@@ -15,7 +15,11 @@ export default {
     titlePrefix: 'request',
     title: undefined
   },
-  getters: {},
+  getters: {
+    title: (state) => {
+      return state.title
+    }
+  },
   mutations: {
     SET_EMOJI: (state, emoji) => {
       state.emoji = emoji
