@@ -6,22 +6,24 @@
         <span class="settings__info">Sign in to your plex account to get information about recently added movies and to see your watch history</span>
 
         <form class="form">
-          <seasoned-input text="plex username" icon="Email"
-                          @inputValue="setValue('plexUsername', $event)"/>
-          <seasoned-input text="plex password" icon="Keyhole" type="password"
-                          @inputValue="setValue('plexPassword', $event)"/>
+          <seasoned-input placeholder="plex username" icon="Email" :value.sync="plexUsername"/>
+          <seasoned-input placeholder="plex password" icon="Keyhole" type="password"
+            :value.sync="plexPassword" @submit="authenticatePlex" />
 
           <seasoned-button @click="authenticatePlex">link plex account</seasoned-button>
+
+          <seasoned-messages :messages.sync="messages" />
         </form>
 
         <hr class='setting__divider'>
 
         <h3 class='settings__header'>Change password</h3>
         <form class="form">
-          <seasoned-input text="new password" icon="Keyhole" type="password"
-                          @inputValue="setValue('newPass', $event)"/>
-          <seasoned-input text="repeat new password" icon="Keyhole" type="password"
-                          @inputValue="setValue('newPassConfirm', $event)"/>
+          <seasoned-input placeholder="new password" icon="Keyhole" type="password"
+            :value.sync="newPassword" />
+
+          <seasoned-input placeholder="repeat new password" icon="Keyhole" type="password"
+            :value.sync="newPasswordRepeat" />
 
           <seasoned-button @click="changePassword">change password</seasoned-button>
         </form>
@@ -45,11 +47,12 @@
 import storage from '@/storage.js'
 import SeasonedInput from '@/components/ui/SeasonedInput.vue'
 import SeasonedButton from '@/components/ui/SeasonedButton.vue'
+import SeasonedMessages from '@/components/ui/SeasonedMessages.vue'
 
 import { plexAuthenticate } from '@/api.js'
 
 export default {
-  components: { SeasonedInput, SeasonedButton },
+  components: { SeasonedInput, SeasonedButton, SeasonedMessages },
   data(){
     return{
       userLoggedIn: '',
@@ -73,11 +76,12 @@ export default {
 
       plexAuthenticate(username, password)
       .then((resp) => {
-         let data = resp.data;
-         console.log('response from plex:', data.user)
+        let data = resp.data;
+        this.messages.push({ type: 'success', title: 'Authenticated with plex', message: 'Successfully linked plex account with seasoned request' })
+        // console.log('response from plex:', data.user)
       })
       .catch((error) => {
-         console.log('error: ', error)
+        this.messages.push({ type: 'error', title: 'Something went wrong', message: error.message })
       })
     }
   },

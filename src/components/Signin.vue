@@ -2,10 +2,8 @@
   <section>
     <h1>Sign in</h1>
 
-    <seasoned-input text="username" icon="Email" type="username"
-                    @inputValue="setValue('username', $event)" />
-    <seasoned-input text="password" icon="Keyhole" type="password"
-                    @inputValue="setValue('password', $event)" @enter="signin"/>
+    <seasoned-input placeholder="username" icon="Email" type="username" :value.sync="username" />
+    <seasoned-input placeholder="password" icon="Keyhole" type="password" :value.sync="password" @enter="signin"/>
 
     <seasoned-button @click="signin">sign in</seasoned-button>
 

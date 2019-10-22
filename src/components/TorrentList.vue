@@ -75,7 +75,7 @@
 
       <div class="editQuery" v-if="editSearchQuery">
 
-        <seasonedInput text="Torrent query" icon="_torrents" @inputValue="(val) => editedSearchQuery = val" @enter="fetchTorrents(editedSearchQuery)" />
+        <seasonedInput placeholder="Torrent query" icon="_torrents" :value.sync="editedSearchQuery" @enter="fetchTorrents(editedSearchQuery)" />
 
         <div style="height: 45px; width: 5px;"></div>
 

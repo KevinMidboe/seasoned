@@ -1,6 +1,6 @@
 <template>
   <transition-group name="fade">
-    <div class="message" v-for="message in messages" :class="message.type || 'warning'" :key="message">
+    <div class="message" v-for="(message, index) in reversedMessages" :class="message.type || 'warning'" :key="index">
       <span class="pinstripe"></span>
       <div>
         <h2>{{ message.title || defaultTitles[message.type] }}</h2>
@@ -29,6 +29,11 @@ export default {
         undefined: 'Something went wrong'
       },
       localMessages: [...this.messages]
+    }
+  },
+  computed: {
+    reversedMessages() {
+      return [...this.messages].reverse()
     }
   },
   methods: {

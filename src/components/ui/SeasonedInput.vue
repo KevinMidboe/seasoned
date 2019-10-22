@@ -1,29 +1,37 @@
 <template>
-  <div class="group" :class="{ completed: value.length > 0 }">
+  <div class="group" :class="{ completed: value }">
     <svg class="group__input-icon"><use v-bind="{'xlink:href':'#icon' + icon}"></use></svg>
-    <input class="group__input" :type="tempType || type" ref="plex_username" 
-            v-model="value" :placeholder="text" @keyup.enter="submit" @input="handleInput" />
+    <input class="group__input" :type="tempType || type" @input="handleInput" v-model="inputValue"
+          :placeholder="placeholder" @keyup.enter="submit" />
     
-    <i v-if="value.length > 0 && type === 'password'" @click="toggleShowPassword" class="group__input-show noselect">show</i>
+    <i v-if="value && type === 'password'" @click="toggleShowPassword" class="group__input-show noselect">show</i>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    text: { type: String },
+    placeholder: { type: String },
     icon: { type: String },
-    type: { type: String }
+    type: { type: String, default: 'text' },
+    value: { type: String, default: undefined }
   },
   data() {
-    return { value: '', tempType: undefined }
+    return {
+      inputValue: undefined,
+      tempType: undefined
+    }
   },
   methods: {
     submit(event) {
       this.$emit('enter')
     },
-    handleInput(value) {
-      this.$emit('inputValue', this.value)
+    handleInput(event) {
+      if (this.value !== undefined) {
+        this.$emit('update:value', this.inputValue)
+      } else {
+        this.$emit('change', this.inputValue, event)
+      }
     },
     toggleShowPassword() {
       if (this.tempType === 'text') {
