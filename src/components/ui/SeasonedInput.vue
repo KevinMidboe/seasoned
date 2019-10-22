@@ -18,7 +18,7 @@ export default {
   },
   data() {
     return {
-      inputValue: undefined,
+      inputValue: this.value || undefined,
       tempType: undefined
     }
   },
