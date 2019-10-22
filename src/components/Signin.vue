@@ -29,8 +29,8 @@ export default {
   data(){
     return{
       messages: [],
-      username: undefined,
-      password: undefined
+      username: null,
+      password: null
     }
   },
   methods: {

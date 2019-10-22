@@ -228,6 +228,7 @@ export default {
   position: fixed;
   flex-wrap: wrap;
   z-index: 5;
+  border: 0;
   background-color: $background-color-secondary;
 
   // TODO check if this is for mobile
@@ -246,10 +247,13 @@ export default {
     width: 100%;
     padding: 13px 20px 13px 45px;
     outline: none;
+    margin: 0;
     border: 0;
-    background-color: transparent;
+    background-color: $background-color-secondary;
     font-weight: 300;
     font-size: 19px;
+    color: $text-color;
+    transition: background-color .5s ease, color .5s ease;
 
     @include tablet-min {
       padding: 13px 30px 13px 60px;

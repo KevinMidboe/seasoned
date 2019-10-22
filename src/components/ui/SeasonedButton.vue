@@ -39,7 +39,7 @@ export default {
   color: $text-color;
   background: $background-color-secondary;
   outline: none;
-  transition: background 0.5s ease, color 0.5s ease;
+  transition: background 0.5s ease, color 0.5s ease, border-color .5s ease;
 
   @include tablet-min{
     font-size: 12px;

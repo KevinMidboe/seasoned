@@ -93,10 +93,6 @@ export default {
       eventHub.$emit('setUserStatus');
       this.$router.push({ name: 'home' });
     }
-  },
-  created(){
-    document.title = 'Profile' + storage.pageTitlePostfix;
-    storage.backTitle = document.title;
   }
 }
 </script>

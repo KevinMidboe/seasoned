@@ -73,16 +73,24 @@ export default {
     }
   },
   created(){
-    document.title = 'Profile' + storage.pageTitlePostfix;
-    storage.backTitle = document.title;
     if(!localStorage.getItem('token')){
       this.userLoggedIn = false;
     } else {
       this.userLoggedIn = true;
       this.getUserInfo();
 
+      getUserRequests()
+        .then(results => {
+          this.results = results.results
+          this.totalResults = results.total_results
+        })
+
       getEmoji()
-        .then(resp => this.emoji = resp.data.emoji )
+        .then(resp => {
+          const { emoji } = resp
+          this.emoji = emoji
+          store.dispatch('documentTitle/updateEmoji', emoji)
+        })
     }
   }
 }

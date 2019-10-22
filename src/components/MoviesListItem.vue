@@ -23,7 +23,7 @@ export default {
     img: img
   },
   data(){
-    return{
+    return {
       noImage: false
     }
   },
@@ -36,7 +36,7 @@ export default {
         this.noImage = true
       }
     },
-    openMoviePopup(id, type){
+    openMoviePopup(id, type) {
       this.$popup.open(id, type)
     }
   }
@@ -46,10 +46,12 @@ export default {
 <style lang="scss">
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
+
 .movies-item {
   padding: 10px;
   width: 50%;
   background-color: $background-color;
+  transition: background-color 0.5s ease;
 
   @include tablet-min{
     padding: 15px;

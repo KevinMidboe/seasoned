@@ -26,7 +26,6 @@ export default {
     }
   }
 }
-  
 </script>
 
 <style lang="scss" scoped>
@@ -47,6 +46,7 @@ header {
   @include tablet-min {
     height: 284px;
   }
+
   &:before {
     content: "";
     position: absolute;
@@ -54,12 +54,14 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background: $background-70;
+    background-color: $background-70;
+    transition: background-color .5s ease;
   }
   
   .container {
     text-align: center;
     position: relative;
+    transition: color .5s ease;
   }
   
   .title {
@@ -69,6 +71,7 @@ header {
     letter-spacing: 0.5px;
     color: $text-color;
     margin: 0;
+
     @include tablet-min{
       font-size: 28px;
     }
@@ -80,6 +83,7 @@ header {
     font-weight: 300;
     color: $text-color-70;
     margin: 5px 0;
+
     @include tablet-min{
       font-size: 16px;
     }

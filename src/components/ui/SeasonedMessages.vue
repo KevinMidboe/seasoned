@@ -54,7 +54,7 @@ export default {
   transition: opacity .4s;
 }
 .fade-leave-active {
-  transition: opacitiy .1s;
+  transition: opacity .1s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
@@ -63,31 +63,31 @@ export default {
 .message {
   width: 100%;
   max-width: 35rem;
-  height: 80px;
+  height: 75px;
 
   display: flex;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  // padding-bottom: 1rem;
-  // background-color: red;
-
-  &:first-of-type {
-    background-color: navajowhite;
-  }
-  
+  color: $text-color-70;
 
   > div {
-    margin: 8px 24px;
+    margin: 6px 24px;
     width: 100%;
 
   }
 
   h2 {
     font-weight: 300;
+    letter-spacing: 0.25px;
     margin: 0;
+    font-size: 1.3rem;
+    color: $text-color;
+    transition: color .5s ease;
   }
   span {
     font-weight: 300;
+    color: $text-color-70;
+    transition: color .5s ease;
   }
 
   .pinstripe {
@@ -112,16 +112,15 @@ export default {
     padding: 0;
     margin-top: 0.5rem;
     margin-right: 0.5rem;
+    color: $text-color-70;
     transition: color .5s ease;
-    color: $white-80;
 
     &:hover {
-      color: $white;
+      color: $text-color;
     }
   }
 
   &.success {
-    color: $color-error-text;
     background-color: $color-success;
 
     .pinstripe {
@@ -130,7 +129,6 @@ export default {
   }
   
   &.error {
-    color: $color-error-text;
     background-color: $color-error;
 
     .pinstripe {
@@ -139,19 +137,10 @@ export default {
   }
 
   &.warning {
-    color: $black;
     background-color: $color-warning;
-
-    .dismiss {
-      color: $black-80;
-
-      &:hover {
-        color: $black;
-      }
-    }
     
     .pinstripe {
-      background-color: $color-warning-light;
+      background-color: $color-warning-highlight;
     }
   }
 }

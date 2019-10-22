@@ -53,15 +53,15 @@ export default {
   data(){
     return{
       userLoggedIn: '',
-      plexUsername: undefined,
-      plexPassword: undefined,
-      newPass: undefined,
-      newPassConfirm: undefined
+      messages: [],
+      plexUsername: null,
+      plexPassword: null,
+      newPassword: null,
+      newPasswordRepeat: null
     }
   },
   methods: {
     setValue(l, t) {
-      console.log('l, t', l, t)
       this[l] = t
     },
     changePassword() {
@@ -82,8 +82,6 @@ export default {
     }
   },
   created(){
-    document.title = 'Settings' + storage.pageTitlePostfix;
-    storage.backTitle = document.title;
     if (localStorage.getItem('token')){
       this.userLoggedIn = true
     }
@@ -94,6 +92,7 @@ export default {
 <style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
+
 a {
    text-decoration: none;
 }

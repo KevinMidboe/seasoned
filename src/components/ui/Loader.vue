@@ -30,7 +30,7 @@
       height: 35px;
       width: 35px;
       &:after {
-        border: 7px solid rgba($green, 0.9);
+        border: 7px solid $green-90;
         border-radius: 50%;
         content: '';
         left: 8px;

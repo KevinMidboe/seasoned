@@ -6,16 +6,15 @@
           <use xlink:href="#svgLogo"></use>
         </svg>
       </router-link>
+
       <div class="nav__hamburger" @click="toggleNav">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
+        <div v-for="_ in 3" class="bar"></div>
       </div>
+
       <ul class="nav__list">
         <li class="nav__item" v-for="item in listTypes">
           <router-link class="nav__link" :to="'/list/' + item.route">
             <div class="nav__link-wrap">
-              <!-- <img :src="item.icon" class="nav__link-icon"> -->
               <svg class="nav__link-icon">
                 <use :xlink:href="'#icon_' + item.route"></use>
               </svg>
@@ -23,8 +22,9 @@
             </div>
           </router-link>
         </li>
+
         <li class="nav__item nav__item--profile">
-           <router-link  class="nav__link nav__link--profile" :to="{name: 'signin'}" v-if="!userLoggedIn">
+          <router-link class="nav__link nav__link--profile" :to="{name: 'signin'}" v-if="!userLoggedIn">
             <div class="nav__link-wrap">
               <svg class="nav__link-icon">
                 <use xlink:href="#iconLogin"></use>
@@ -32,7 +32,8 @@
               <span class="nav__link-title">Sign in</span>
             </div>
           </router-link>
-          <router-link  class="nav__link nav__link--profile" :to="{name: 'profile'}" v-if="userLoggedIn">
+
+          <router-link class="nav__link nav__link--profile" :to="{name: 'profile'}" v-if="userLoggedIn">
             <div class="nav__link-wrap">
               <svg class="nav__link-icon">
                 <use xlink:href="#iconLogin"></use>
@@ -43,6 +44,7 @@
         </li>
       </ul>
     </nav>
+
     <div class="spacer"></div>
   </div>
 </template>
@@ -67,6 +69,7 @@ export default {
     }
   },
   created(){
+    // TODO move this to state manager
     eventHub.$on('setUserStatus', this.setUserStatus);
   }
 }
@@ -80,14 +83,15 @@ export default {
   width: 30px;
 }
 
-
 .spacer {
   @include mobile-only {
     width: 100%;
     height: $header-size;
   }
 }
+
 .nav {
+  transition: background .5s ease;
   position: fixed;
   top: 0;
   left: 0;
@@ -201,7 +205,6 @@ export default {
       opacity: 0;
       visibility: hidden;
       background-color: $background-95;
-      transition: all 0.5s ease;
       text-align: left;
       &--active{
         opacity: 1;
@@ -218,6 +221,7 @@ export default {
     }
   }
   &__item {
+    transition: background .5s ease, color .5s ease, border .5s ease;
     background-color: $background-color-secondary;
     color: $text-color-70;
 
@@ -264,7 +268,6 @@ export default {
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: color 0.5s ease, background 0.5s ease;
     position: relative;
     cursor: pointer;
     &-wrap {
@@ -284,13 +287,13 @@ export default {
       &--profile {
         width: 75px;
         height: 75px;
+        background-color: $background-color-secondary;
       }
     }
     &-icon {
       width: 20px;
       height: 20px;
       fill: $text-color-70;
-      transition: fill 0.5s ease;
       @include tablet-min {
         width: 20px;
         height: 20px;

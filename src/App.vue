@@ -97,9 +97,13 @@ body{
   line-height: 1.6;
   background: $background-color;
   color: $text-color;
+  transition: background-color .5s ease, color .5s ease;
   &.hidden{
     overflow: hidden;
   }
+}
+h1,h2,h3 {
+  transition: color .5s ease;
 }
 a:any-link {
   color: inherit;

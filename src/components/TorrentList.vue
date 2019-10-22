@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show">
+  <div v-if="show" class="container">
     <h2 class="torrentHeader-text">Searching for: {{ editedSearchQuery || query }}</h2>
 <!--     <div class="torrentHeader">
       <span class="torrentHeader-text">Searching for:&nbsp;</span>

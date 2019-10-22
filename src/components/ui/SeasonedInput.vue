@@ -68,7 +68,6 @@ export default {
     width: 100%;
     max-width: 35rem;
     padding: 10px 10px 10px 45px;
-    // padding: 15px 10px 15px 45px;
     outline: none;
     background-color: $background-color-secondary;
     color: $text-color;
@@ -77,9 +76,8 @@ export default {
     border: 1px solid $text-color-50;
     margin: 0;
     margin-left: -2.2rem !important;
-    // margin-bottom: 1rem;
     z-index: 3;
-    transition: border-color .5s ease;
+    transition: color .5s ease, background-color .5s ease, border .5s ease;
 
     border-radius: 0;
     -webkit-appearance: none;
