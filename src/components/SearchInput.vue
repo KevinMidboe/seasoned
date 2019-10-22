@@ -108,17 +108,17 @@ export default {
 
         this.elasticSearchResults = data.map(item => {
           const index = item._index.slice(0, -1)
-          if (index === 'movie') {
+          if (index === 'movie' || item._source.original_title) {
             return {
               name: item._source.original_title,
               id: item._source.id,
-              type: index
+              type: 'movie'
             }
-          } else if (index === 'show') {
+          } else if (index === 'show' || item._source.original_name) {
             return {
               name: item._source.original_name,
               id: item._source.id,
-              type: index
+              type: 'show'
             }
           }
         })
