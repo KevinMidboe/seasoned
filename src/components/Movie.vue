@@ -190,7 +190,7 @@ export default {
   computed: {
     numberOfTorrentResults: () => {
       let numTorrents = store.getters['torrentModule/resultCount']
-      return numTorrents ? numTorrents + ' results' : null
+      return numTorrents !== null ? numTorrents + ' results' : null
     }
   },
   beforeDestroy() {
