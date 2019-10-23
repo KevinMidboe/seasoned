@@ -1,61 +1,63 @@
 <template>
-  <div>
-    <nav class="nav">
-      <router-link class="nav__logo" :to="{name: 'home'}" exact title="Vue.js — TMDb App">
-        <svg class="nav__logo-image">
-          <use xlink:href="#svgLogo"></use>
-        </svg>
-      </router-link>
-
-      <div class="nav__hamburger" @click="toggleNav">
-        <div v-for="_ in 3" class="bar"></div>
-      </div>
-
-      <ul class="nav__list">
-        <li class="nav__item" v-for="item in listTypes">
-          <router-link class="nav__link" :to="'/list/' + item.route">
-            <div class="nav__link-wrap">
-              <svg class="nav__link-icon">
-                <use :xlink:href="'#icon_' + item.route"></use>
-              </svg>
-              <span class="nav__link-title">{{ item.title }}</span>
-            </div>
-          </router-link>
-        </li>
-
-        <li class="nav__item nav__item--profile">
-          <router-link class="nav__link nav__link--profile" :to="{name: 'signin'}" v-if="!userLoggedIn">
-            <div class="nav__link-wrap">
-              <svg class="nav__link-icon">
-                <use xlink:href="#iconLogin"></use>
-              </svg>
-              <span class="nav__link-title">Sign in</span>
-            </div>
-          </router-link>
-
-          <router-link class="nav__link nav__link--profile" :to="{name: 'profile'}" v-if="userLoggedIn">
-            <div class="nav__link-wrap">
-              <svg class="nav__link-icon">
-                <use xlink:href="#iconLogin"></use>
-              </svg>
-              <span class="nav__link-title">Profile</span>
-            </div>
-          </router-link>
-        </li>
-      </ul>
-    </nav>
-
-    <div class="spacer"></div>
-  </div>
+  <nav class="nav">
+    <router-link class="nav__logo" :to="{name: 'home'}" exact title="Vue.js — TMDb App">
+      <svg class="nav__logo-image">
+        <use xlink:href="#svgLogo"></use>
+      </svg>
+    </router-link>
+    <div class="nav__hamburger" @click="toggleNav">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <ul class="nav__list">
+      <li class="nav__item" v-for="item in listTypes" v-if="item.isCategory">
+        <router-link class="nav__link" :to="{name: item.name, params: {mode: item.type, category: item.query}}">
+          <div class="nav__link-wrap">
+            <svg class="nav__link-icon">
+              <use :xlink:href="'#icon_' + item.query"></use>
+            </svg>
+            <span class="nav__link-title">{{ item.shortTitle }}</span>
+          </div>
+        </router-link>
+      </li>
+      <li class="nav__item nav__item--profile">
+<!--         <div  class="nav__link nav__link--profile"  @click="requestToken" v-if="!userLoggedIn">
+          <div class="nav__link-wrap">
+            <svg class="nav__link-icon">
+              <use xlink:href="#iconLogin"></use>
+            </svg>
+            <span class="nav__link-title">Log In</span>
+          </div>
+        </div> -->
+         <router-link  class="nav__link nav__link--profile" :to="{name: 'signin'}" v-if="!userLoggedIn">
+          <div class="nav__link-wrap">
+            <svg class="nav__link-icon">
+              <use xlink:href="#iconLogin"></use>
+            </svg>
+            <span class="nav__link-title">Sign in</span>
+          </div>
+        </router-link>
+        <router-link  class="nav__link nav__link--profile" :to="{name: 'profile'}" v-if="userLoggedIn">
+          <div class="nav__link-wrap">
+            <svg class="nav__link-icon">
+              <use xlink:href="#iconLogin"></use>
+            </svg>
+            <span class="nav__link-title">Profile</span>
+          </div>
+        </router-link>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script>
-import storage from '@/storage'
+import storage from '../storage.js'
 
 export default {
   data(){
     return {
-      listTypes: storage.homepageLists,
+      listTypes: storage.listTypes,
       userLoggedIn: localStorage.getItem('token') ? true : false
     }
   },
@@ -63,74 +65,64 @@ export default {
     setUserStatus(){
       this.userLoggedIn = localStorage.getItem('token') ? true : false;
     },
+    requestToken(){
+      eventHub.$emit('requestToken');
+    },
     toggleNav(){
       document.querySelector('.nav__hamburger').classList.toggle('nav__hamburger--active');
       document.querySelector('.nav__list').classList.toggle('nav__list--active');
     }
   },
   created(){
-    // TODO move this to state manager
     eventHub.$on('setUserStatus', this.setUserStatus);
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
-
-.icon {
-  width: 30px;
-}
-
-.spacer {
-  @include mobile-only {
-    width: 100%;
-    height: $header-size;
-  }
-}
-
-.nav {
-  transition: background .5s ease;
+.nav{
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 50px;
+  background: $c-white;
+  display: flex;
   z-index: 10;
-  display: block;
-  color: $text-color;
-  background-color: $background-color-secondary;
-
   @include tablet-min{
+    display: block;
     width: 95px;
     height: 100vh;
   }
-  &__logo {
+  &__logo{
+    display: block;
     width: 55px;
-    height: $header-size;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: $background-nav-logo;
+    background: $c-dark;
     @include tablet-min{
       width: 95px;
+      height: 75px;
     }
     &-image{
       width: 35px;
       height: 31px;
-      fill: $green;
+      fill: $c-green;
       transition: transform 0.5s ease;
       @include tablet-min{
         width: 45px;
         height: 40px;
       }
     }
-    &:hover &-image {
+    &:hover &-image{
       transform: scale(1.04);
     }
   }
-  &__hamburger {
+  &__hamburger{
     display: block;
     position: fixed;
     width: 55px;
@@ -138,22 +130,23 @@ export default {
     top: 0;
     right: 0;
     cursor: pointer;
+    background: $c-white;
     z-index: 10;
-    border-left: 1px solid $background-color;
+    border-left: 1px solid $c-light;
     @include tablet-min{
       display: none;
     }
-    .bar {
+    .bar{
       position: absolute;
       width: 23px;
       height: 1px;
-      background-color: $text-color-70;
+      background: rgba($c-dark, 0.5);
       transition: all 300ms ease;
-      &:nth-child(1) {
+      &:nth-child(1){
         left: 16px;
         top: 17px;
       }
-      &:nth-child(2) {
+      &:nth-child(2){
         left: 16px;
         top: 25px;
         &:after {
@@ -163,15 +156,16 @@ export default {
           top: 0px;
           width: 23px;
           height: 1px;
+          background: transparent;
           transition: all 300ms ease;
         }
       }
-      &:nth-child(3) {
+      &:nth-child(3){
         right: 15px;
         top: 33px;
       }
     }
-    &--active {
+    &--active{
       .bar{
         &:nth-child(1),
         &:nth-child(3){
@@ -182,13 +176,12 @@ export default {
         }
         &:nth-child(2):after {
           transform: rotate(-90deg);
-          // background: rgba($c-dark, 0.5);
-          background-color: $text-color-70;
+          background: rgba($c-dark, 0.5);
         }
       }
     }
   }
-  &__list {
+  &__list{
     list-style: none;
     padding: 0;
     margin: 0;
@@ -197,22 +190,23 @@ export default {
     position: fixed;
     left: 0;
     top: 50px;
-    border-top: 1px solid $background-color;
-    @include mobile-only {
-      display: flex;
-      flex-wrap: wrap;
+    background: rgba($c-white, 0.98);
+    border-top: 1px solid $c-light;
+    @include mobile-only{
       font-size: 0;
       opacity: 0;
       visibility: hidden;
-      background-color: $background-95;
+      height: calc(100vh - 50px);
+      transition: all 0.5s ease;
       text-align: left;
       &--active{
         opacity: 1;
         visibility: visible;
       }
     }
-    @include tablet-min {
+    @include tablet-min{
       display: flex;
+      background: transparent;
       position: relative;
       display: block;
       width: 100%;
@@ -220,44 +214,31 @@ export default {
       top: 0;
     }
   }
-  &__item {
-    transition: background .5s ease, color .5s ease, border .5s ease;
-    background-color: $background-color-secondary;
-    color: $text-color-70;
-
-    @include mobile-only {
-      flex: 0 0 50%;
+  &__item{
+    @include mobile-only{
+      display: inline-block;
       text-align: center;
-      border-bottom: 1px solid $background-color;
+      width: 50%;
+      border-bottom: 1px solid $c-light;
       &:nth-child(odd){
-        border-right: 1px solid $background-color;
-
-        &:last-child {
-          // flex: 0 0 100%;
-        }
+        border-right: 1px solid $c-light;
       }
     }
-    @include tablet-min {
+    @include tablet-min{
       width: 100%;
-      border-bottom: 1px solid $text-color-5;
-
-      &--profile {
+      border-bottom: 1px solid $c-light;
+      &--profile{
         position: fixed;
         right: 0;
         top: 0;
-        width: $header-size;
-        height: $header-size;
+        width: 75px;
+        height: 75px;
         border-bottom: 0;
-        border-left: 1px solid $background-color;
+        border-left: 1px solid $c-light;
       }
     }
-    &:hover, .is-active {
-      color: $text-color;
-      background-color: $background-color;
-    }
   }
-  &__link {
-    background-color: inherit; // a elements have a transparent background
+  &__link{
     width: 100%;
     display: flex;
     flex-wrap: wrap;
@@ -268,46 +249,52 @@ export default {
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color: rgba($c-dark, 0.7);
+    transition: color 0.5s ease, background 0.5s ease;
     position: relative;
     cursor: pointer;
-    &-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    @include mobile-only {
+    @include mobile-only{
       font-size: 10px;
       padding: 20px 0;
     }
-    @include tablet-min {
+    @include tablet-min{
       width: 95px;
       height: 95px;
       font-size: 9px;
-      &--profile {
+      &--profile{
         width: 75px;
         height: 75px;
-        background-color: $background-color-secondary;
+        background: $c-white;
       }
     }
-    &-icon {
+    &-icon{
       width: 20px;
       height: 20px;
-      fill: $text-color-70;
-      @include tablet-min {
+      margin-bottom: 3px;
+      fill: rgba($c-dark, 0.7);
+      transition: fill 0.5s ease;
+      @include tablet-min{
         width: 20px;
         height: 20px;
         margin-bottom: 5px;
       }
-
     }
-    &-title {
-      margin-top: 5px;
+    &-title{
       display: block;
       width: 100%;
     }
-    &:hover &-icon, &.is-active &-icon {
-      fill: $text-color;
+    &:hover{
+      color: $c-dark;
+    }
+    &:hover &-icon{
+      fill: $c-dark;
+    }
+    &.is-active{
+      color: $c-dark;
+      background: $c-light;
+    }
+    &.is-active &-icon{
+      fill: $c-dark;
     }
   }
 }

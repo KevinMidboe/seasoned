@@ -3,20 +3,21 @@
     <div class="profile__content" v-if="userLoggedIn">
       <header class="profile__header">
         <h2 class="profile__title">{{ emoji }} Welcome {{ userName }}</h2>
-
-        <div class="button--group">
-          <seasoned-button @click="showSettings = !showSettings">{{ showSettings ? 'hide settings' : 'show settings' }}</seasoned-button>
-
-          <seasoned-button @click="logOut">Log out</seasoned-button>
+        
+        <div>
+           <router-link class="" :to="{name: 'settings'}">
+          </router-link>
+            <button v-if="showSettings" class="button__active" @click="toggleSettings" style="margin-right: 2em;">Hide settings</button>
+            <button v-else class="button" @click="toggleSettings" style="margin-right: 2em;">Show settings</button>
+          <button class="button" @click="logOut">Log Out</button>
         </div>
       </header>
-
       <settings v-if="showSettings"></settings>
 
-      <list-header title="User requests" :info="resultCount"/>
-      <results-list v-if="results" :results="results" />
+      <movies-list v-for="item in listTypes" v-if="!showSettings && item.isProfileContent" :type="'component'" :mode="item.type" :category="item.query" :shortList="true"></movies-list>
+      <!-- <movies-list v-for="item in listTypes" v-if="item.isCategory" :type="'component'" :mode="item.type" :shortList="true"></movies-list> -->
+      <!-- <created-lists></created-lists> -->
     </div>
-
     <section class="not-found" v-if="!userLoggedIn">
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
@@ -29,35 +30,21 @@
 </template>
 
 <script>
-import storage from '@/storage'
-import store from '@/store'
-import ListHeader from '@/components/ListHeader'
-import ResultsList from '@/components/ResultsList'
-import Settings from '@/components/Settings'
-import SeasonedButton from '@/components/ui/SeasonedButton'
-
-import { getEmoji, getUserRequests } from '@/api'
+import axios from 'axios'
+import storage from '../storage.js'
+import MoviesList from './MoviesList.vue'
+import Settings from './Settings.vue'
+// import CreatedLists from './CreatedLists.vue'
 
 export default {
-  components: { ListHeader, ResultsList, Settings, SeasonedButton },
+  components: { MoviesList, Settings },
   data(){
     return{
       userLoggedIn: '',
       userName: '',
       emoji: '',
-      results: undefined,
-      totalResults: undefined,
-      showSettings: false
-    }
-  },
-  computed: {
-    resultCount() {
-      if (this.results === undefined)
-        return
-
-      const loadedResults = this.results.length
-      const totalResults = this.totalResults < 10000 ? this.totalResults : '∞'
-      return `${loadedResults} of ${totalResults} results`
+      showSettings: false,
+      listTypes: storage.listTypes
     }
   },
   methods: {
@@ -74,8 +61,17 @@ export default {
           }
       }.bind(this));
     },
+    getNewEmoji(){
+      axios.get(`https://api.kevinmidboe.com/api/v1/emoji`)
+      .then(function(resp){
+          this.emoji = resp.data.emoji;
+      }.bind(this))
+    },
     getUserInfo(){
       this.userName = localStorage.getItem('username'); 
+    },
+    requestToken(){
+      eventHub.$emit('requestToken');
     },
     toggleSettings() {
       this.showSettings = this.showSettings ? false : true;
@@ -87,55 +83,29 @@ export default {
     }
   },
   created(){
+    document.title = 'Profile' + storage.pageTitlePostfix;
+    storage.backTitle = document.title;
     if(!localStorage.getItem('token')){
       this.userLoggedIn = false;
     } else {
       this.userLoggedIn = true;
       this.getUserInfo();
-
-      getUserRequests()
-        .then(results => {
-          this.results = results.results
-          this.totalResults = results.total_results
-        })
-
-      getEmoji()
-        .then(resp => {
-          const { emoji } = resp
-          this.emoji = emoji
-          store.dispatch('documentTitle/updateEmoji', emoji)
-        })
+      this.getNewEmoji();
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
-
-.button--group {
-  display: flex;
-}
-
-// DUPLICATE CODE
 .profile{
   &__header{
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 20px;
-    border-bottom: 1px solid $text-color-5;
-
-    @include mobile-only {
-      flex-direction: column;
-      align-items: flex-start;
-
-      .button--group {
-        padding-top: 2rem;
-      }
-    }
-
+    border-bottom: 1px solid rgba($c-dark, 0.05);
     @include tablet-min{
       padding: 29px 30px;
     }
@@ -146,16 +116,16 @@ export default {
       padding: 29px 60px;
     }
   }
-  &__title{
-    margin: 0;
-    font-size: 16px;
-    line-height: 16px;
-    color: $text-color;
-    font-weight: 300;
-    @include tablet-min{
-      font-size: 18px;
-      line-height: 18px;
+    &__title{
+      margin: 0;
+      font-size: 16px;
+      line-height: 16px;
+      color: $c-dark;
+      font-weight: 300;
+      @include tablet-min{
+        font-size: 18px;
+        line-height: 18px;
+      }
     }
-  }
 }
 </style>

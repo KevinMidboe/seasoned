@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Movie from './Movie';
+import Movie from './Movie.vue';
 export default {
   components: { Movie }
 }

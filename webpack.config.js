@@ -12,27 +12,17 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        use: [
-          {
-            loader: 'vue-loader',
-            options: {
-              loaders: {
-                'scss': 'vue-style-loader!css-loader!sass-loader',
-                'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-              }
-            }
-          },
-          {
-            loader: 'vue-svg-inline-loader'
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            'scss': 'vue-style-loader!css-loader!sass-loader',
+            'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
           }
-        ]
+        }
       },
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        options: {
-          presets: ['@babel/preset-env']
-        },
         exclude: /node_modules/
       },
       {
@@ -46,10 +36,8 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.js', '.vue', '.json', 'scss'],
     alias: {
       'vue$': 'vue/dist/vue.common.js',
-      '@': path.resolve(__dirname, './src'),
       'src': path.resolve(__dirname, './src'),
       'assets': path.resolve(__dirname, './src/assets'),
       'components': path.resolve(__dirname, './src/components')
@@ -57,13 +45,12 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    inline: true,
     noInfo: true
   },
   performance: {
     hints: false
   },
-  devtool: 'inline-source-map'
+  // devtool: '#eval-source-map'
 }
 
 if (process.env.NODE_ENV === 'production') {

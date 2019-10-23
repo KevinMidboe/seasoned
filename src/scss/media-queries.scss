@@ -4,7 +4,6 @@ $phone-xs-width: 480px;
 $tablet-p-width: 768px;
 $tablet-l-width: 1024px;
 $desktop-width:  1200px;
-$desktop-l-width: 1600px;
 
 // Media
 @mixin mobile-only{
@@ -39,11 +38,6 @@ $desktop-l-width: 1600px;
 }
 @mixin desktop-min{
 	@media (min-width: #{$desktop-width}){
-		@content;
-	}
-}
-@mixin desktop-lg-min{
-	@media (min-width: #{$desktop-l-width}){
 		@content;
 	}
 }
