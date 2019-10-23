@@ -1,4 +1,12 @@
-.DS_Store
+# config file - copy config.json.example
+src/config.json
+
+# Build directory
+dist/
+
+# Node packages
 node_modules/
 npm-debug.log
-dist/
+
+# MacOS trash
+.DS_Store

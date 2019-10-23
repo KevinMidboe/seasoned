@@ -1,6 +1,8 @@
 <template>
-  <li class="movies-item">
-    <a class="movies-item__link" :class="{'no-image': noImage}" href="#" @click.prevent="openMoviePopup(movie.id, movie.type, true)">
+  <li class="movies-item" :class="{'shortList': shortList}">
+    <a class="movies-item__link" :class="{'no-image': noImage}" @click.prevent="openMoviePopup(movie.id, movie.type)">
+
+      <!-- TODO change to picture element -->
       <figure class="movies-item__poster">
         <img v-if="!noImage" class="movies-item__img" src="~assets/placeholder.png" v-img="poster()" alt="">
         <img v-if="noImage" class="movies-item__img is-loaded" src="~assets/no-image.png" alt="">
@@ -14,29 +16,29 @@
 </template>
 
 <script>
-import img from '../directives/v-image.js'
+import img from '../directives/v-image'
 
 export default {
-  props: ['movie'],
+  props: ['movie', 'shortList'],
   directives: {
     img: img
   },
   data(){
-    return{
+    return {
       noImage: false
     }
   },
   methods: {
+    // TODO handle missing images better and load diff sizes based on screen size
     poster() {
-      if(this.movie.poster_path){
-        return 'https://image.tmdb.org/t/p/w300' + this.movie.poster_path;
+      if (this.movie.poster) {
+        return 'https://image.tmdb.org/t/p/w500' + this.movie.poster
       } else {
-        this.noImage = true;
+        this.noImage = true
       }
     },
-    openMoviePopup(id, type, event){
-      console.log('open:', id, type, event)
-      eventHub.$emit('openMoviePopup', id, type, event);
+    openMoviePopup(id, type) {
+      this.$popup.open(id, type)
     }
   }
 }
@@ -45,19 +47,41 @@ export default {
 <style lang="scss">
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
-.movies-item{
+
+.movies-item {
+  padding: 10px;
+  width: 50%;
+  background-color: $background-color;
+  transition: background-color 0.5s ease;
+
+  @include tablet-min{
+    padding: 15px;
+  }
+  @include tablet-landscape-min{
+    padding: 15px;
+    width: 25%;
+  }
+  @include desktop-min{
+    padding: 15px;
+    width: 20%;
+  }
+
+  @include desktop-lg-min{
+    padding: 20px;
+    width: 12.5%;
+  }
+
   &__link{
     text-decoration: none;
-    color: rgba($c-dark, 0.5);
+    color: $text-color-70;
     font-weight: 300;
   }
   &__content{
     padding-top: 15px;
   }
   &__poster{
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    transition: transform 0.5s ease, box-shadow 0.3s ease;
     transform: translateZ(0);
-    background: $c-white;
   }
   &__img{
     width: 100%;
@@ -71,13 +95,14 @@ export default {
   }
   &__link:not(.no-image):hover &__poster{
     transform: scale(1.03);
-    box-shadow: 0 0 10px rgba($c-dark, 0.1);
+    box-shadow: 0 0 10px rgba($dark, 0.1);
   }
   &__title{
     margin: 0;
     font-size: 11px;
     letter-spacing: 0.5px;
     transition: color 0.5s ease;
+    cursor: pointer;
     @include mobile-ls-min{
       font-size: 12px;
     }
@@ -86,7 +111,7 @@ export default {
     }
   }
   &__link:hover &__title{
-    color: $c-dark;
+    color: $text-color;
   }
 }
 </style>

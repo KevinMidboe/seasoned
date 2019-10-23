@@ -1,0 +1,55 @@
+@import "./src/scss/variables";
+
+// Loading placeholder styling
+@mixin nth-children($points...) {
+  @each $point in $points {
+    &:nth-child(#{$point}) {
+      @content;
+    }
+  }
+}
+
+.text-input__loading {
+  width: 100%;
+
+   &--line {
+    height: 10px;
+    margin: 10px;
+    animation: pulse 1s infinite ease-in-out;
+
+    &.short {
+      width: 60px !important;
+    }
+
+    &.nomargin {
+      margin: 0;
+    }
+  }
+
+  div {
+    @include nth-children(1, 5, 9) {
+      width: 150px;
+    }
+    @include nth-children(2, 6, 10) {
+      width: 250px;
+    }
+    @include nth-children(3, 7) {
+      width: 120px;
+    }
+    @include nth-children(4, 8) {
+      width: 100px;
+    }
+  }
+
+  @keyframes pulse {
+    0% {
+      background-color: rgba(165, 165, 165, 0.1);
+    }
+    50% {
+      background-color: rgba(165, 165, 165, 0.3);
+    }
+    100% {
+      background-color: rgba(165, 165, 165, 0.1);
+    }
+  }
+}

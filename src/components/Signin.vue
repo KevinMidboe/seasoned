@@ -1,122 +1,99 @@
 <template>
-  <section class="profile">
-    <div class="profile__content">
-      <header class="profile__header">
-        <h2 class="profile__title">Register new user</h2>
-      </header>
+  <section>
+    <h1>Sign in</h1>
 
-      <form class="form">
-        <div class="form__buffer"></div>
-        <div>
-          <div class="form__group">
-            <svg class="form__group__input-icon">
-              <use xlink:href="#iconEmail"></use>
-            </svg>
-            <input class="form__group-input" type="username" ref="username" placeholder="Username" >
-          </div>
-          <div class="form__group">
-            <svg class="form__group__input-icon">
-              <use xlink:href="#iconKeyhole"></use>
-            </svg>
-            <input class="form__group-input" type="password" ref="password" placeholder="Password" v-on:keyup.enter="signin">
-          </div>
-          
-          <transition name="message-fade">
-              <div class="message" :class="messageClass" v-if="showMessage">
-                <span class="message-text">{{ messageText }}</span>
-                <span class="message-dismiss" @click="showMessage=false">X</span>
-              </div>
-            </transition>
-          
-          <div class="form__group">
-            <button type="button" class="button" v-on:click="signin">Sign in</button>
-          </div>
-        </div>
-      </form>
-      
-      <div class="form__group">
-        <router-link class="form__group-link" :to="{name: 'register'}" exact title="Sign in here">
-          <span class="form__group-signin">Don't have a user? Register here</span>
-        </router-link>
-      </div>
+    <seasoned-input placeholder="username" icon="Email" type="username" :value.sync="username" />
+    <seasoned-input placeholder="password" icon="Keyhole" type="password" :value.sync="password" @enter="signin"/>
 
-      <!-- <created-lists></created-lists> -->
-    </div>
+    <seasoned-button @click="signin">sign in</seasoned-button>
+
+    <router-link class="link" to="/register">Don't have a user? Register here</router-link>
+    <seasoned-messages :messages.sync="messages"></seasoned-messages>
+
   </section>
 </template>
 
+
+
 <script>
 import axios from 'axios'
-import storage from '../storage.js'
-import MoviesList from './MoviesList.vue'
-// import CreatedLists from './CreatedLists.vue'
+import storage from '../storage'
+import SeasonedInput from '@/components/ui/SeasonedInput'
+import SeasonedButton from '@/components/ui/SeasonedButton'
+import SeasonedMessages from '@/components/ui/SeasonedMessages'
 
 export default {
-  components: { MoviesList },
+  components: { SeasonedInput, SeasonedButton, SeasonedMessages },
   data(){
     return{
-      userLoggedIn: '',
-      userName: '',
-      showMessage: false,
-      messageClass: 'message-success',
-      messageText: 'hello world'
+      messages: [],
+      username: null,
+      password: null
     }
   },
   methods: {
+    setValue(l, t) {
+      this[l] = t
+    },
     signin(){
-      let username = this.$refs.username.value;
-      let password = this.$refs.password.value;
+      let username = this.username;
+      let password = this.password;
 
       axios.post(`https://api.kevinmidboe.com/api/v1/user/login`, {
         username: username,
         password: password
       })
-      .then(function (resp){
+      .then(resp => {
         let data = resp.data;
         if (data.success){
           localStorage.setItem('token', data.token);
           localStorage.setItem('username', username);
           localStorage.setItem('admin', data.admin);
-          this.userLoggedIn = true;
           
           eventHub.$emit('setUserStatus');
           this.$router.push({ name: 'profile' })
         }
-      }.bind(this))
-      .catch(function (error){
-        if (error.message.endsWith('401'))
-          this.msg('Incorrect username or password ', 'warning')
-        else
-          this.msg(error.message, 'warning')
-      }.bind(this));
-    },
-    msg(text, status){
-      if (status === 'warning')
-        this.messageClass = 'message-warning';
-      else if (status === 'success')
-        this.messageClass = 'message-success';
-      else
-        this.messageClass = 'message-info';
-      this.messageText = text;
-      this.showMessage = true;
-      // setTimeout(() => this.showMessage = false, 3500);
-    },
-    toggleView(){
-      this.register = false;
-    },
+      })
+      .catch(error => {
+        if (error.message.endsWith('401')) {
+          this.messages.push({ type: 'warning', title: 'Access denied', message: 'Incorrect username or password' })
+        }
+        else {
+          this.messages.push({ type: 'error', title: 'Unexpected error', message: error.message })
+        }
+      });
+    }
   },
   created(){
     document.title = 'Sign in' + storage.pageTitlePostfix;
     storage.backTitle = document.title;
-    if (this.userLoggedIn == true) {
-      this.$router.push({ name: 'profile' })
-    }
-  },
-  mounted(){
-    // this.$refs.email.focus();
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "./src/scss/variables";
+
+section {
+  padding: 1.3rem;
+
+  @include tablet-min {
+    padding: 4rem;
+  }
+
+  h1 {
+    margin: 0;
+    line-height: 16px;
+    color: $text-color;
+    font-weight: 300;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .link {
+    display: block;
+    width: max-content;
+    margin-top: 1rem;
+  }
+}
 </style>

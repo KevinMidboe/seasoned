@@ -1,103 +1,64 @@
+import Vue from 'vue'
 import VueRouter from 'vue-router';
+import store from '@/store'
+
+Vue.use(VueRouter)
+
 
 let routes = [
   {
     name: 'home',
     path: '/',
-    components: {
-      'list-router-view': require('./components/Home.vue')
-    }
+    component: (resolve) => require(['./components/Home.vue'], resolve)
   },
   {
-    name: 'home-category',
-    path: '/list/:category',
-    components: {
-      'list-router-view': require('./components/MoviesList.vue')
-    }
+    name: 'profile',
+    path: '/profile',
+    component: (resolve) => require(['./components/Profile.vue'], resolve)
+  },
+  {
+    name: 'list',
+    path: '/list/:name',
+    component: (resolve) => require(['./components/ListPage.vue'], resolve)
   },
   {
     name: 'request',
     path: '/request/all',
     components: {
-      'request-router-view': require('./components/MoviesList.vue')
+      'request-router-view': require('./components/ListPage.vue')
     }
   },
   {
     name: 'search',
-    path: '/search/:query',
-    components: {
-      'search-router-view': require('./components/MoviesList.vue')
-    }
-  },
-  {
-    name: 'user-requests',
-    path: '/profile/requests',
-    components: {
-      'user-requests-router-view': require('./components/MoviesList.vue')
-    }
-  },
-  {
-    name: 'movie',
-    path: '/movie/:id',
-    components: {
-      'page-router-view': require('./components/MoviePage.vue')
-    },
-    beforeEnter: (to, from, next) => {
-      if(history.state && history.state.popup && from.name){
-        eventHub.$emit('openMoviePopup', to.params.id, 'movie', false);
-        return;
-      }
-      next();
-    }
-  },
-  {
-    name: 'show',
-    path: '/show/:id',
-    components: {
-      'page-router-view': require('./components/MoviePage.vue')
-    },
-    beforeEnter: (to, from, next) => {
-      if(history.state && history.state.popup && from.name){
-        eventHub.$emit('openMoviePopup', to.params.id, 'show', false);
-        return;
-      }
-      next();
-    }
+    path: '/search',
+    component: (resolve) => require(['./components/Search.vue'], resolve)
   },
   {
     name: 'register',
     path: '/register',
-    components: {
-      'search-router-view': require('./components/Register.vue')
-    }
+    component: (resolve) => require(['./components/Register.vue'], resolve)
+  },
+  {
+    name: 'settings',
+    path: '/settings',
+    component: (resolve) => require(['./components/Settings.vue'], resolve)
   },
   {
     name: 'signin',
     path: '/signin',
-    components: {
-      'search-router-view': require('./components/Signin.vue')
-    }
+    component: (resolve) => require(['./components/Signin.vue'], resolve)
   },
-  {
-    name: 'profile',
-    path: '/profile',
-    components: {
-      'search-router-view': require('./components/Profile.vue')
-    }
-  },
-  {
-    name: 'settings',
-    path: '/profile/settings',
-    components: {
-      'search-router-view': require('./components/Settings.vue')
-    }
-  },
+  // {
+  //   name: 'user-requests',
+  //   path: '/profile/requests',
+  //   components: {
+  //     'user-requests-router-view': require('./components/MoviesList.vue')
+  //   }
+  // },
   {
     name: '404',
     path: '/404',
-    components: {
-      'page-router-view': require('./components/404.vue')
-    }
+    component: (resolve) => require(['./components/404.vue'], resolve)
   },
   {
     path: '*',
@@ -110,13 +71,15 @@ let routes = [
 ];
 
 const router =  new VueRouter({
-  // mode: 'history',
+  mode: 'hash',
   base: '/',
   routes,
   linkActiveClass: 'is-active'
 });
 
 router.beforeEach((to, from, next) => {
+  store.dispatch('documentTitle/updateTitle', to.name)
+
   // Toggle mobile nav
   if(document.querySelector('.nav__hamburger--active')){
     document.querySelector('.nav__hamburger').classList.remove('nav__hamburger--active');

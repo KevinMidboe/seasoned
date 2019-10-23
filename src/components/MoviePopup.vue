@@ -1,26 +1,42 @@
 <template>
-  <div class="movie-popup" @click="$emit('close')">
+  <div class="movie-popup" @click="$popup.close()">
     <div class="movie-popup__box" @click.stop>
-      <movie :id="id" :mediaType="type"></movie>
-      <button class="movie-popup__close" @click="$emit('close')"></button>
+      <movie :id="id" :type="type"></movie>
+      <button class="movie-popup__close" @click="$popup.close()"></button>
     </div>
     <i class="loader"></i>
   </div>
 </template>
 
 <script>
-import Movie from './Movie.vue';
+import Movie from './Movie';
 
 export default {
-  props: ['id', 'type'],
+  props: {
+    id: {
+      type: Number,
+      required: true
+    },
+    type: {
+      type: String,
+      required: true
+    }
+  },
   components: { Movie },
-  created(){
-    window.addEventListener('keyup', function(e){
-      if (e.keyCode == 27) {
-        this.$emit('close');
+  methods: {
+    checkEventForEscapeKey(event) {
+      if (event.keyCode == 27) {
+        this.$popup.close()
       }
-    }.bind(this));
+    }
+  },
+  created(){
+    window.addEventListener('keyup', this.checkEventForEscapeKey)
+  },
+  beforeDestroy() {
+    window.removeEventListener('keyup', this.checkEventForEscapeKey)
   }
+
 }
 </script>
 
@@ -35,7 +51,7 @@ export default {
   z-index: 20;
   width: 100%;
   height: 100vh;
-  background: rgba($c-dark, 0.98);
+  background: rgba($dark, 0.93);
   -webkit-overflow-scrolling: touch;
   overflow: auto;
   &__box{
@@ -43,7 +59,7 @@ export default {
     max-width: 768px;
     position: relative;
     z-index: 5;
-    background: $c-dark;
+    background: $background-color-secondary;
     padding-bottom: 50px;
     @include tablet-min{
       padding-bottom: 0;
@@ -70,7 +86,7 @@ export default {
       left: 10px;
       width: 20px;
       height: 2px;
-      background: $c-white;
+      background: $white;
     }
     &:before{
       transform: rotate(45deg);
@@ -79,7 +95,7 @@ export default {
       transform: rotate(-45deg);
     }
     &:hover{
-      background: $c-green;
+      background: $green;
     }
   }
 }
