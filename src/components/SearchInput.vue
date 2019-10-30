@@ -3,6 +3,7 @@
     
     <div class="search">
       <input
+        ref="input"
         type="text"
         placeholder="Search for a movie or show"
         autocorrect="off"
@@ -93,6 +94,13 @@ export default {
     navigateUp() {
       this.focus = true
       this.selectedResult--
+      const input = this.$refs.input;
+      const textLength = input.value.length
+
+      setTimeout(() => {
+        input.focus()
+        input.setSelectionRange(textLength, textLength + 1)
+      }, 1)
     },
     handleInput(e){
       this.selectedResult = 0
