@@ -123,6 +123,10 @@ img{
   height: auto;
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
 .wrapper{
   position: relative;
 }
