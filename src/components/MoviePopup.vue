@@ -32,9 +32,11 @@ export default {
   },
   created(){
     window.addEventListener('keyup', this.checkEventForEscapeKey)
+    document.getElementsByTagName("body")[0].classList += " no-scroll";
   },
   beforeDestroy() {
     window.removeEventListener('keyup', this.checkEventForEscapeKey)
+    document.getElementsByTagName("body")[0].classList.remove("no-scroll");
   }
 
 }
