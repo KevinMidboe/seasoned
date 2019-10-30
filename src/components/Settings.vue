@@ -129,7 +129,11 @@ a {
   }
 }
 .settings {
-   padding: 35px;
+  padding: 3rem;
+
+  @include mobile-only {
+    padding: 1rem;
+  }
 
    &__header {
       margin: 0;

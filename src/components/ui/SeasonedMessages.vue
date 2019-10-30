@@ -55,6 +55,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "./src/scss/variables";
+@import "./src/scss/media-queries";
+
 .fade-enter-active {
   transition: opacity .4s;
 }
@@ -93,6 +95,20 @@ export default {
     font-weight: 300;
     color: $text-color-70;
     transition: color .5s ease;
+  }
+
+  @include mobile-only {
+    > div {
+      margin: 6px 6px;
+      line-height: 1.3rem;
+    }
+    h2 {
+      font-size: 1.1rem;
+    }
+    span {
+      font-size: 0.9rem;
+    }
+
   }
 
   .pinstripe {
