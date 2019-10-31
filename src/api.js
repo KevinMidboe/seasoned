@@ -140,9 +140,16 @@ const addMagnet = (magnet, name, tmdb_id) => {
     name: name,
     tmdb_id: tmdb_id
   })
-  const headers = { authorization: storage.token }
+  const headers = {
+    'Content-Type': 'application/json',
+    authorization: storage.token
+  }
 
-  return fetch(url.href, { method: 'POST', headers, body })
+  return fetch(url.href, {
+      method: 'POST',
+      headers,
+      body
+    })
     .then(resp => resp.json())
     .catch(error => { console.error(`api error adding magnet: ${name} ${error}`); throw error })
 }
