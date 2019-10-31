@@ -135,11 +135,11 @@ const searchTorrents = (query, authorization_token) => {
 const addMagnet = (magnet, name, tmdb_id) => {
   const url = new URL('v1/pirate/add', SEASONED_URL)
 
-  const body = {
+  const body = JSON.stringify({
     magnet: magnet,
     name: name,
     tmdb_id: tmdb_id
-  }
+  })
   const headers = { authorization: storage.token }
 
   return fetch(url.href, { method: 'POST', headers, body })
