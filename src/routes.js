@@ -12,6 +12,11 @@ let routes = [
     component: (resolve) => require(['./components/Home.vue'], resolve)
   },
   {
+    name: 'activity',
+    path: '/activity',
+    component: (resolve) => require(['./components/ActivityPage.vue'], resolve)
+  },
+  {
     name: 'profile',
     path: '/profile',
     component: (resolve) => require(['./components/Profile.vue'], resolve)
