@@ -96,6 +96,17 @@
             </div>
           </div>
 
+
+
+          <div v-if="showIssueForm" class="issueForm">
+            <h2 class="movie__details-title">Report an issue</h2>
+            <RadioButtons class="issueOptions"
+                          :options="issueOptions"
+                          :value.sync="selectedIssue" />
+            <TextArea title="Additional information" :rows="3"
+                      placeholder="Placeholder text" />
+            <SeasonedButton>Report issue</SeasonedButton>
+          </div>
         </div>
 
         <!-- TODO: change this classname, this is general  -->
@@ -125,12 +136,23 @@ import Person from './Person'
 import SidebarListElement from './ui/sidebarListElem'
 import store from '@/store'
 import LoadingPlaceholder from './ui/LoadingPlaceholder'
+import RadioButtons from './ui/RadioButtons'
+import TextArea from './ui/TextArea'
+import SeasonedButton from './ui/SeasonedButton'
 
 import { getMovie, getShow, request, getRequestStatus } from '@/api'
 
 export default {
   props: ['id', 'type'],
-  components: { TorrentList, Person, LoadingPlaceholder, SidebarListElement },
+  components: {
+    TorrentList,
+    Person,
+    LoadingPlaceholder,
+    SidebarListElement,
+    RadioButtons,
+    TextArea,
+    SeasonedButton
+  },
   directives: { img: img }, // TODO decide to remove or use
   data(){
     return{
@@ -145,7 +167,9 @@ export default {
       requested: false,
       admin: localStorage.getItem('admin'),
       showTorrents: false,
-      compact: false
+      compact: false,
+      showIssueForm: false,
+      selectedIssue: null
     }
   },
   methods: {
@@ -180,6 +204,9 @@ export default {
       const tmdbType = this.type === 'show' ? 'tv' : this.type
       window.location.href = 'https://www.themoviedb.org/' + tmdbType + '/' + this.id
     },
+    reportIssue() {
+      this.showIssueForm = !this.showIssueForm;
+    }
   },
   watch: {
     id: function(val){
@@ -194,6 +221,35 @@ export default {
     numberOfTorrentResults: () => {
       let numTorrents = store.getters['torrentModule/resultCount']
       return numTorrents !== null ? numTorrents + ' results' : null
+    },
+    issueOptions: function() {
+      return [{
+          value: 'playback',
+          text: 'Unable to play'
+        }, {
+          value: 'missing-episode',
+          text: 'Missing Episode',
+          subElements: this.seasonOptions
+        }, {
+          value: 'missing-subtitle',
+          text: 'Missing subtitles'
+        }]
+    },
+    seasonOptions: function() {
+      if (this.movie.type !== 'show') {
+        return []
+      }
+
+      const options = []
+      const length = this.movie.seasons;
+
+      for (var i = 0; i < length; i++) {
+        options.push({
+          value: i+1,
+          text: `Season ${i+1}`
+        })
+      }
+      return options;
     }
   },
   beforeDestroy() {
