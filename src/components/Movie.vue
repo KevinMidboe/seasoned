@@ -67,14 +67,16 @@
 
         <!-- MOVIE INFO -->
         <div class="movie__info">
-          <div class="movie__description" v-if="movie"> {{ movie.overview }}</div>
 
           <!-- Loading placeholder -->
-          <div v-else class="movie__description">
+          <div v-if="!movie" class="movie__description">
             <loading-placeholder :count="12" />
           </div>
 
-          <div class="movie__details" v-if="movie">
+          <div class="movie__details" v-if="movie && !showIssueForm">
+            <div class="movie__description">
+              {{ movie.overview }}
+            </div>
             <div v-if="movie.year" class="movie__details-block">
               <h2 class="movie__details-title">Release Date</h2>
               <div class="movie__details-text">{{ movie.year }}</div>
