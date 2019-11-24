@@ -31,7 +31,7 @@ export default {
   font-size: 11px;
   line-height: 2;
   height: 45px;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.2px;
   padding: 5px 20px 4px 20px;
   margin: 0;
   margin-right: 0.3rem;
