@@ -32,10 +32,8 @@
 
         <!-- SIDEBAR ACTIONS -->
         <div class="movie__actions" v-if="movie">
-
-          <sidebar-list-element :iconRef="'#iconNot_exsits'" :active="matched"
-            :iconRefActive="'#iconExists'" :textActive="'Already in plex 🎉'">
-
+          <sidebar-list-element :iconRef="'#iconNot_exsits'" :active="requested"
+            :iconRefActive="'#iconExists'" :textActive="'Already in plex 🎉'" :class="requested ? 'rotate-180' : null">
             Not yet in plex
           </sidebar-list-element>
           <sidebar-list-element @click="sendRequest" :iconRef="'#iconSent'"
