@@ -36,17 +36,22 @@
             :iconRefActive="'#iconExists'" :textActive="'Already in plex 🎉'" :class="requested ? 'rotate-180' : null">
             Not yet in plex
           </sidebar-list-element>
+
           <sidebar-list-element @click="sendRequest" :iconRef="'#iconSent'"
             :active="requested" :textActive="'Requested to be downloaded'">
-
             Request to be downloaded?
           </sidebar-list-element>
+
           <sidebar-list-element v-if="admin" @click="showTorrents=!showTorrents"
             :iconRef="'#icon_torrents'" :active="showTorrents"
             :supplementaryText="numberOfTorrentResults">
-
             Search for torrents
           </sidebar-list-element>
+
+          <sidebar-list-element @click="reportIssue" :iconRef="null" :active="showIssueForm">
+            &nbsp;⚠️ &nbsp;Report an issue!
+          </sidebar-list-element>
+
           <sidebar-list-element @click="openTmdb" :iconRef="'#icon_info'">
             See more info
           </sidebar-list-element>
