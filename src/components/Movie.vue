@@ -421,15 +421,19 @@ export default {
       font-size: 13px;
       line-height: 1.8;
       margin-bottom: 20px;
+      flex: 0 0 100%;
+
       @include tablet-min {
         margin-bottom: 30px;
         font-size: 14px;
       }
     }
     &__details {
-      &-block {
-        float: left;
-      }
+      display: flex;
+      width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+
       &-block:not(:last-child) {
         margin-bottom: 20px;
         margin-right: 20px;
