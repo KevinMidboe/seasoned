@@ -48,7 +48,9 @@
             Search for torrents
           </sidebar-list-element>
 
-          <sidebar-list-element @click="reportIssue" :iconRef="null" :active="showIssueForm">
+          <sidebar-list-element @click="showIssueForm = !showIssueForm"
+                                :iconRef="null"
+                                :active="showIssueForm">
             &nbsp;⚠️ &nbsp;Report an issue!
           </sidebar-list-element>
 
@@ -107,7 +109,7 @@
                           :value.sync="selectedIssue" />
             <TextArea title="Additional information" :rows="3"
                       placeholder="Placeholder text" />
-            <SeasonedButton>Report issue</SeasonedButton>
+            <SeasonedButton @click="reportIssue">Report issue</SeasonedButton>
           </div>
         </div>
 
@@ -207,7 +209,13 @@ export default {
       window.location.href = 'https://www.themoviedb.org/' + tmdbType + '/' + this.id
     },
     reportIssue() {
-      this.showIssueForm = !this.showIssueForm;
+      if (this.showIssueForm) {
+        this.$notifications.success({
+          title: 'Issue successfully submitted',
+          description: 'Reported issue: Missing subtitles',
+          timeout: 300000
+        })
+      }
     }
   },
   watch: {
