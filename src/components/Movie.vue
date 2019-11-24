@@ -482,4 +482,24 @@ export default {
         }
     }
 }
+
+.issueForm {
+  // padding: 40px;
+
+  .issueOptions {
+    margin-top: 1rem;
+  }
+
+  .seasonOptions {
+    margin-top: 2rem;
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    > :not(h2) {
+      margin-left: 1rem;
+    }
+  }
+}
 </style>
