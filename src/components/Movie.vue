@@ -285,6 +285,9 @@ export default {
 @import "./src/scss/media-queries";
 
 .movie {
+  background-color: $background-color;
+  color: $text-color;
+
   &__wrap {
     display: flex;
     &--header {
@@ -298,9 +301,6 @@ export default {
       @include tablet-min{
         flex-direction: row;
       }
-
-      background-color: $background-color;
-      color: $text-color;
     }
   }
   &__header {
