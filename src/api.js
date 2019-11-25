@@ -10,6 +10,13 @@ const ELASTIC_INDEX = config.ELASTIC_INDEX
 // TODO
 //  - Move autorization token and errors here?
 
+const checkStatusAndReturnJson = (response) => {
+  if (!response.ok) {
+    throw resp
+  }
+  return response.json()
+}
+
 // - - - TMDB - - - 
 
 /**
@@ -239,7 +246,6 @@ const login = (username, password) => {
   }
 
   return fetch(url.href, options)
-    .then(resp => checkStatus)
     .then(resp => resp.json())
     .catch(error => {
       console.error('Unexpected error occured before receiving response. Error:', error)
