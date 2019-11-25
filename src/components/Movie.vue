@@ -151,7 +151,7 @@ export default {
       this.title = movie.title
       this.poster = movie.poster
       this.backdrop = movie.backdrop
-      this.matched = movie.existsInPlex
+      this.matched = movie.exists_in_plex || false
       this.checkIfRequested(movie)
         .then(status => this.requested = status)
 
@@ -161,9 +161,7 @@ export default {
       return await getRequestStatus(movie.id, movie.type)
     },
     nestedDataToString(data) {
-      let nestedArray = []
-      data.forEach(item => nestedArray.push(item));
-      return nestedArray.join(', ');
+      return data.join(', ')
     },
     sendRequest(){
       request(this.id, this.type, storage.token)
@@ -200,7 +198,7 @@ export default {
     this.prevDocumentTitle = store.getters['documentTitle/title']
 
     if (this.type === 'movie') {
-      getMovie(this.id)
+      getMovie(this.id, true)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: '404' });
