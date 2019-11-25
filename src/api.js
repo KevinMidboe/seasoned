@@ -18,11 +18,17 @@ const ELASTIC_INDEX = config.ELASTIC_INDEX
  * @param {boolean} [credits=false] Include credits
  * @returns {object} Tmdb response
  */
-const getMovie = (id, credits=false) => {
+const getMovie = (id, checkExistance=false, credits=false, release_dates=false) => {
   const url = new URL('v2/movie', SEASONED_URL)
   url.pathname = path.join(url.pathname, id.toString())
+  if (checkExistance) {
+    url.searchParams.append('check_existance', true)
+  }
   if (credits) {
     url.searchParams.append('credits', true)
+  }
+  if(release_dates) {
+    url.searchParams.append('release_dates', true)
   }
 
   return fetch(url.href)
