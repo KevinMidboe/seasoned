@@ -211,6 +211,43 @@ const getRequestStatus = (id, type, authorization_token=undefined) => {
     .catch(err => Promise.reject(err))
 }
 
+// - - - Seasoned user endpoints - - -
+
+const register = (username, password) => {
+  const url = new URL('v1/user', SEASONED_URL)
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  }
+
+  return fetch(url.href, options)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error('Unexpected error occured before receiving response. Error:', error)
+      // TODO log to sentry the issue here
+      throw error
+    })
+}
+
+const login = (username, password) => {
+  const url = new URL('v1/user/login', SEASONED_URL)
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  }
+
+  return fetch(url.href, options)
+    .then(resp => checkStatus)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error('Unexpected error occured before receiving response. Error:', error)
+      // TODO log to sentry the issue here
+      throw error
+    })
+}
+
 // - - - Authenticate with plex - - -
 
 const plexAuthenticate = (username, password) => {
@@ -303,6 +340,8 @@ export {
   request,
   getRequestStatus,
   plexAuthenticate,
+  register,
+  login,
   getEmoji,
   elasticSearchMoviesAndShows
 }
