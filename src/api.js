@@ -107,7 +107,9 @@ const searchTmdb = (query, page=1) => {
   url.searchParams.append('query', query)
   url.searchParams.append('page', page)
 
-  return fetch(url.href)
+  const headers = { authorization: localStorage.getItem('token') }
+
+  return fetch(url.href, { headers })
     .then(resp => resp.json())
     .catch(error => { console.error(`api error searching: ${query}, page: ${page}`); throw error })
 }
