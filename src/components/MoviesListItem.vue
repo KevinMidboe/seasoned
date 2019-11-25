@@ -72,7 +72,7 @@ export default {
   }
 
   @include desktop-lg-min{
-    padding: 20px;
+    padding: 15px;
     width: 12.5%;
   }
 
