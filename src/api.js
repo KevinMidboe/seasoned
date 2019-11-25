@@ -214,29 +214,20 @@ const getRequestStatus = (id, type, authorization_token=undefined) => {
 // - - - Authenticate with plex - - -
 
 const plexAuthenticate = (username, password) => {
-  const url = new URL('https://plex.tv/api/v2/users/signin')
-
+  const url = new URL('v1/user/authenticate', SEASONED_URL)
+  const body = { username, password }
   const headers = {
     'Content-Type': 'application/json',
-    'X-Plex-Platform': 'Linux',
-    'X-Plex-Version': 'v2.0.24',
-    'X-Plex-Platform-Version': '4.13.0-36-generic',
-    'X-Plex-Device-Name': 'Tautulli',
-    'X-Plex-Client-Identifier': '123'
+    authorization: storage.token
   }
 
-  let formData = new FormData()
-  formData.set('login', username)
-  formData.set('password', password)
-  formData.set('rememberMe', false)
-
-  return axios({
-      method: 'POST',
-      url: url.href,
-      headers: headers,
-      data: formData
-    })
-    .catch(error => { console.error(`api error authentication plex: ${username}`); throw error })
+  return fetch(url.href, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  })
+  .then(resp => resp.json())
+  .catch(error => { console.error(`api error authentication plex: ${username}`); throw error })
 }
 
 
