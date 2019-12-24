@@ -2,7 +2,10 @@
   <section>
     <h1>Sign in</h1>
 
-    <seasoned-input placeholder="username" icon="Email" type="username" :value.sync="username" />
+    <seasoned-input placeholder="username"
+                    icon="Email"
+                    type="email"
+                    :value.sync="username" />
     <seasoned-input placeholder="password" icon="Keyhole" type="password" :value.sync="password" @enter="signin"/>
 
     <seasoned-button @click="signin">sign in</seasoned-button>
