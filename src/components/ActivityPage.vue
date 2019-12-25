@@ -292,6 +292,8 @@ export default {
   .dayinput {
     font-size: 1.2rem;
     max-width: 3rem;
+    background-color: $background-ui;
+    color: $text-color;
   }
 }
 
