@@ -41,6 +41,7 @@
 <script>
 import store from '@/store'
 import ToggleButton from '@/components/ui/ToggleButton';
+import { fetchChart } from '@/api'
 
 var Chart = require('chart.js');
 Chart.defaults.global.elements.point.radius = 0
@@ -58,13 +59,13 @@ export default {
         name: 'Watch activity',
         ref: 'activityCanvas',
         data: null,
-        urlPath: 'api/v1/user/plays_by_day',
+        urlPath: '/plays_by_day',
         graphType: 'line'
       }, {
         name: 'Plays by day of week',
         ref: 'playsByDayOfWeekCanvas',
         data: null,
-        urlPath: 'api/v1/user/plays_by_dayofweek',
+        urlPath: '/plays_by_dayofweek',
         graphType: 'bar'
       }],
       chartData: [{
@@ -116,16 +117,10 @@ export default {
       }
 
       for (let chart of charts) {
-        const url = new URL(chart.urlPath, 'http://10.0.0.10:31459')
-        url.searchParams.append('days', this.days)
-        url.searchParams.append('y_axis', this.selectedChartType.type)
 
-        const headers = {
-          authorization: localStorage.getItem('token')
-        }
 
-        fetch(url.href, { headers })
-          .then(resp => resp.json())
+
+        fetchChart(chart.urlPath, this.days, this.selectedChartType.type)
           .then(data => {
             this.series = data.data.series.filter(group => group.name === 'TV')[0].data;      // plays pr date in groups (movie/tv/music)
             this.categories = data.data.categories;  // dates

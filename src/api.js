@@ -335,6 +335,25 @@ const unlinkPlexAccount = (username, password) => {
 }
 
 
+// - - - User graphs - - -
+
+const fetchChart = (urlPath, days, chartType) => {
+  const url = new URL('v1/user' + urlPath, SEASONED_URL)
+  url.searchParams.append('days', days)
+  url.searchParams.append('y_axis', chartType)
+
+  const authorization_token = localStorage.getItem('token')
+  const headers = authorization_token ? {
+    'Authorization': authorization_token,
+    'Content-Type': 'application/json'
+  } : {}
+
+  return fetch(url.href, { headers })
+    .then(resp => resp.json())
+    .catch(error => { console.log('api error fetching chart'); throw error })
+}
+
+
 // - - - Random emoji - - -
 
 const getEmoji = () => {
@@ -412,6 +431,7 @@ export {
   login,
   getSettings,
   updateSettings,
+  fetchChart,
   getEmoji,
   elasticSearchMoviesAndShows
 }
