@@ -2,6 +2,7 @@ import axios from 'axios'
 import storage from '@/storage'
 import config from '@/config.json'
 import path from 'path'
+import store from '@/store'
 
 const SEASONED_URL = config.SEASONED_URL
 const ELASTIC_URL = config.ELASTIC_URL
