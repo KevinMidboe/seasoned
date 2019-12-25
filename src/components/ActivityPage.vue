@@ -40,7 +40,7 @@
 
 <script>
 import store from '@/store'
-import ToggleButton from '@/components/ui/ToggleButton.vue';
+import ToggleButton from '@/components/ui/ToggleButton';
 
 var Chart = require('chart.js');
 Chart.defaults.global.elements.point.radius = 0
