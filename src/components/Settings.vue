@@ -3,17 +3,23 @@
     <div class="profile__content" v-if="userLoggedIn">
       <section class='settings'>
         <h3 class='settings__header'>Plex account</h3>
-        <span class="settings__info">Sign in to your plex account to get information about recently added movies and to see your watch history</span>
 
-        <form class="form">
-          <seasoned-input placeholder="plex username" icon="Email" :value.sync="plexUsername"/>
-          <seasoned-input placeholder="plex password" icon="Keyhole" type="password"
-            :value.sync="plexPassword" @submit="authenticatePlex" />
+        <div v-if="!hasPlexUser">
+          <span class="settings__info">Sign in to your plex account to get information about recently added movies and to see your watch history</span>
 
-          <seasoned-button @click="authenticatePlex">link plex account</seasoned-button>
+          <form class="form">
+            <seasoned-input placeholder="plex username" icon="Email" :value.sync="plexUsername"/>
+            <seasoned-input placeholder="plex password" icon="Keyhole" type="password"
+              :value.sync="plexPassword" @submit="authenticatePlex" />
 
-          <seasoned-messages :messages.sync="messages" />
-        </form>
+            <seasoned-button @click="authenticatePlex">link plex account</seasoned-button>
+          </form>
+        </div>
+        <div v-else>
+          <span class="settings__info">Awesome, your account is already authenticated with plex! Enjoy viewing your seasoned search history, plex watch history and real-time torrent download progress.</span>
+          <seasoned-button @click="unauthenticatePlex">un-link plex account</seasoned-button>
+        </div>
+        <seasoned-messages :messages.sync="messages" />
 
         <hr class='setting__divider'>
 
@@ -44,12 +50,13 @@
 </template>
 
 <script>
+import store from '@/store'
 import storage from '@/storage'
 import SeasonedInput from '@/components/ui/SeasonedInput'
 import SeasonedButton from '@/components/ui/SeasonedButton'
 import SeasonedMessages from '@/components/ui/SeasonedMessages'
 
-import { plexAuthenticate } from '@/api'
+import { getSettings, updateSettings, linkPlexAccount, unlinkPlexAccount } from '@/api'
 
 export default {
   components: { SeasonedInput, SeasonedButton, SeasonedMessages },
@@ -60,7 +67,21 @@ export default {
       plexUsername: null,
       plexPassword: null,
       newPassword: null,
-      newPasswordRepeat: null
+      newPasswordRepeat: null,
+      emoji: null
+    }
+  },
+  computed: {
+    hasPlexUser: function() {
+      return this.settings && this.settings['plex_userid']
+    },
+    settings: {
+      get: () => {
+        return store.getters['userModule/settings']
+      },
+      set: function(newSettings) {
+        store.dispatch('userModule/setSettings', newSettings)
+      }
     }
   },
   methods: {
@@ -70,26 +91,37 @@ export default {
     changePassword() {
       return
     },
-    authenticatePlex() {
+    async authenticatePlex() {
       let username = this.plexUsername
       let password = this.plexPassword
 
-      plexAuthenticate(username, password)
-      .then(resp => {
-        const data = resp.data
-        this.messages.push({ type: 'success', title: 'Authenticated with plex', message: 'Successfully linked plex account with seasoned request' })
+      const response = await linkPlexAccount(username, password)
 
-        console.log('response from plex:', data.username)
+      this.messages.push({
+        type: response.success ? 'success' : 'error',
+        title: response.success ? 'Authenticated with plex' : 'Something went wrong',
+        message: response.message
       })
-      .catch(error => {
-        console.error(error);
 
-        this.messages.push({ type: 'error', title: 'Something went wrong', message: error.message })
+      if (response.success)
+        getSettings().then(settings => this.settings = settings)
+    },
+    async unauthenticatePlex() {
+      const response = await unlinkPlexAccount()
+
+      this.messages.push({
+        type: response.success ? 'success' : 'error',
+        title: response.success ? 'Unlinked plex account ' : 'Something went wrong',
+        message: response.message
       })
+
+      if (response.success)
+        getSettings().then(settings => this.settings = settings)
     }
   },
   created(){
-    if (localStorage.getItem('token')){
+    const token = localStorage.getItem('token') || false;
+    if (token){
       this.userLoggedIn = true
     }
   }
@@ -151,7 +183,7 @@ a {
       display: block;
       height: 1px;
       border: 0;
-      border-bottom: 1px solid rgba(8, 28, 36, 0.05);
+      border-bottom: 1px solid $text-color-50;
       margin-top: 30px;
       margin-bottom: 70px;
       margin-left: 20px;
