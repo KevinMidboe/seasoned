@@ -254,10 +254,55 @@ const login = (username, password) => {
     })
 }
 
+const getSettings = () => {
+  const settingsExists = (value) => {
+    if (value instanceof Object && value.hasOwnProperty('settings'))
+      return value;
+    throw "Settings does not exist in response object.";
+  }
+  const commitSettingsToStore = (response) => {
+    store.dispatch('userModule/setSettings', response.settings)
+    return response
+  }
+
+  const url = new URL('v1/user/settings', SEASONED_URL)
+
+  const authorization_token = localStorage.getItem('token')
+  const headers = authorization_token ? {
+    'Authorization': authorization_token,
+    'Content-Type': 'application/json'
+  } : {}
+
+  return fetch(url.href, { headers })
+    .then(resp => resp.json())
+    .then(settingsExists)
+    .then(commitSettingsToStore)
+    .then(response => response.settings)
+    .catch(error => { console.log('api error getting user settings'); throw error })
+}
+
+const updateSettings = (settings) => {
+  const url = new URL('v1/user/settings', SEASONED_URL)
+
+  const authorization_token = localStorage.getItem('token')
+  const headers = authorization_token ? {
+    'Authorization': authorization_token,
+    'Content-Type': 'application/json'
+  } : {}
+
+  return fetch(url.href, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(settings)
+    })
+    .then(resp => resp.json())
+    .catch(error => { console.log('api error updating user settings'); throw error })
+}
+
 // - - - Authenticate with plex - - -
 
-const plexAuthenticate = (username, password) => {
-  const url = new URL('v1/user/authenticate', SEASONED_URL)
+const linkPlexAccount = (username, password) => {
+  const url = new URL('v1/user/link_plex', SEASONED_URL)
   const body = { username, password }
   const headers = {
     'Content-Type': 'application/json',
@@ -270,7 +315,22 @@ const plexAuthenticate = (username, password) => {
     body: JSON.stringify(body)
   })
   .then(resp => resp.json())
-  .catch(error => { console.error(`api error authentication plex: ${username}`); throw error })
+  .catch(error => { console.error(`api error linking plex account: ${username}`); throw error })
+}
+
+const unlinkPlexAccount = (username, password) => {
+  const url = new URL('v1/user/unlink_plex', SEASONED_URL)
+  const headers = {
+    'Content-Type': 'application/json',
+    authorization: storage.token
+  }
+
+  return fetch(url.href, {
+    method: 'POST',
+    headers
+  })
+  .then(resp => resp.json())
+  .catch(error => { console.error(`api error unlinking plex account: ${username}`); throw error })
 }
 
 
@@ -345,9 +405,12 @@ export {
   addMagnet,
   request,
   getRequestStatus,
-  plexAuthenticate,
+  linkPlexAccount,
+  unlinkPlexAccount,
   register,
   login,
+  getSettings,
+  updateSettings,
   getEmoji,
   elasticSearchMoviesAndShows
 }
