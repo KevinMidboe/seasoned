@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { register } from '@/api'
 import SeasonedButton from '@/components/ui/SeasonedButton'
 import SeasonedInput from '@/components/ui/SeasonedInput'
 import SeasonedMessages from '@/components/ui/SeasonedMessages'
@@ -40,23 +40,20 @@ export default {
       let verifyCredentials = this.checkCredentials(username, password, passwordRepeat);
 
       if (verifyCredentials.verified) {
-        axios.post(`https://api.kevinmidboe.com/api/v1/user`, {
-          username: username,
-          password: password
-        })
-        .then(resp => {
-          let data = resp.data;
-          if (data.success){
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('username', username);
-            localStorage.setItem('admin', data.admin)
-            
-            eventHub.$emit('setUserStatus');
-            this.$router.push({ name: 'profile' })
-          }
+
+        register(username, password)
+          .then(data => {
+            if (data.success){
+              localStorage.setItem('token', data.token);
+              localStorage.setItem('username', username);
+              localStorage.setItem('admin', data.admin)
+
+              eventHub.$emit('setUserStatus');
+              this.$router.push({ name: 'profile' })
+            }
         })
         .catch(error => {
-          this.messages.push({ type: 'error', title: 'Unexpected error', message: error.response.data.error })
+          this.messages.push({ type: 'error', title: 'Unexpected error', message: error.message })
         });
       } 
       else {

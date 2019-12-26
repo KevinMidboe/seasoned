@@ -2,6 +2,7 @@ import axios from 'axios'
 import storage from '@/storage'
 import config from '@/config.json'
 import path from 'path'
+import store from '@/store'
 
 const SEASONED_URL = config.SEASONED_URL
 const ELASTIC_URL = config.ELASTIC_URL
@@ -9,6 +10,13 @@ const ELASTIC_INDEX = config.ELASTIC_INDEX
 
 // TODO
 //  - Move autorization token and errors here?
+
+const checkStatusAndReturnJson = (response) => {
+  if (!response.ok) {
+    throw resp
+  }
+  return response.json()
+}
 
 // - - - TMDB - - - 
 
@@ -18,11 +26,17 @@ const ELASTIC_INDEX = config.ELASTIC_INDEX
  * @param {boolean} [credits=false] Include credits
  * @returns {object} Tmdb response
  */
-const getMovie = (id, credits=false) => {
+const getMovie = (id, checkExistance=false, credits=false, release_dates=false) => {
   const url = new URL('v2/movie', SEASONED_URL)
   url.pathname = path.join(url.pathname, id.toString())
+  if (checkExistance) {
+    url.searchParams.append('check_existance', true)
+  }
   if (credits) {
     url.searchParams.append('credits', true)
+  }
+  if(release_dates) {
+    url.searchParams.append('release_dates', true)
   }
 
   return fetch(url.href)
@@ -119,7 +133,9 @@ const searchTmdb = (query, page=1) => {
   url.searchParams.append('query', query)
   url.searchParams.append('page', page)
 
-  return fetch(url.href)
+  const headers = { authorization: localStorage.getItem('token') }
+
+  return fetch(url.href, { headers })
     .then(resp => resp.json())
     .catch(error => { console.error(`api error searching: ${query}, page: ${page}`); throw error })
 }
@@ -221,32 +237,138 @@ const getRequestStatus = (id, type, authorization_token=undefined) => {
     .catch(err => Promise.reject(err))
 }
 
-// - - - Authenticate with plex - - -
+// - - - Seasoned user endpoints - - -
 
-const plexAuthenticate = (username, password) => {
-  const url = new URL('https://plex.tv/api/v2/users/signin')
-
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Plex-Platform': 'Linux',
-    'X-Plex-Version': 'v2.0.24',
-    'X-Plex-Platform-Version': '4.13.0-36-generic',
-    'X-Plex-Device-Name': 'Tautulli',
-    'X-Plex-Client-Identifier': '123'
+const register = (username, password) => {
+  const url = new URL('v1/user', SEASONED_URL)
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
   }
 
-  let formData = new FormData()
-  formData.set('login', username)
-  formData.set('password', password)
-  formData.set('rememberMe', false)
-
-  return axios({
-      method: 'POST',
-      url: url.href,
-      headers: headers,
-      data: formData
+  return fetch(url.href, options)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error('Unexpected error occured before receiving response. Error:', error)
+      // TODO log to sentry the issue here
+      throw error
     })
-    .catch(error => { console.error(`api error authentication plex: ${username}`); throw error })
+}
+
+const login = (username, password) => {
+  const url = new URL('v1/user/login', SEASONED_URL)
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  }
+
+  return fetch(url.href, options)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error('Unexpected error occured before receiving response. Error:', error)
+      // TODO log to sentry the issue here
+      throw error
+    })
+}
+
+const getSettings = () => {
+  const settingsExists = (value) => {
+    if (value instanceof Object && value.hasOwnProperty('settings'))
+      return value;
+    throw "Settings does not exist in response object.";
+  }
+  const commitSettingsToStore = (response) => {
+    store.dispatch('userModule/setSettings', response.settings)
+    return response
+  }
+
+  const url = new URL('v1/user/settings', SEASONED_URL)
+
+  const authorization_token = localStorage.getItem('token')
+  const headers = authorization_token ? {
+    'Authorization': authorization_token,
+    'Content-Type': 'application/json'
+  } : {}
+
+  return fetch(url.href, { headers })
+    .then(resp => resp.json())
+    .then(settingsExists)
+    .then(commitSettingsToStore)
+    .then(response => response.settings)
+    .catch(error => { console.log('api error getting user settings'); throw error })
+}
+
+const updateSettings = (settings) => {
+  const url = new URL('v1/user/settings', SEASONED_URL)
+
+  const authorization_token = localStorage.getItem('token')
+  const headers = authorization_token ? {
+    'Authorization': authorization_token,
+    'Content-Type': 'application/json'
+  } : {}
+
+  return fetch(url.href, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(settings)
+    })
+    .then(resp => resp.json())
+    .catch(error => { console.log('api error updating user settings'); throw error })
+}
+
+// - - - Authenticate with plex - - -
+
+const linkPlexAccount = (username, password) => {
+  const url = new URL('v1/user/link_plex', SEASONED_URL)
+  const body = { username, password }
+  const headers = {
+    'Content-Type': 'application/json',
+    authorization: storage.token
+  }
+
+  return fetch(url.href, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  })
+  .then(resp => resp.json())
+  .catch(error => { console.error(`api error linking plex account: ${username}`); throw error })
+}
+
+const unlinkPlexAccount = (username, password) => {
+  const url = new URL('v1/user/unlink_plex', SEASONED_URL)
+  const headers = {
+    'Content-Type': 'application/json',
+    authorization: storage.token
+  }
+
+  return fetch(url.href, {
+    method: 'POST',
+    headers
+  })
+  .then(resp => resp.json())
+  .catch(error => { console.error(`api error unlinking plex account: ${username}`); throw error })
+}
+
+
+// - - - User graphs - - -
+
+const fetchChart = (urlPath, days, chartType) => {
+  const url = new URL('v1/user' + urlPath, SEASONED_URL)
+  url.searchParams.append('days', days)
+  url.searchParams.append('y_axis', chartType)
+
+  const authorization_token = localStorage.getItem('token')
+  const headers = authorization_token ? {
+    'Authorization': authorization_token,
+    'Content-Type': 'application/json'
+  } : {}
+
+  return fetch(url.href, { headers })
+    .then(resp => resp.json())
+    .catch(error => { console.log('api error fetching chart'); throw error })
 }
 
 
@@ -322,7 +444,13 @@ export {
   addMagnet,
   request,
   getRequestStatus,
-  plexAuthenticate,
+  linkPlexAccount,
+  unlinkPlexAccount,
+  register,
+  login,
+  getSettings,
+  updateSettings,
+  fetchChart,
   getEmoji,
   elasticSearchMoviesAndShows
 }

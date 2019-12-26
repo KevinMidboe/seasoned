@@ -11,6 +11,7 @@
   --text-color-secondary: orange;
   --background-color: #f8f8f8;
   --background-color-secondary: #ffffff;
+  --background-ui: #edeef0;
   --background-95: rgba(255, 255, 255, 0.95);
   --background-70: rgba(255, 255, 255, 0.7);
   --background-40: rgba(255, 255, 255, 0.4);
@@ -18,6 +19,7 @@
   
   --color-green: #01d277;
   --color-green-90: rgba(1, 210, 119, .9);
+  --color-green-70: rgba(1, 210, 119, .73);
   --color-teal: #091c24;
   --color-black: #081c24;
   --white: #fff;
@@ -47,6 +49,7 @@
     --background-95: rgba(30, 31, 34, 0.95);
     --background-70: rgba(30, 31, 34, 0.8);
     --background-40: rgba(30, 31, 34, 0.4);
+    --background-ui: #202125;
   }
 }
 
@@ -61,6 +64,7 @@ $header-size: var(--header-size);
 $dark: rgb(30, 31, 34);
 $green: var(--color-green);
 $green-90: var(--color-green-90);
+$green-70: var(--color-green-70);
 $teal: #091c24;
 $black: #081c24;
 $black-80: rgba(0,0,0,0.8);
@@ -74,6 +78,7 @@ $text-color-5: var(--text-color-5) !default;
 $text-color-secondary: var(--text-color-secondary) !default;
 $background-color: var(--background-color) !default;
 $background-color-secondary: var(--background-color-secondary) !default;
+$background-ui: var(--background-ui) !default;
 $background-95: var(--background-95) !default;
 $background-70: var(--background-70) !default;
 $background-40: var(--background-40) !default;
@@ -103,6 +108,7 @@ $color-error-highlight: var(--color-error-highlight) !default;
   --background-color-secondary: #111111;
   --background-95: rgba(30, 31, 34, 0.95);
   --background-70: rgba(30, 31, 34, 0.7);
+  --background-ui: #202125;
   --color-teal: #091c24;
 }
 
@@ -117,6 +123,7 @@ $color-error-highlight: var(--color-error-highlight) !default;
   --background-color-secondary: #ffffff;
   --background-95: rgba(255, 255, 255, 0.95);
   --background-70: rgba(255, 255, 255, 0.7);
+  --background-ui: #edeef0;
   --background-nav-logo: #081c24;
   --color-green: #01d277;
   --color-teal: #091c24;
