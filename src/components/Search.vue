@@ -8,9 +8,25 @@
       <seasoned-button @click="loadMore">load more</seasoned-button>
     </div>
 
-    <loader v-if="!results.length" />
+    <div class="notFound" v-if="results.length == 0 && loading == false">
+      <h1 class="notFound-title">No results for search: <b>{{ query }}</b></h1>
+    </div>
+
+    <loader v-if="loading" />
   </div>
 </template>
+
+<style lang="scss" scoped>
+.notFound {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &-title {
+    font-weight: 400;
+  }
+}
+</style>
 
 <script>
 import { searchTmdb } from '@/api'
@@ -37,6 +53,8 @@ export default {
       query: String,
       title: String,
       page: Number,
+      adult: undefined,
+      mediaType: null,
       totalPages: 0,
       results: [],
       totalResults: []
@@ -50,8 +68,8 @@ export default {
     }
   },
   methods: {
-    search(query=this.query, page=this.page) {
-      searchTmdb(query, page)
+    search(query=this.query, page=this.page, adult=this.adult, mediaType=this.mediaType) {
+      searchTmdb(query, page, adult, mediaType)
         .then(this.parseResponse)
     },
     parseResponse(data) {
@@ -74,14 +92,16 @@ export default {
     }
   },
   created() {
-    const { query, page } = this.$route.query
+    const { query, page, adult, media_type } = this.$route.query
 
     if (!query) {
       // abort
       console.error('abort, no query')
     }
     this.query = decodeURIComponent(query)
-    this.page = page ? page : 1
+    this.page = page || 1
+    this.adult = adult || this.adult
+    this.mediaType = media_type || this.mediaType
     this.title = `Search results: ${this.query}`
 
     this.search()
