@@ -1,8 +1,10 @@
 <template>
   <div>
     <a @click="$emit('click')"><li>
-      <figure :class="activeClassIfActive">
-        <svg><use :xlink:href="iconRefNameIfActive"/></svg>
+      <figure :class="activeClassIfActive" v-if="iconRefNameIfActive">
+        <svg class="icon">
+          <use :xlink:href="iconRefNameIfActive"/>
+        </svg>
       </figure>
 
       <span :class="activeClassIfActive">{{ contentTextToDisplay }}</span>
@@ -21,7 +23,7 @@ export default {
   props: {
     iconRef: {
       type: String,
-      required: true
+      required: false
     },
     iconRefActive: {
       type: String,
@@ -44,7 +46,7 @@ export default {
     iconRefNameIfActive() {
       const { iconRefActive, iconRef, active } = this
 
-      if ((iconRefActive && iconRef) & active) {
+      if ((iconRefActive && iconRef) && active) {
         return iconRefActive
       }
       return iconRef
@@ -98,7 +100,7 @@ li {
     text-align: right;
   }
 
-  figure, figure > svg {
+  figure, figure > .icon {
     width: 18px;
     height: 18px;
     margin: 0 7px 0 0;

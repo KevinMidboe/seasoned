@@ -32,23 +32,28 @@
 
         <!-- SIDEBAR ACTIONS -->
         <div class="movie__actions" v-if="movie">
-
-          <sidebar-list-element :iconRef="'#iconNot_exsits'" :active="matched"
-            :iconRefActive="'#iconExists'" :textActive="'Already in plex 🎉'">
-
+          <sidebar-list-element :iconRef="'#iconNot_exsits'" :active="requested"
+            :iconRefActive="'#iconExists'" :textActive="'Already in plex 🎉'" :class="requested ? 'rotate-180' : null">
             Not yet in plex
           </sidebar-list-element>
+
           <sidebar-list-element @click="sendRequest" :iconRef="'#iconSent'"
             :active="requested" :textActive="'Requested to be downloaded'">
-
             Request to be downloaded?
           </sidebar-list-element>
+
           <sidebar-list-element v-if="admin" @click="showTorrents=!showTorrents"
             :iconRef="'#icon_torrents'" :active="showTorrents"
             :supplementaryText="numberOfTorrentResults">
-
             Search for torrents
           </sidebar-list-element>
+
+          <sidebar-list-element @click="showIssueForm = !showIssueForm"
+                                :iconRef="null"
+                                :active="showIssueForm">
+            &nbsp;⚠️ &nbsp;Report an issue!
+          </sidebar-list-element>
+
           <sidebar-list-element @click="openTmdb" :iconRef="'#icon_info'">
             See more info
           </sidebar-list-element>
@@ -64,14 +69,16 @@
 
         <!-- MOVIE INFO -->
         <div class="movie__info">
-          <div class="movie__description" v-if="movie"> {{ movie.overview }}</div>
 
           <!-- Loading placeholder -->
-          <div v-else class="movie__description">
+          <div v-if="!movie" class="movie__description">
             <loading-placeholder :count="12" />
           </div>
 
-          <div class="movie__details" v-if="movie">
+          <div class="movie__details" v-if="movie && !showIssueForm">
+            <div class="movie__description">
+              {{ movie.overview }}
+            </div>
             <div v-if="movie.year" class="movie__details-block">
               <h2 class="movie__details-title">Release Date</h2>
               <div class="movie__details-text">{{ movie.year }}</div>
@@ -93,6 +100,17 @@
             </div>
           </div>
 
+
+
+          <div v-if="showIssueForm" class="issueForm">
+            <h2 class="movie__details-title">Report an issue</h2>
+            <RadioButtons class="issueOptions"
+                          :options="issueOptions"
+                          :value.sync="selectedIssue" />
+            <TextArea title="Additional information" :rows="3"
+                      placeholder="Placeholder text" />
+            <SeasonedButton @click="reportIssue">Report issue</SeasonedButton>
+          </div>
         </div>
 
         <!-- TODO: change this classname, this is general  -->
@@ -122,12 +140,23 @@ import Person from './Person'
 import SidebarListElement from './ui/sidebarListElem'
 import store from '@/store'
 import LoadingPlaceholder from './ui/LoadingPlaceholder'
+import RadioButtons from './ui/RadioButtons'
+import TextArea from './ui/TextArea'
+import SeasonedButton from './ui/SeasonedButton'
 
 import { getMovie, getShow, request, getRequestStatus } from '@/api'
 
 export default {
   props: ['id', 'type'],
-  components: { TorrentList, Person, LoadingPlaceholder, SidebarListElement },
+  components: {
+    TorrentList,
+    Person,
+    LoadingPlaceholder,
+    SidebarListElement,
+    RadioButtons,
+    TextArea,
+    SeasonedButton
+  },
   directives: { img: img }, // TODO decide to remove or use
   data(){
     return{
@@ -142,7 +171,9 @@ export default {
       requested: false,
       admin: localStorage.getItem('admin'),
       showTorrents: false,
-      compact: false
+      compact: false,
+      showIssueForm: false,
+      selectedIssue: null
     }
   },
   methods: {
@@ -177,6 +208,15 @@ export default {
       const tmdbType = this.type === 'show' ? 'tv' : this.type
       window.location.href = 'https://www.themoviedb.org/' + tmdbType + '/' + this.id
     },
+    reportIssue() {
+      if (this.showIssueForm) {
+        this.$notifications.success({
+          title: 'Issue successfully submitted',
+          description: 'Reported issue: Missing subtitles',
+          timeout: 300000
+        })
+      }
+    }
   },
   watch: {
     id: function(val){
@@ -191,6 +231,35 @@ export default {
     numberOfTorrentResults: () => {
       let numTorrents = store.getters['torrentModule/resultCount']
       return numTorrents !== null ? numTorrents + ' results' : null
+    },
+    issueOptions: function() {
+      return [{
+          value: 'playback',
+          text: 'Unable to play'
+        }, {
+          value: 'missing-episode',
+          text: 'Missing Episode',
+          subElements: this.seasonOptions
+        }, {
+          value: 'missing-subtitle',
+          text: 'Missing subtitles'
+        }]
+    },
+    seasonOptions: function() {
+      if (this.movie.type !== 'show') {
+        return []
+      }
+
+      const options = []
+      const length = this.movie.seasons;
+
+      for (var i = 0; i < length; i++) {
+        options.push({
+          value: i+1,
+          text: `Season ${i+1}`
+        })
+      }
+      return options;
     }
   },
   beforeDestroy() {
@@ -224,6 +293,9 @@ export default {
 @import "./src/scss/media-queries";
 
 .movie {
+  background-color: $background-color;
+  color: $text-color;
+
   &__wrap {
     display: flex;
     &--header {
@@ -237,9 +309,6 @@ export default {
       @include tablet-min{
         flex-direction: row;
       }
-
-      background-color: $background-color;
-      color: $text-color;
     }
   }
   &__header {
@@ -360,15 +429,19 @@ export default {
       font-size: 13px;
       line-height: 1.8;
       margin-bottom: 20px;
+      flex: 0 0 100%;
+
       @include tablet-min {
         margin-bottom: 30px;
         font-size: 14px;
       }
     }
     &__details {
-      &-block {
-        float: left;
-      }
+      display: flex;
+      width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+
       &-block:not(:last-child) {
         margin-bottom: 20px;
         margin-right: 20px;
@@ -416,5 +489,25 @@ export default {
           }
         }
     }
+}
+
+.issueForm {
+  // padding: 40px;
+
+  .issueOptions {
+    margin-top: 1rem;
+  }
+
+  .seasonOptions {
+    margin-top: 2rem;
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    > :not(h2) {
+      margin-left: 1rem;
+    }
+  }
 }
 </style>
