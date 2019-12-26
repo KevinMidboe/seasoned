@@ -140,7 +140,7 @@ export default {
       matched: false,
       userLoggedIn: storage.sessionId ? true : false,
       requested: false,
-      admin: localStorage.getItem('admin'),
+      admin: localStorage.getItem('admin') == "true" ? true : false,
       showTorrents: false,
       compact: false
     }
