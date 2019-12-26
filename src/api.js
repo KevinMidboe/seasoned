@@ -49,6 +49,24 @@ const getShow = (id, credits=false) => {
 }
 
 /**
+ * Fetches tmdb person by id. Can optionally include cast credits in result object.
+ * @param {number} id
+ * @param {boolean} [credits=false] Include credits
+ * @returns {object} Tmdb response
+ */
+const getPerson = (id, credits=false) => {
+  const url = new URL('v2/person', SEASONED_URL)
+  url.pathname = path.join(url.pathname, id.toString())
+  if (credits) {
+    url.searchParams.append('credits', true)
+  }
+
+  return fetch(url.href)
+    .then(resp => resp.json())
+    .catch(error => { console.error(`api error getting person: ${id}`); throw error })
+}
+
+/**
  * Fetches tmdb list by name.
  * @param {string} name List the fetch
  * @param {number} [page=1]
@@ -295,6 +313,7 @@ const elasticSearchMoviesAndShows = (query) => {
 export {
   getMovie,
   getShow,
+  getPerson,
   getTmdbMovieListByName,
   searchTmdb,
   getUserRequests,
