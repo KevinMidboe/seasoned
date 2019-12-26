@@ -20,9 +20,11 @@
 
     <div v-if="listLoaded">
       <div v-if="torrents.length > 0">
-        <ul class="filter">
+        <!-- <ul class="filter">
           <li class="filter-item" v-for="(item, index) in release_types" @click="applyFilter(item, index)" :class="{'active': item === selectedRelaseType}">{{ item }}</li>
-        </ul>
+        </ul> -->
+
+        <toggle-button :options="release_types" :selected.sync="selectedRelaseType" class="toggle"></toggle-button>
 
 
         <table>
@@ -97,9 +99,10 @@ import { searchTorrents, addMagnet } from '@/api'
 
 import SeasonedButton from '@/components/ui/SeasonedButton'
 import SeasonedInput from '@/components/ui/SeasonedInput'
+import ToggleButton from '@/components/ui/ToggleButton'
 
 export default {
-  components: { SeasonedButton, SeasonedInput },
+  components: { SeasonedButton, SeasonedInput, ToggleButton },
   props: {
     query: {
       type: String,
@@ -110,7 +113,7 @@ export default {
       require: true
     },
     tmdb_type: String,
-    admin: String,
+    admin: Boolean,
     show: Boolean
   },
   data() {
@@ -133,6 +136,11 @@ export default {
     }
     store.dispatch('torrentModule/reset')
   },
+  watch: {
+    selectedRelaseType: function(newValue) {
+      this.applyFilter(newValue)
+    }
+  },
   methods: {
     selectedSortableClass(headerName) {
       return headerName === this.prevCol ? 'active' : ''
@@ -147,27 +155,31 @@ export default {
     expand(event, name) {
       const existingExpandedElement = document.getElementsByClassName('expanded')[0]
 
+      const clickedElement = event.target.parentNode;
+      const scopedStyleDataVariable = Object.keys(clickedElement.dataset)[0]
+
       if (existingExpandedElement) {
-        console.log('exists')
         const expandedSibling = event.target.parentNode.nextSibling.className === 'expanded'
 
         existingExpandedElement.remove()
+        const table = document.getElementsByTagName('table')[0]
+        table.style.display = 'block'
 
         if (expandedSibling) {
-          console.log('sibling is here')
           return
         }
       }
 
-      console.log('expand event', event)
       const nameRow = document.createElement('tr')
       const nameCol = document.createElement('td')
       nameRow.className = 'expanded'
+      nameRow.dataset[scopedStyleDataVariable] = "";
       nameCol.innerText = name
+      nameCol.dataset[scopedStyleDataVariable] = "";
 
       nameRow.appendChild(nameCol)
 
-      event.target.parentNode.insertAdjacentElement('afterend', nameRow)
+      clickedElement.insertAdjacentElement('afterend', nameRow)
     },
     sendTorrent(magnet, name, event){
       this.$notifications.info({
@@ -177,7 +189,6 @@ export default {
       })
 
       event.target.parentNode.classList.add('active')
-
       addMagnet(magnet, name, this.tmdb_id)
       .catch((resp) => { console.log('error:', resp.data) })
       .then((resp) => {
@@ -193,7 +204,6 @@ export default {
       if (this.prevCol === col && sameDirection === false) {
         this.direction = !this.direction
       }
-      console.log('col and more', col, sameDirection)
 
       switch (col) {
         case 'name':
@@ -279,14 +289,13 @@ export default {
 @import "./src/scss/variables";
 .expanded {
   display: flex;
-  margin: 0 1rem;
+  padding: 0.25rem 1rem;
   max-width: 100%;
   border-left: 1px solid $text-color;
   border-right: 1px solid $text-color;
   border-bottom: 1px solid $text-color;
 
   td {
-    // border-left: 1px solid $c-dark;
     word-break: break-all;
     padding: 0.5rem 0.15rem;
     width: 100%;
@@ -298,8 +307,14 @@ export default {
 @import "./src/scss/media-queries";
 @import "./src/scss/elements";
 
+.toggle {
+  max-width: unset !important;
+  margin: 1rem 0;
+}
+
 .container {
   background-color: $background-color;
+  padding: 0 1rem;
 }
 
 .torrentHeader {
@@ -348,7 +363,6 @@ table {
 .table__content, .table__header {
   display: flex;
   padding: 0;
-  margin: 0 1rem;
   border-left: 1px solid $text-color;
   border-right: 1px solid $text-color;
   border-bottom: 1px solid $text-color;
