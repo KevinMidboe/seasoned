@@ -128,10 +128,15 @@ const getUserRequests = (page=1) => {
  * @param {number} [page=1]
  * @returns {object} Tmdb response
  */
-const searchTmdb = (query, page=1) => {
+const searchTmdb = (query, page=1, adult=false, mediaType=null) => {
   const url = new URL('v2/search', SEASONED_URL)
+  if (mediaType != null && ['movie', 'show', 'person'].includes(mediaType)) {
+    url.pathname += `/${mediaType}`
+  }
+
   url.searchParams.append('query', query)
   url.searchParams.append('page', page)
+  url.searchParams.append('adult', adult)
 
   const headers = { authorization: localStorage.getItem('token') }
 
