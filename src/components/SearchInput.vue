@@ -77,7 +77,7 @@ export default {
   props: ['value'],
   data() {
     return {
-      adult: false,
+      adult: true,
       searchTypes: ['all', 'movie', 'show', 'person'],
       selectedSearchType: 'all',
 
