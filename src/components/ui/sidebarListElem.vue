@@ -1,16 +1,18 @@
 <template>
   <div>
-    <a @click="$emit('click')"><li>
-      <figure :class="activeClassIfActive">
-        <svg><use :xlink:href="iconRefNameIfActive"/></svg>
-      </figure>
+    <a @click="$emit('click')">
+      <li>
+        <figure :class="activeClassIfActive">
+          <svg class="icon"><use :xlink:href="iconRefNameIfActive"/></svg>
+        </figure>
 
-      <span :class="activeClassIfActive">{{ contentTextToDisplay }}</span>
+        <span class="text" :class="activeClassIfActive">{{ contentTextToDisplay }}</span>
 
-      <span v-if="supplementaryText" class="supplementary-text">
-        {{ supplementaryText }}
-      </span>
-    </li></a>
+        <span v-if="supplementaryText" class="supplementary-text">
+          {{ supplementaryText }}
+        </span>
+      </li>
+    </a>
   </div>
 </template>
 
@@ -44,7 +46,7 @@ export default {
     iconRefNameIfActive() {
       const { iconRefActive, iconRef, active } = this
 
-      if ((iconRefActive && iconRef) & active) {
+      if ((iconRefActive && iconRef) && active) {
         return iconRefActive
       }
       return iconRef
@@ -85,12 +87,26 @@ li {
   &:hover {
     color: $text-color-70;
     cursor: pointer;
+
+    .icon {
+      fill: $text-color-70;
+      cursor: pointer;
+        transform: scale(1.1, 1.1);
+    }
   }
   .active {
     color: $text-color;
+
+    .icon {
+      fill: $green;
+    }
   }
   .pending {
     color: #f8bd2d;
+  }
+
+  .text {
+    margin-left: 26px;
   }
 
   .supplementary-text {
@@ -98,24 +114,24 @@ li {
     text-align: right;
   }
 
-  figure, figure > svg {
-    width: 18px;
-    height: 18px;
-    margin: 0 7px 0 0;
-    fill: $text-color-50;
-    transition: fill 0.5s ease, transform 0.5s ease;
-    &.waiting {
-      transform: scale(0.8, 0.8);
-    }
-    &.pending {
-      fill: #f8bd2d;
-    }
-    &:hover &-icon {
-      fill: $text-color-70;
-      cursor: pointer;
-    }
-    &.active > svg {
-      fill: $green;
+  figure {
+    position: absolute;
+
+    > svg {
+      position: relative;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      margin: 0 7px 0 0;
+      fill: $text-color-50;
+      transition: fill 0.5s ease, transform 0.5s ease;
+
+      & .waiting {
+        transform: scale(0.8, 0.8);
+      }
+      & .pending {
+        fill: #f8bd2d;
+      }
     }
   }
 }

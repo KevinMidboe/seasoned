@@ -13,7 +13,7 @@
         </div>
       </figure>
       <div class="movies-item__content">
-        <p class="movies-item__title">{{ movie.title }}</p>
+        <p class="movies-item__title">{{ movie.title || movie.name }}</p>
         <p class="movies-item__title">{{ movie.year }}</p>
       </div>
     </a>

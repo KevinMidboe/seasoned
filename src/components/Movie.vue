@@ -123,7 +123,7 @@ import SidebarListElement from './ui/sidebarListElem'
 import store from '@/store'
 import LoadingPlaceholder from './ui/LoadingPlaceholder'
 
-import { getMovie, getShow, request, getRequestStatus } from '@/api'
+import { getMovie, getPerson, getShow, request, getRequestStatus } from '@/api'
 
 export default {
   props: ['id', 'type'],
@@ -140,7 +140,7 @@ export default {
       matched: false,
       userLoggedIn: storage.sessionId ? true : false,
       requested: false,
-      admin: localStorage.getItem('admin'),
+      admin: localStorage.getItem('admin') == "true" ? true : false,
       showTorrents: false,
       compact: false
     }
@@ -199,6 +199,12 @@ export default {
 
     if (this.type === 'movie') {
       getMovie(this.id, true)
+        .then(this.parseResponse)
+        .catch(error => {
+          this.$router.push({ name: '404' });
+        })
+    } else if (this.type == 'person') {
+       getPerson(this.id, true)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: '404' });

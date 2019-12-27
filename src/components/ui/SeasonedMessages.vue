@@ -70,7 +70,7 @@ export default {
 .message {
   width: 100%;
   max-width: 35rem;
-  height: 75px;
+  min-height: 75px;
 
   display: flex;
   margin-top: 1rem;

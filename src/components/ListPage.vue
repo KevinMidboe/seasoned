@@ -1,7 +1,7 @@
 
 <template>
   <div>
-    <list-header :title="listTitle" :info="resultCount" :sticky="true" />
+    <list-header :title="listTitle" :info="info" :sticky="true" />
 
     <results-list :results="results" v-if="results" />
 
@@ -30,7 +30,8 @@ export default {
       results: [],
       page: 1,
       totalPages: 0,
-      totalResults: 0
+      totalResults: 0,
+      loading: true
     }
   },
   computed: {
@@ -42,18 +43,24 @@ export default {
       console.log('routelistname', routeListName)
       return routeListName.includes('_') ? routeListName.split('_').join(' ') : routeListName
     },
-    resultCount() {
+    info() {
       if (this.results.length === 0)
-        return ''
-
+        return [null, null]
+      return [this.pageCount, this.resultCount]
+    },
+    resultCount() {
       const loadedResults = this.results.length
       const totalResults = this.totalResults < 10000 ? this.totalResults : '∞'
       return `${loadedResults} of ${totalResults} results`
+    },
+    pageCount() {
+      return `Page ${this.page} of ${this.totalPages}`
     }
   },
   methods: {
     loadMore() {
       console.log(this.$route)
+      this.loading = true;
       this.page++
 
       window.history.replaceState({}, 'search', `/#/${this.$route.fullPath}?page=${this.page}`)
@@ -82,6 +89,8 @@ export default {
         // TODO handle if list is not found
         console.log('404 this is not a tmdb list')
       }
+
+      this.loading = false
     }
   },
   created() {

@@ -63,6 +63,24 @@ const getShow = (id, credits=false) => {
 }
 
 /**
+ * Fetches tmdb person by id. Can optionally include cast credits in result object.
+ * @param {number} id
+ * @param {boolean} [credits=false] Include credits
+ * @returns {object} Tmdb response
+ */
+const getPerson = (id, credits=false) => {
+  const url = new URL('v2/person', SEASONED_URL)
+  url.pathname = path.join(url.pathname, id.toString())
+  if (credits) {
+    url.searchParams.append('credits', true)
+  }
+
+  return fetch(url.href)
+    .then(resp => resp.json())
+    .catch(error => { console.error(`api error getting person: ${id}`); throw error })
+}
+
+/**
  * Fetches tmdb list by name.
  * @param {string} name List the fetch
  * @param {number} [page=1]
@@ -110,10 +128,15 @@ const getUserRequests = (page=1) => {
  * @param {number} [page=1]
  * @returns {object} Tmdb response
  */
-const searchTmdb = (query, page=1) => {
+const searchTmdb = (query, page=1, adult=false, mediaType=null) => {
   const url = new URL('v2/search', SEASONED_URL)
+  if (mediaType != null && ['movie', 'show', 'person'].includes(mediaType)) {
+    url.pathname += `/${mediaType}`
+  }
+
   url.searchParams.append('query', query)
   url.searchParams.append('page', page)
+  url.searchParams.append('adult', adult)
 
   const headers = { authorization: localStorage.getItem('token') }
 
@@ -424,6 +447,7 @@ const elasticSearchMoviesAndShows = (query) => {
 export {
   getMovie,
   getShow,
+  getPerson,
   getTmdbMovieListByName,
   searchTmdb,
   getUserRequests,

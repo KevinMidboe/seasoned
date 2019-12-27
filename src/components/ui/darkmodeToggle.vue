@@ -11,13 +11,19 @@ export default {
 
   data() {
     return {
-      darkmode: window.getComputedStyle(document.body).colorScheme.includes('dark')
+      darkmode: this.supported
     }
   },
   methods: {
     toggleDarkmode() {
       this.darkmode = !this.darkmode;
       document.body.className = this.darkmode ? 'dark' : 'light'
+    },
+    supported() {
+      const computedStyle = window.getComputedStyle(document.body)
+      if (computedStyle['colorScheme'] != null)
+        return computedStyle.colorScheme.includes('dark')
+      return false
     }
   },
   computed: {
@@ -41,7 +47,7 @@ export default {
   margin-right: 2px;
   bottom: 0;
   right: 0;
-  z-index: 1;
+  z-index: 10;
 
   -webkit-user-select: none;
   -moz-user-select: none;
