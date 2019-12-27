@@ -50,9 +50,12 @@ const getMovie = (id, checkExistance=false, credits=false, release_dates=false) 
  * @param {boolean} [credits=false] Include credits
  * @returns {object} Tmdb response
  */
-const getShow = (id, credits=false) => {
+const getShow = (id, checkExistance=false, credits=false) => {
   const url = new URL('v2/show', SEASONED_URL)
   url.pathname = path.join(url.pathname, id.toString())
+  if (checkExistance) {
+    url.searchParams.append('check_existance', true)
+  }
   if (credits) {
     url.searchParams.append('credits', true)
   }

@@ -210,7 +210,7 @@ export default {
           this.$router.push({ name: '404' });
         })
     } else {
-      getShow(this.id)
+      getShow(this.id, true)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: '404' });
