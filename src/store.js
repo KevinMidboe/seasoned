@@ -1,17 +1,19 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import torrentModule from './modules/torrentModule'
 import darkmodeModule from './modules/darkmodeModule'
 import documentTitle from './modules/documentTitle'
+import torrentModule from './modules/torrentModule'
+import userModule from './modules/userModule'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
-    torrentModule,
     darkmodeModule,
-    documentTitle
+    documentTitle,
+    torrentModule,
+    userModule
   }
 })
 

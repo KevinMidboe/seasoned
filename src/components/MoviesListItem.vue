@@ -6,6 +6,11 @@
       <figure class="movies-item__poster">
         <img v-if="!noImage" class="movies-item__img" src="~assets/placeholder.png" v-img="poster()" alt="">
         <img v-if="noImage" class="movies-item__img is-loaded" src="~assets/no-image.png" alt="">
+
+        <div v-if="movie.download" class="progress">
+          <progress :value="movie.download.progress" max="100"></progress>
+          <span>{{ movie.download.state }}: {{ movie.download.progress }}%</span>
+        </div>
       </figure>
       <div class="movies-item__content">
         <p class="movies-item__title">{{ movie.title }}</p>
@@ -67,7 +72,7 @@ export default {
   }
 
   @include desktop-lg-min{
-    padding: 20px;
+    padding: 15px;
     width: 12.5%;
   }
 
@@ -112,6 +117,49 @@ export default {
   }
   &__link:hover &__title{
     color: $text-color;
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+@import "./src/scss/variables";
+
+.progress {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.8rem;
+
+  > progress {
+    width: 95%;
+  }
+
+  > span {
+    position: absolute;
+    font-size: 1rem;
+    line-height: 1.4rem;
+    color: $white;
+  }
+
+  progress {
+    border-radius: 4px;
+    height: 1.4rem;
+  }
+  progress::-webkit-progress-bar {
+    background-color: rgba($black, 0.55);
+    border-radius: 4px;
+  }
+  progress::-webkit-progress-value {
+    background-color: $green-70;
+    border-radius: 4px;
+
+  }
+  progress::-moz-progress-bar {
+    /* style rules */
+    background-color: green;
   }
 }
 </style>

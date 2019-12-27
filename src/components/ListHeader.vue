@@ -2,8 +2,11 @@
   <header :class="{ 'sticky': sticky }">
     <h2>{{ title }}</h2>
 
-    <span v-if="info" class="result-count">{{ info }}</span>
-    <router-link v-else-if="link" :to="link" class='view-more'>
+    <div v-if="info instanceof Array" class="flex flex-direction-column">
+      <span v-for="item in info" class="info">{{ item }}</span>
+    </div>
+    <span v-else class="info">{{ info }}</span>
+    <router-link v-if="link" :to="link" class='view-more' :aria-label="`View all ${title}`">
       View All
     </router-link>
   </header>  
@@ -19,10 +22,10 @@ export default {
     sticky: {
       type: Boolean,
       required: false,
-      default: false
+      default: true
     },
     info: {
-      type: String,
+      type: [String, Array],
       required: false
     },
     link: {
@@ -37,12 +40,16 @@ export default {
 <style lang="scss" scoped>
 @import './src/scss/variables';
 @import './src/scss/media-queries';
+@import './src/scss/main';
 
 header {
   width: 100%;
+  min-height: 80px;
   display: flex;
   justify-content: space-between;
-  padding: 1.8rem 12px;
+  align-items: center;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 
   &.sticky {
     background-color: $background-color;
@@ -51,22 +58,19 @@ header {
     position: -webkit-sticky;
     top: $header-size;
     z-index: 4;
-
-    padding-bottom: 1rem;
-    margin-bottom: 1.5rem;
   }
 
   h2 {
-    font-size: 18px;
+    font-size: 1.4rem;
     font-weight: 300;
     text-transform: capitalize;
-    line-height: 18px;
+    line-height: 1.4rem;
     margin: 0;
     color: $text-color;
   }
 
   .view-more {
-    font-size: 13px;
+    font-size: 0.9rem;
     font-weight: 300;
     letter-spacing: .5px;
     color: $text-color-70;
@@ -82,12 +86,13 @@ header {
     }
   }
 
-  .result-count {
+  .info {
     font-size: 13px;
     font-weight: 300;
     letter-spacing: .5px;
     color: $text-color;
     text-decoration: none;
+    text-align: right;
   }
 
   @include tablet-min {

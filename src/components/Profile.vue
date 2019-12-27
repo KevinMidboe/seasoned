@@ -2,7 +2,7 @@
   <section class="profile">
     <div class="profile__content" v-if="userLoggedIn">
       <header class="profile__header">
-        <h2 class="profile__title">{{ emoji }} Welcome {{ userName }}</h2>
+        <h2 class="profile__title">{{ emoji }} Welcome {{ username }}</h2>
 
         <div class="button--group">
           <seasoned-button @click="showSettings = !showSettings">{{ showSettings ? 'hide settings' : 'show settings' }}</seasoned-button>
@@ -13,7 +13,7 @@
 
       <settings v-if="showSettings"></settings>
 
-      <list-header title="User requests" :info="resultCount"/>
+      <list-header title="User requests" :info="resultCount" />
       <results-list v-if="results" :results="results" />
     </div>
 
@@ -43,7 +43,6 @@ export default {
   data(){
     return{
       userLoggedIn: '',
-      userName: '',
       emoji: '',
       results: undefined,
       totalResults: undefined,
@@ -58,25 +57,10 @@ export default {
       const loadedResults = this.results.length
       const totalResults = this.totalResults < 10000 ? this.totalResults : '∞'
       return `${loadedResults} of ${totalResults} results`
-    }
+    },
+    username: () => store.getters['userModule/username']
   },
   methods: {
-    createSession(token){
-      axios.get(`https://api.themoviedb.org/3/authentication/session/new?api_key=${storage.apiKey}&request_token=${token}`)
-      .then(function(resp){
-          let data = resp.data;
-          if(data.success){
-            let id = data.session_id;
-            localStorage.setItem('session_id', id);
-            eventHub.$emit('setUserStatus');
-            this.userLoggedIn = true;
-            this.getUserInfo();
-          }
-      }.bind(this));
-    },
-    getUserInfo(){
-      this.userName = localStorage.getItem('username'); 
-    },
     toggleSettings() {
       this.showSettings = this.showSettings ? false : true;
     },
@@ -91,7 +75,6 @@ export default {
       this.userLoggedIn = false;
     } else {
       this.userLoggedIn = true;
-      this.getUserInfo();
 
       getUserRequests()
         .then(results => {
