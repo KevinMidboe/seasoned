@@ -15,8 +15,8 @@
   --background-95: rgba(255, 255, 255, 0.95);
   --background-70: rgba(255, 255, 255, 0.7);
   --background-40: rgba(255, 255, 255, 0.4);
+
   --background-nav-logo: #081c24;
-  
   --color-green: #01d277;
   --color-green-90: rgba(1, 210, 119, .9);
   --color-green-70: rgba(1, 210, 119, .73);
@@ -104,12 +104,12 @@ $color-error-highlight: var(--color-error-highlight) !default;
   --text-color-50: rgba(255, 255, 255, 0.5);
   --text-color-5: rgba(255, 255, 255, 0.05);
   --text-color-secondary: orange;
-  --background-color: #1e1f22;
-  --background-color-secondary: #111111;
-  --background-95: rgba(30, 31, 34, 0.95);
-  --background-70: rgba(30, 31, 34, 0.7);
+  --background-color: rgba(17, 17, 17, 1);
+  --background-color-secondary: rgba(6, 7, 8, 1);
   --background-ui: #202125;
-  --color-teal: #091c24;
+  --background-95: rgba(17, 17, 17, 0.95);
+  --background-70: rgba(17, 17, 17, 0.8);
+  --background-40: rgba(17, 17, 17, 0.4);
 }
 
 .light {
@@ -117,14 +117,11 @@ $color-error-highlight: var(--color-error-highlight) !default;
   --text-color-70: rgba(8, 28, 36, 0.7);
   --text-color-50: rgba(8, 28, 36, 0.5);
   --text-color-5: rgba(8, 28, 36, 0.05);
-  --text-color-inverted: #fff;
   --text-color-secondary: orange;
   --background-color: #f8f8f8;
   --background-color-secondary: #ffffff;
+  --background-ui: #edeef0;
   --background-95: rgba(255, 255, 255, 0.95);
   --background-70: rgba(255, 255, 255, 0.7);
-  --background-ui: #edeef0;
-  --background-nav-logo: #081c24;
-  --color-green: #01d277;
-  --color-teal: #091c24;
+  --background-40: rgba(255, 255, 255, 0.4);
 }
