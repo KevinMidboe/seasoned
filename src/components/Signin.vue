@@ -24,6 +24,7 @@ import storage from '../storage'
 import SeasonedInput from '@/components/ui/SeasonedInput'
 import SeasonedButton from '@/components/ui/SeasonedButton'
 import SeasonedMessages from '@/components/ui/SeasonedMessages'
+import { parseJwt } from '@/utils'
 
 export default {
   components: { SeasonedInput, SeasonedButton, SeasonedMessages },
@@ -45,9 +46,10 @@ export default {
       login(username, password)
         .then(data => {
           if (data.success){
+            const jwtData = parseJwt(data.token)
             localStorage.setItem('token', data.token);
-            localStorage.setItem('username', username);
-            localStorage.setItem('admin', data.admin || false);
+            localStorage.setItem('username', jwtData['username']);
+            localStorage.setItem('admin', jwtData['admin'] || false);
 
             eventHub.$emit('setUserStatus');
             this.$router.push({ name: 'profile' })
