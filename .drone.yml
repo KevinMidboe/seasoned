@@ -9,13 +9,13 @@ platform:
 
 steps:
 - name: frontend_install
-  image: docker:13.6.0
+  image: node:13.6.0
   commands:
     - node -v
     - yarn --version
     - yarn
 - name: frontend_build
-  image: docker:13.6.0
+  image: node:13.6.0
   commands:
     - node -v
     - yarn --version
