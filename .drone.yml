@@ -18,7 +18,7 @@ steps:
 trigger:
   branch:
     - master
-    - *-test
+    - drone-test
   event:
     include:
       - pull_request
