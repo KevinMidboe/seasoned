@@ -1,6 +1,6 @@
 ---
 kind: pipeline
-type: exec
+type: docker
 name: default
 
 platform:
@@ -9,16 +9,23 @@ platform:
 
 steps:
 - name: frontend_install
+  image: docker:13.6.0
   commands:
+    - node -v
+    - yarn --version
     - yarn
 - name: frontend_build
+  image: docker:13.6.0
   commands:
+    - node -v
+    - yarn --version
     - yarn build
 
 trigger:
   branch:
     - master
-    - *-test
+    - drone-test
   event:
     include:
       - pull_request
+      - push 
