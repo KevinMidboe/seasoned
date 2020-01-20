@@ -15,7 +15,6 @@ steps:
   commands:
     - yarn build
 
-drone 
 trigger:
   branch:
     - master
