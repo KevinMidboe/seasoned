@@ -14,12 +14,26 @@ steps:
     - node -v
     - yarn --version
     - yarn
-- name: frontend_build
-  image: node:13.6.0
-  commands:
-    - node -v
-    - yarn --version
-    - yarn build
+- name: deploy
+  image: appleboy/drone-ssh
+  pull: true
+  secrets:
+    - ssh_key
+  when:
+    event:
+      - push
+    branch:
+      - master
+      - drone-test
+    status: success
+  settings:
+    host: 10.0.0.114
+    username: root
+    key:
+      from_secret: ssh_key
+    command_timeout: 600s
+    script:
+      - /home/kevin/deploy/seasoned.sh
 
 trigger:
   branch:
