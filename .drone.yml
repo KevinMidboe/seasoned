@@ -18,6 +18,7 @@ steps:
 trigger:
   branch:
     - master
+    - *-test
   event:
     include:
       - pull_request
