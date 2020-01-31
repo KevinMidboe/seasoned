@@ -1,11 +1,12 @@
 <template>
   <li class="movies-item" :class="{'shortList': shortList}">
-    <a class="movies-item__link" :class="{'no-image': noImage}" @click.prevent="openMoviePopup(movie.id, movie.type)">
+    <a class="movies-item__link" :class="{'no-image': !movie}" @click.prevent="openMoviePopup(movie.id, movie.type)">
 
       <!-- TODO change to picture element -->
       <figure class="movies-item__poster">
-        <img v-if="!noImage" class="movies-item__img" src="~assets/placeholder.png" v-img="poster()" alt="">
-        <img v-if="noImage" class="movies-item__img is-loaded" src="~assets/no-image.png" alt="">
+        <img v-if="movie.poster" class="movies-item__img is-loaded" ref="image" src="~assets/placeholder.png">
+        <!--        <img class="movies-item__img is-loaded" ref="image" :data-src="posterUrl" src="~assets/placeholder.png"> -->
+        <!--        <img v-if="poster === null" class="movies-item__img is-loaded" src="~assets/no-image.png" alt=""> -->
 
         <div v-if="movie.download" class="progress">
           <progress :value="movie.download.progress" max="100"></progress>
@@ -24,24 +25,70 @@
 import img from '../directives/v-image'
 
 export default {
-  props: ['movie', 'shortList'],
+  props: {
+    movie: {
+      type: Object,
+      required: true
+    },
+    shortList: {
+      type: Boolean,
+      required: false
+    }
+  },
   directives: {
     img: img
   },
   data(){
     return {
-      noImage: false
+      posterSizes: [{
+        id: 'w500',
+        minWidth: 500
+      }, {
+        id: 'w342',
+        minWidth: 342
+      }, {
+        id: 'w185',
+        minWidth: 185
+      }, {
+        id: 'w154',
+        minWidth: 0
+      }]
     }
   },
-  methods: {
-    // TODO handle missing images better and load diff sizes based on screen size
-    poster() {
-      if (this.movie.poster) {
-        return 'https://image.tmdb.org/t/p/w500' + this.movie.poster
-      } else {
-        this.noImage = true
-      }
+  computed: {
+    posterUrl: function() {
+      if (this.movie.poster == null)
+        return "~assets/no-image.png"
+
+      const correctWidth = this.posterQualityIdentifierFromPosterWidth
+
+      return `https://image.tmdb.org/t/p/${correctWidth}${this.movie.poster}`
     },
+    posterQualityIdentifierFromPosterWidth: function() {
+      const posterWidth = this.$refs.image.clientHeight
+      if (posterWidth > this.posterSizes[0].minWidth)
+        return this.posterSizes[0].id
+
+      const widthCandidates = this.posterSizes.filter(size => posterWidth < size.minWidth ? size.id : null)
+      return widthCandidates[widthCandidates.length - 1].id
+    }
+  },
+  mounted() {
+    if (this.$refs.image == undefined)
+      return
+    const imageObserver = new IntersectionObserver((entries, imgObserver) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const lazyImage = entry.target
+          lazyImage.src = this.posterUrl
+          lazyImage.class
+        }
+      })
+    });
+
+    imageObserver.observe(this.$refs.image);
+  },
+  methods: {
     openMoviePopup(id, type) {
       this.$popup.open(id, type)
     }
