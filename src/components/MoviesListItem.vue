@@ -4,9 +4,7 @@
 
       <!-- TODO change to picture element -->
       <figure class="movies-item__poster">
-        <img v-if="movie.poster" class="movies-item__img is-loaded" ref="image" src="~assets/placeholder.png">
-        <!--        <img class="movies-item__img is-loaded" ref="image" :data-src="posterUrl" src="~assets/placeholder.png"> -->
-        <!--        <img v-if="poster === null" class="movies-item__img is-loaded" src="~assets/no-image.png" alt=""> -->
+        <img v-if="movie.poster" class="movies-item__img is-loaded" ref="image" src="~assets/placeholder.png" :alt="`${movie.title} poster image`">
 
         <div v-if="movie.download" class="progress">
           <progress :value="movie.download.progress" max="100"></progress>
