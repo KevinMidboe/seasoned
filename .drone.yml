@@ -40,4 +40,5 @@ trigger:
   event:
     include:
       - pull_request
-      - push 
+      - push
+
