@@ -203,8 +203,6 @@ export default {
   },
   methods: {
     parseResponse(movie) {
-      setTimeout(() => {
-
       this.loading = false
       this.movie = { ...movie }
       this.title = movie.title
@@ -217,7 +215,6 @@ export default {
 
       store.dispatch('documentTitle/updateTitle', movie.title)
       this.setPosterSrc()
-      }, 1000)
     },
     async checkIfRequested(movie) {
       return await getRequestStatus(movie.id, movie.type)
