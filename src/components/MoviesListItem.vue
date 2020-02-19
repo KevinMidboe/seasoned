@@ -12,7 +12,13 @@
         <progress :value="movie.download.progress" max="100"></progress>
         <span>{{ movie.download.state }}: {{ movie.download.progress }}%</span>
       </div>
-    </a>
+    </figure>
+
+    <div class="movie-item__info">
+      <p v-if="movie.title || movie.name">{{ movie.title || movie.name }}</p>
+      <p v-if="movie.year">{{ movie.year }}</p>
+      <p v-if="movie.type == 'person'">Known for: {{ movie.known_for_department }}</p>
+    </div>
   </li>
 </template>
 
