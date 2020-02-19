@@ -2,28 +2,32 @@
   <section class="movie">
 
     <!-- HEADER w/ POSTER -->
-    <header class="movie__header" :style="{ 'background-image': movie && backdrop !== null ? 'url(' + ASSET_URL + ASSET_SIZES[1] + backdrop + ')' : '' }" :class="compact ? 'compact' : ''" @click="compact=!compact">
-      <div class="movie__wrap movie__wrap--header">
-        <figure class="movie__poster">
+    <header ref="header" :class="compact ? 'compact' : ''" @click="compact=!compact">
+      <figure class="movie__poster">
+        <img class="movie-item__img is-loaded"
+             ref="poster-image"
+             src="~assets/placeholder.png">
+
+        <!--   -->
+        <!-- <img v-else class="movie-item__img is-loaded" src="~assets/no-image.png" ref="image" alt="No image - linked image unavailable"> -->
+      </figure>
+<!--         <figure class="movie__poster">
           <img v-if="movie && poster === null"
             class="movies-item__img is-loaded"
             alt="movie poster image"
             src="~assets/no-image.png">
           <img v-else-if="poster === undefined"
             class="movies-item__img grey"
-            alt="movie poster image">
-            <!-- src="~assets/placeholder.png"> -->
+            alt="movie poster image"
+            src="~assets/placeholder.png">
           <img v-else
             class="movies-item__img is-loaded"
             alt="movie poster image"
             :src="ASSET_URL + ASSET_SIZES[0] + poster">
-        </figure>
+        </figure> -->
 
-        <div class="movie__title">
-          <h1 v-if="movie">{{ movie.title }}</h1>
-          <loading-placeholder v-else :count="1" />
-        </div>
-      </div>
+        <h1 class="movie__title" v-if="movie">{{ movie.title }}</h1>
+        <loading-placeholder v-else :count="1" />
     </header>
 
     <!-- Siderbar and movie info -->
@@ -64,32 +68,48 @@
 
         <!-- MOVIE INFO -->
         <div class="movie__info">
-          <div class="movie__description" v-if="movie"> {{ movie.overview }}</div>
 
           <!-- Loading placeholder -->
+          <div class="movie__description noselect"
+               @click="truncatedDescription=!truncatedDescription"
+               v-if="!loading">
+            <span :class="truncatedDescription ? 'truncated':null">{{ movie.overview }}</span>
+            <button class="truncate-toggle"><i>⬆</i></button>
+          </div>
           <div v-else class="movie__description">
-            <loading-placeholder :count="12" />
+            <loading-placeholder :count="5" />
           </div>
 
           <div class="movie__details" v-if="movie">
-            <div v-if="movie.year" class="movie__details-block">
-              <h2 class="movie__details-title">Release Date</h2>
-              <div class="movie__details-text">{{ movie.year }}</div>
+            <div v-if="movie.year">
+              <h2 class="title">Release Date</h2>
+              <div class="text">{{ movie.year }}</div>
             </div>
 
-             <div v-if="movie.rank" class="movie__details-block">
-              <h2 class="movie__details-title">Rating</h2>
-              <div class="movie__details-text">{{ movie.rank }}</div>
+             <div v-if="movie.rating">
+              <h2 class="title">Rating</h2>
+              <div class="text">{{ movie.rating }}</div>
             </div>
 
-            <div v-if="movie.type == 'show'" class="movie__details-block">
-              <h2 class="movie__details-title">Seasons</h2>
-              <div class="movie__details-text">{{ movie.seasons }}</div>
+            <div v-if="movie.type == 'show'">
+              <h2 class="title">Seasons</h2>
+              <div class="text">{{ movie.seasons }}</div>
             </div>
 
-            <div v-if="movie.genres" class="movie__details-block">
-              <h2 class="movie__details-title">Genres</h2>
-              <div class="movie__details-text">{{ nestedDataToString(movie.genres) }}</div>
+            <div v-if="movie.genres">
+              <h2 class="title">Genres</h2>
+              <div class="text">{{ movie.genres.join(', ') }}</div>
+            </div>
+
+            <div v-if="movie.type == 'show'">
+              <h2 class="title">Production status</h2>
+              <div class="text">{{ movie.production_status }}</div>
+            </div>
+
+
+            <div v-if="movie.type == 'show'">
+              <h2 class="title">Runtime</h2>
+              <div class="text">{{ movie.runtime[0] }} minutes</div>
             </div>
           </div>
 
@@ -126,7 +146,17 @@ import LoadingPlaceholder from './ui/LoadingPlaceholder'
 import { getMovie, getPerson, getShow, request, getRequestStatus } from '@/api'
 
 export default {
-  props: ['id', 'type'],
+  // props: ['id', 'type'],
+  props: {
+    id: {
+      required: true,
+      type: Number
+    },
+    type: {
+      required: false,
+      type: String
+    }
+  },
   components: { TorrentList, Person, LoadingPlaceholder, SidebarListElement },
   directives: { img: img }, // TODO decide to remove or use
   data(){
@@ -142,11 +172,40 @@ export default {
       requested: false,
       admin: localStorage.getItem('admin') == "true" ? true : false,
       showTorrents: false,
-      compact: false
+      compact: false,
+      loading: true,
+      truncatedDescription: true
+    }
+  },
+  watch: {
+    id: function(val){
+      if (this.type === 'movie') {
+        this.fetchMovie(val);
+      } else {
+        this.fetchShow(val)
+      }
+    },
+    backdrop: function(backdrop) {
+      if (backdrop != null) {
+        const style = {
+          backgroundImage: 'url(' + this.ASSET_URL + this.ASSET_SIZES[1] + backdrop + ')'
+        }
+
+        Object.assign(this.$refs.header.style, style)
+      }
+    }
+  },
+  computed: {
+    numberOfTorrentResults: () => {
+      let numTorrents = store.getters['torrentModule/resultCount']
+      return numTorrents !== null ? numTorrents + ' results' : null
     }
   },
   methods: {
     parseResponse(movie) {
+      setTimeout(() => {
+
+      this.loading = false
       this.movie = { ...movie }
       this.title = movie.title
       this.poster = movie.poster
@@ -155,13 +214,22 @@ export default {
       this.checkIfRequested(movie)
         .then(status => this.requested = status)
 
+
       store.dispatch('documentTitle/updateTitle', movie.title)
+      this.setPosterSrc()
+      }, 1000)
     },
     async checkIfRequested(movie) {
       return await getRequestStatus(movie.id, movie.type)
     },
-    nestedDataToString(data) {
-      return data.join(', ')
+    setPosterSrc() {
+      const poster = this.$refs['poster-image']
+      if (this.poster == null) {
+        poster.src = '/dist/no-image.png'
+        return
+      }
+
+      poster.src = `${this.ASSET_URL}${this.ASSET_SIZES[0]}${this.poster}`
     },
     sendRequest(){
       request(this.id, this.type, storage.token)
@@ -176,25 +244,7 @@ export default {
       window.location.href = 'https://www.themoviedb.org/' + tmdbType + '/' + this.id
     },
   },
-  watch: {
-    id: function(val){
-      if (this.type === 'movie') {
-        this.fetchMovie(val);
-      } else {
-        this.fetchShow(val)
-      }
-    }
-  },
-  computed: {
-    numberOfTorrentResults: () => {
-      let numTorrents = store.getters['torrentModule/resultCount']
-      return numTorrents !== null ? numTorrents + ' results' : null
-    }
-  },
-  beforeDestroy() {
-    store.dispatch('documentTitle/updateTitle', this.prevDocumentTitle)
-  },
-  created(){
+  created() {
     this.prevDocumentTitle = store.getters['documentTitle/title']
 
     if (this.type === 'movie') {
@@ -216,8 +266,9 @@ export default {
           this.$router.push({ name: '404' });
         })
     }
-
-    console.log('admin: ', this.admin)
+  },
+  beforeDestroy() {
+    store.dispatch('documentTitle/updateTitle', this.prevDocumentTitle)
   }
 }
 </script>
@@ -226,6 +277,89 @@ export default {
 @import "./src/scss/loading-placeholder";
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
+@import "./src/scss/main";
+
+header {
+  $duration: 0.2s;
+  height: 250px;
+  transform: scaleY(1);
+  transition: height $duration ease;
+  transform-origin: top;
+  position: relative;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-color: $background-color;
+  display: flex;
+  align-items: center;
+
+  @include tablet-min {
+    height: 350px;
+  }
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    background: $background-dark-85;
+  }
+  @include mobile {
+    &.compact {
+      height: 100px;
+    }
+  }
+}
+
+.movie__poster {
+  display: none;
+
+  @include desktop {
+    background: $background-color;
+    height: 0;
+    display: block;
+    position: absolute;
+    width: calc(45% - 40px);
+    top: 40px;
+    left: 40px;
+
+    > img {
+      width: 100%;
+    }
+  }
+}
+
+.truncate-toggle {
+  border: none;
+  background: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: $text-color;
+
+  > i {
+    font-style: unset;
+    font-size: 0.7rem;
+    transition: 0.3s ease all;
+    transform: rotateY(180deg)
+  }
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid $text-color-50;
+  }
+  &::before {
+      margin-right: 1rem;
+  }
+  &::after {
+      margin-left: 1rem;
+  }
+}
 
 .movie {
   &__wrap {
@@ -244,49 +378,6 @@ export default {
 
       background-color: $background-color;
       color: $text-color;
-    }
-  }
-  &__header {
-    $duration: 0.2s;
-    height: 250px;
-    transform: scaleY(1);
-    transition: height $duration ease;
-    transform-origin: top;
-    position: relative;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    background-color: $background-color;
-    @include tablet-min {
-      height: 350px;
-    }
-    &:before {
-      content: "";
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 0;
-      width: 100%;
-      height: 100%;
-      background: $background-dark-85;
-    }
-    &.compact {
-      height: 100px;
-    }
-  }
-
-  &__poster {
-    display: none;
-    @include tablet-min {
-      background: $background-color;
-      height: 0;
-      display: block;
-      position: absolute;
-      width: calc(45% - 40px);
-      top: 40px;
-      left: 40px;
-
     }
   }
 
@@ -364,37 +455,49 @@ export default {
       font-size: 13px;
       line-height: 1.8;
       margin-bottom: 20px;
+
+      & .truncated {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+
+        & + .truncate-toggle > i {
+          transform: rotateY(0deg) rotateZ(180deg);
+        } 
+      }
+
       @include tablet-min {
         margin-bottom: 30px;
         font-size: 14px;
       }
     }
     &__details {
-      &-block {
-        float: left;
-      }
-      &-block:not(:last-child) {
+      display: flex;
+      flex-wrap: wrap;
+
+      > div {
         margin-bottom: 20px;
         margin-right: 20px;
         @include tablet-min {
           margin-bottom: 30px;
           margin-right: 30px;
         }
-      }
-      &-title {
-        margin: 0;
-        font-weight: 400;
-        text-transform: uppercase;
-        font-size: 14px;
-        color: $green;
-        @include tablet-min {
-          font-size: 16px;
+        & .title {
+          margin: 0;
+          font-weight: 400;
+          text-transform: uppercase;
+          font-size: 14px;
+          color: $green;
+          @include tablet-min {
+            font-size: 16px;
+          }
         }
-      }
-      &-text {
-        font-weight: 300;
-        font-size: 14px;
-        margin-top: 5px;
+        & .text {
+          font-weight: 300;
+          font-size: 14px;
+          margin-top: 5px;
+        }
       }
     }
     &__admin {

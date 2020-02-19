@@ -1,21 +1,24 @@
 <template>
-  <li class="movies-item" :class="{'shortList': shortList}">
-    <a class="movies-item__link" :class="{'no-image': !movie}" @click.prevent="openMoviePopup(movie.id, movie.type)">
+  <li class="movie-item" :class="{'shortList': shortList}">
+    <figure class="movie-item__poster">
+      <img class="movie-item__img is-loaded"
+           ref="poster-image"
+           @click="openMoviePopup(movie.id, movie.type)"
+           :alt="posterAltText"
+           :data-src="poster"
+           src="~assets/placeholder.png">
 
-      <!-- TODO change to picture element -->
-      <figure class="movies-item__poster">
-        <img v-if="movie.poster" class="movies-item__img is-loaded" ref="image" src="~assets/placeholder.png" :alt="`${movie.title} poster image`">
-
-        <div v-if="movie.download" class="progress">
-          <progress :value="movie.download.progress" max="100"></progress>
-          <span>{{ movie.download.state }}: {{ movie.download.progress }}%</span>
-        </div>
-      </figure>
-      <div class="movies-item__content">
-        <p class="movies-item__title">{{ movie.title || movie.name }}</p>
-        <p class="movies-item__title">{{ movie.year }}</p>
+      <div v-if="movie.download" class="progress">
+        <progress :value="movie.download.progress" max="100"></progress>
+        <span>{{ movie.download.state }}: {{ movie.download.progress }}%</span>
       </div>
-    </a>
+    </figure>
+
+    <div class="movie-item__info">
+      <p v-if="movie.title || movie.name">{{ movie.title || movie.name }}</p>
+      <p v-if="movie.year">{{ movie.year }}</p>
+      <p v-if="movie.type == 'person'">Known for: {{ movie.known_for_department }}</p>
+    </div>
   </li>
 </template>
 
@@ -38,6 +41,8 @@ export default {
   },
   data(){
     return {
+      poster: undefined,
+      observed: false,
       posterSizes: [{
         id: 'w500',
         minWidth: 500
@@ -54,37 +59,35 @@ export default {
     }
   },
   computed: {
-    posterUrl: function() {
-      if (this.movie.poster == null)
-        return "~assets/no-image.png"
-
-      const correctWidth = this.posterQualityIdentifierFromPosterWidth
-
-      return `https://image.tmdb.org/t/p/${correctWidth}${this.movie.poster}`
-    },
-    posterQualityIdentifierFromPosterWidth: function() {
-      const posterWidth = this.$refs.image.clientHeight
-      if (posterWidth > this.posterSizes[0].minWidth)
-        return this.posterSizes[0].id
-
-      const widthCandidates = this.posterSizes.filter(size => posterWidth < size.minWidth ? size.id : null)
-      return widthCandidates[widthCandidates.length - 1].id
+    posterAltText: function() {
+      const type = this.movie.type || ''
+      const title = this.movie.title || this.movie.name
+      return this.movie.poster ? `Poster for ${type} ${title}` : `Missing image for ${type} ${title}`
+    }
+  },
+  beforeMount() {
+    if (this.movie.poster != null) {
+      this.poster = 'https://image.tmdb.org/t/p/w500' + this.movie.poster
+    } else {
+      this.poster = '/dist/no-image.png'
     }
   },
   mounted() {
-    if (this.$refs.image == undefined)
+    const poster = this.$refs['poster-image']
+    if (poster == null)
       return
+
     const imageObserver = new IntersectionObserver((entries, imgObserver) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && this.observed == false) {
           const lazyImage = entry.target
-          lazyImage.src = this.posterUrl
-          lazyImage.class
+          lazyImage.src = lazyImage.dataset.src
+          this.observed = true
         }
       })
     });
 
-    imageObserver.observe(this.$refs.image);
+    imageObserver.observe(poster);
   },
   methods: {
     openMoviePopup(id, type) {
@@ -94,74 +97,103 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
+@import "./src/scss/main";
 
-.movies-item {
+.movie-item {
   padding: 10px;
   width: 50%;
   background-color: $background-color;
   transition: background-color 0.5s ease;
 
-  @include tablet-min{
+  @include tablet-min {
     padding: 15px;
+    width: 33%;
   }
-  @include tablet-landscape-min{
+  @include tablet-landscape-min {
     padding: 15px;
     width: 25%;
   }
-  @include desktop-min{
+  @include desktop-min {
     padding: 15px;
     width: 20%;
   }
 
-  @include desktop-lg-min{
+  @include desktop-lg-min {
     padding: 15px;
     width: 12.5%;
   }
 
-  &__link{
+  &:hover &__info > p {
+    color: $text-color;
+  }
+
+  &__poster {
     text-decoration: none;
     color: $text-color-70;
     font-weight: 300;
+
+    > img {
+      width: 100%;
+      opacity: 0;
+      transform: scale(0.97) translateZ(0);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      &.is-loaded{
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      &:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 10px rgba($dark, 0.1);
+      }
+    }
   }
-  &__content{
+
+  &__info {
     padding-top: 15px;
-  }
-  &__poster{
-    transition: transform 0.5s ease, box-shadow 0.3s ease;
-    transform: translateZ(0);
-  }
-  &__img{
-    width: 100%;
-    opacity: 0;
-    transform: scale(0.97) translateZ(0);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    &.is-loaded{
-      opacity: 1;
-      transform: scale(1);
+    font-weight: 300;
+
+    > p {
+      color: $text-color-70;
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      transition: color 0.5s ease;
+      cursor: pointer;
+      @include mobile-ls-min{
+        font-size: 12px;
+      }
+      @include tablet-min{
+        font-size: 14px;
+      }
     }
   }
-  &__link:not(.no-image):hover &__poster{
-    transform: scale(1.03);
-    box-shadow: 0 0 10px rgba($dark, 0.1);
+}
+
+
+
+
+.no-image {
+  background-color: var(--text-color);
+  color: var(--background-color);
+  width: 100%;
+  height: 383px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    font-size: 1.5rem;
+    width: 70%;
+    text-align: center;
+    text-transform: uppercase;
   }
-  &__title{
-    margin: 0;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    transition: color 0.5s ease;
-    cursor: pointer;
-    @include mobile-ls-min{
-      font-size: 12px;
-    }
-    @include tablet-min{
-      font-size: 14px;
-    }
-  }
-  &__link:hover &__title{
-    color: $text-color;
+
+  &:hover {
+    transform: scale(1);
   }
 }
 </style>
