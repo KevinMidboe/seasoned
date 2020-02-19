@@ -1,13 +1,14 @@
 <template>
   <div>
-    
     <div class="search">
       <input
         ref="input"
         type="text"
         placeholder="Search for a movie or show"
+        aria-label="Search input for finding a movie or show"
         autocorrect="off"
         autocapitalize="off"
+        tabindex="1"
         v-model="query" 
         @input="handleInput" 
         @click="focus = true"
@@ -16,20 +17,38 @@
         @keydown.up="navigateUp"
         @keydown.down="navigateDown" />
 
-      <svg class="search--icon" fill="currentColor"><use xlink:href="#iconSearch"></use></svg>
+      <svg class="search-icon" fill="currentColor" @click="handleSubmit"><use xlink:href="#iconSearch"></use></svg>
     </div> 
 
     <transition name="fade">
       <div class="dropdown" v-if="!disabled && focus && query.length > 0">
-        <div class="dropdown--results">
+        <div class="filter">
+          <h2>Filter your search:</h2>
 
+          <div class="filter-items">
+            <toggle-button :options="searchTypes" :selected.sync="selectedSearchType" />
+
+            <label>Adult
+              <input type="checkbox" value="adult" v-model="adult">
+            </label>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="dropdown-results" v-if="elasticSearchResults.length">
           <ul v-for="(item, index) in elasticSearchResults"
-              @click="$popup.open(item.id, item.type)"
+              @click="openResult(item, index + 1)"
               :class="{ active: index + 1 === selectedResult}">
                 
               {{ item.name }}
           </ul>
+        </div>
 
+        <div v-else class="dropdown">
+          <div class="dropdown-results">
+            <h2 class="not-found">No results for query: <b>{{ query }}</b></h2>
+          </div>
         </div>
 
         <seasoned-button class="end-section" fullWidth="true" 
@@ -37,14 +56,14 @@
           close
         </seasoned-button>
       </div>
+
     </transition>
-</div>
-
-
+  </div>
 </template>
 
 <script>
 import SeasonedButton from '@/components/ui/SeasonedButton'
+import ToggleButton from '@/components/ui/ToggleButton';
 
 import { elasticSearchMoviesAndShows } from '@/api'
 import config from '@/config.json'
@@ -52,18 +71,23 @@ import config from '@/config.json'
 export default {
   name: 'SearchInput',
   components: {
-    SeasonedButton
+    SeasonedButton,
+    ToggleButton
   },
   props: ['value'],
   data() {
     return {
+      adult: true,
+      searchTypes: ['all', 'movie', 'show', 'person'],
+      selectedSearchType: 'all',
+
       query: this.value,
       focus: false,
       disabled: false,
       scrollListener: undefined,
       scrollDistance: 0,
-      elasticSearchResults: '',
-      selectedResult: 0
+      elasticSearchResults: [],
+      selectedResult: 0,
     }
   },
   watch: {
@@ -74,6 +98,9 @@ export default {
         window.removeEventListener('scroll', this.disableFocus)
         this.scrollDistance = 0
       }
+    },
+    adult: function(value) {
+      this.handleInput()
     }
   },
   beforeMount() {
@@ -102,6 +129,10 @@ export default {
         input.setSelectionRange(textLength, textLength + 1)
       }, 1)
     },
+    openResult(item, index) {
+      this.selectedResult = index;
+      this.$popup.open(item.id, item.type)
+    },
     handleInput(e){
       this.selectedResult = 0
       this.$emit('input', this.query);
@@ -114,24 +145,43 @@ export default {
       .then(resp => {
         const data = resp.hits.hits
 
-        this.elasticSearchResults = data.map(item => {
+        let results = data.map(item => {
           const index = item._index.slice(0, -1)
           if (index === 'movie' || item._source.original_title) {
             return {
               name: item._source.original_title,
               id: item._source.id,
+              adult: item._source.adult,
               type: 'movie'
             }
           } else if (index === 'show' || item._source.original_name) {
             return {
               name: item._source.original_name,
               id: item._source.id,
+              adult: item._source.adult,
               type: 'show'
             }
           }
         })
-        console.log(this.elasticSearchResults)
+        results = this.removeDuplicates(results)
+        this.elasticSearchResults = results
       })
+    },
+    removeDuplicates(searchResults) {
+      let filteredResults = []
+      searchResults.map(result => {
+        const numberOfDuplicates = filteredResults.filter(filterItem => filterItem.id == result.id)
+        if (numberOfDuplicates.length >= 1) {
+          return null
+        }
+        filteredResults.push(result)
+      })
+
+      if (this.adult == false) {
+        filteredResults = filteredResults.filter(result => result.adult == false)
+      }
+
+      return filteredResults
     },
     handleSubmit() {
       let searchResults = this.elasticSearchResults
@@ -144,7 +194,8 @@ export default {
         this.$popup.open(resultItem.id, resultItem.type)
       } else {
         const encodedQuery = encodeURI(this.query.replace('/ /g, "+"'))
-        this.$router.push({ name: 'search', query: { query: encodedQuery }});
+        const media_type = this.selectedSearchType !== 'all' ? this.selectedSearchType : null
+        this.$router.push({ name: 'search', query: { query: encodedQuery, adult: this.adult, media_type }});
         this.focus = false
         this.selectedResult = 0
       }
@@ -179,6 +230,41 @@ export default {
   opacity: 0;
 }
 
+.filter {
+  // background-color: rgba(004, 122, 125, 0.2);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 2rem;
+
+  h2 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+  }
+
+  &-items {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    > :not(:first-child) {
+      margin-left: 1rem;
+      // background-color: red !important;
+    }
+  }
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-bottom: 1px solid $text-color-50;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 90%;
+}
+
 .dropdown {
   width: 100%;
   position: relative;
@@ -196,7 +282,11 @@ export default {
     width: calc(100%);
   }
 
-  &--results {
+  .not-found {
+    font-weight: 400;
+  }
+
+  &-results {
     padding-left: 60px;
     width: 100%;
 
@@ -268,7 +358,7 @@ export default {
     }
   }
 
-  &--icon{
+  &-icon{
     width: 20px;
     height: 20px;
     fill: $text-color-50;

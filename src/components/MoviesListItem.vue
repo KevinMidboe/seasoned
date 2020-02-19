@@ -28,12 +28,12 @@ import img from '../directives/v-image'
 export default {
   props: {
     movie: {
-      required: true,
-      type: Object
+      type: Object,
+      required: true
     },
     shortList: {
-      required: false,
-      type: Boolean
+      type: Boolean,
+      required: false
     }
   },
   directives: {
