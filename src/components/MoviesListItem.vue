@@ -26,24 +26,70 @@
 import img from '../directives/v-image'
 
 export default {
-  props: ['movie', 'shortList'],
+  props: {
+    movie: {
+      required: true,
+      type: Object
+    },
+    shortList: {
+      required: false,
+      type: Boolean
+    }
+  },
   directives: {
     img: img
   },
   data(){
     return {
-      noImage: false
+      poster: undefined,
+      observed: false,
+      posterSizes: [{
+        id: 'w500',
+        minWidth: 500
+      }, {
+        id: 'w342',
+        minWidth: 342
+      }, {
+        id: 'w185',
+        minWidth: 185
+      }, {
+        id: 'w154',
+        minWidth: 0
+      }]
     }
   },
+  computed: {
+    posterAltText: function() {
+      const type = this.movie.type || ''
+      const title = this.movie.title || this.movie.name
+      return this.movie.poster ? `Poster for ${type} ${title}` : `Missing image for ${type} ${title}`
+    }
+  },
+  beforeMount() {
+    if (this.movie.poster != null) {
+      this.poster = 'https://image.tmdb.org/t/p/w500' + this.movie.poster
+    } else {
+      this.poster = '/dist/no-image.png'
+    }
+  },
+  mounted() {
+    const poster = this.$refs['poster-image']
+    if (poster == null)
+      return
+
+    const imageObserver = new IntersectionObserver((entries, imgObserver) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && this.observed == false) {
+          const lazyImage = entry.target
+          lazyImage.src = lazyImage.dataset.src
+          this.observed = true
+        }
+      })
+    });
+
+    imageObserver.observe(poster);
+  },
   methods: {
-    // TODO handle missing images better and load diff sizes based on screen size
-    poster() {
-      if (this.movie.poster) {
-        return 'https://image.tmdb.org/t/p/w500' + this.movie.poster
-      } else {
-        this.noImage = true
-      }
-    },
     openMoviePopup(id, type) {
       this.$popup.open(id, type)
     }
