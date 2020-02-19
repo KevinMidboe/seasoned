@@ -97,74 +97,103 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
+@import "./src/scss/main";
 
-.movies-item {
+.movie-item {
   padding: 10px;
   width: 50%;
   background-color: $background-color;
   transition: background-color 0.5s ease;
 
-  @include tablet-min{
+  @include tablet-min {
     padding: 15px;
+    width: 33%;
   }
-  @include tablet-landscape-min{
+  @include tablet-landscape-min {
     padding: 15px;
     width: 25%;
   }
-  @include desktop-min{
+  @include desktop-min {
     padding: 15px;
     width: 20%;
   }
 
-  @include desktop-lg-min{
+  @include desktop-lg-min {
     padding: 15px;
     width: 12.5%;
   }
 
-  &__link{
+  &:hover &__info > p {
+    color: $text-color;
+  }
+
+  &__poster {
     text-decoration: none;
     color: $text-color-70;
     font-weight: 300;
+
+    > img {
+      width: 100%;
+      opacity: 0;
+      transform: scale(0.97) translateZ(0);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      &.is-loaded{
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      &:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 10px rgba($dark, 0.1);
+      }
+    }
   }
-  &__content{
+
+  &__info {
     padding-top: 15px;
-  }
-  &__poster{
-    transition: transform 0.5s ease, box-shadow 0.3s ease;
-    transform: translateZ(0);
-  }
-  &__img{
-    width: 100%;
-    opacity: 0;
-    transform: scale(0.97) translateZ(0);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    &.is-loaded{
-      opacity: 1;
-      transform: scale(1);
+    font-weight: 300;
+
+    > p {
+      color: $text-color-70;
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      transition: color 0.5s ease;
+      cursor: pointer;
+      @include mobile-ls-min{
+        font-size: 12px;
+      }
+      @include tablet-min{
+        font-size: 14px;
+      }
     }
   }
-  &__link:not(.no-image):hover &__poster{
-    transform: scale(1.03);
-    box-shadow: 0 0 10px rgba($dark, 0.1);
+}
+
+
+
+
+.no-image {
+  background-color: var(--text-color);
+  color: var(--background-color);
+  width: 100%;
+  height: 383px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    font-size: 1.5rem;
+    width: 70%;
+    text-align: center;
+    text-transform: uppercase;
   }
-  &__title{
-    margin: 0;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    transition: color 0.5s ease;
-    cursor: pointer;
-    @include mobile-ls-min{
-      font-size: 12px;
-    }
-    @include tablet-min{
-      font-size: 14px;
-    }
-  }
-  &__link:hover &__title{
-    color: $text-color;
+
+  &:hover {
+    transform: scale(1);
   }
 }
 </style>
