@@ -1,20 +1,16 @@
 <template>
-  <li class="movies-item" :class="{'shortList': shortList}">
-    <a class="movies-item__link" :class="{'no-image': noImage}" @click.prevent="openMoviePopup(movie.id, movie.type)">
+  <li class="movie-item" :class="{'shortList': shortList}">
+    <figure class="movie-item__poster">
+      <img class="movie-item__img is-loaded"
+           ref="poster-image"
+           @click="openMoviePopup(movie.id, movie.type)"
+           :alt="posterAltText"
+           :data-src="poster"
+           src="~assets/placeholder.png">
 
-      <!-- TODO change to picture element -->
-      <figure class="movies-item__poster">
-        <img v-if="!noImage" class="movies-item__img" src="~assets/placeholder.png" v-img="poster()" alt="">
-        <img v-if="noImage" class="movies-item__img is-loaded" src="~assets/no-image.png" alt="">
-
-        <div v-if="movie.download" class="progress">
-          <progress :value="movie.download.progress" max="100"></progress>
-          <span>{{ movie.download.state }}: {{ movie.download.progress }}%</span>
-        </div>
-      </figure>
-      <div class="movies-item__content">
-        <p class="movies-item__title">{{ movie.title || movie.name }}</p>
-        <p class="movies-item__title">{{ movie.year }}</p>
+      <div v-if="movie.download" class="progress">
+        <progress :value="movie.download.progress" max="100"></progress>
+        <span>{{ movie.download.state }}: {{ movie.download.progress }}%</span>
       </div>
     </a>
   </li>
