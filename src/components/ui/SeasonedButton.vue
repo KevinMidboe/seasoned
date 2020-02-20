@@ -1,6 +1,6 @@
 <template>
   <div class="seasoned-button">
-    <button type="button" class="button" @click="emit('click')" :class="{ active: active }"><slot></slot></button>
+    <button type="button" class="button" @click="emit('click')" :class="{ active: isActive }"><slot></slot></button>
   </div>
 </template>
 
@@ -9,11 +9,20 @@
 export default {
   name: 'seasonedButton',
   props: {
-    active: Boolean
+    required: false,
+    active: Boolean,
+    default: false
+  },
+  data() {
+    isActive: false
+  },
+  beforeMount() {
+    if (this.active) {
+      this.isActive = this.active;
+    }
   },
   methods: {
     emit() {
-      this.active = !this.active;
       this.$emit('click')
     }
   }
