@@ -13,6 +13,7 @@ export default {
   },
   methods: {
     emit() {
+      this.active = !this.active;
       this.$emit('click')
     }
   }
