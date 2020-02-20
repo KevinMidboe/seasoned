@@ -69,6 +69,10 @@ export default {
 
       ifMissingSettingsAndTokenExistsFetchSettings()
       return undefined
+    },
+    isPlexAuthenticated: (state) => {
+      let hasPlexId = state.settings['plex_userid']
+      return hasPlexId != undefined
     }
   },
   mutations: {

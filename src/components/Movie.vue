@@ -182,6 +182,9 @@ export default {
     numberOfTorrentResults: () => {
       let numTorrents = store.getters['torrentModule/resultCount']
       return numTorrents !== null ? numTorrents + ' results' : null
+    },
+    isPlexAuthenticated: () => {
+      return store.getters['userModule/isPlexAuthenticated']
     }
   },
   methods: {
