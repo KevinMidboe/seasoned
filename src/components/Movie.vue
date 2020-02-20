@@ -7,27 +7,10 @@
         <img class="movie-item__img is-loaded"
              ref="poster-image"
              src="~assets/placeholder.png">
-
-        <!--   -->
-        <!-- <img v-else class="movie-item__img is-loaded" src="~assets/no-image.png" ref="image" alt="No image - linked image unavailable"> -->
       </figure>
-<!--         <figure class="movie__poster">
-          <img v-if="movie && poster === null"
-            class="movies-item__img is-loaded"
-            alt="movie poster image"
-            src="~assets/no-image.png">
-          <img v-else-if="poster === undefined"
-            class="movies-item__img grey"
-            alt="movie poster image"
-            src="~assets/placeholder.png">
-          <img v-else
-            class="movies-item__img is-loaded"
-            alt="movie poster image"
-            :src="ASSET_URL + ASSET_SIZES[0] + poster">
-        </figure> -->
 
-        <h1 class="movie__title" v-if="movie">{{ movie.title }}</h1>
-        <loading-placeholder v-else :count="1" />
+      <h1 class="movie__title" v-if="movie">{{ movie.title }}</h1>
+      <loading-placeholder v-else :count="1" />
     </header>
 
     <!-- Siderbar and movie info -->
