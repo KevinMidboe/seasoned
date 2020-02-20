@@ -53,7 +53,7 @@
         <div class="movie__info">
 
           <!-- Loading placeholder -->
-          <div class="movie__description"
+          <div class="movie__description noselect"
                @click="truncatedDescription=!truncatedDescription"
                v-if="!loading">
             <span :class="truncatedDescription ? 'truncated':null">{{ movie.overview }}</span>
