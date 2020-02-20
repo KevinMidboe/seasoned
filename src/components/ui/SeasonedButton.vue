@@ -46,9 +46,16 @@ export default {
     padding: 6px 20px 5px 20px;
   }
 
-  body:not(.touch) &:hover, &:focus, &:active, &.active {
+  &:focus, &:active, &.active {
     background: $text-color;
     color: $background-color;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: $text-color;
+      color: $background-color;
+    }
   }
 }
 </style>
