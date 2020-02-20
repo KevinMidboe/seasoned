@@ -23,6 +23,7 @@ export default {
   },
   methods: {
     emit() {
+      this.isActive = !this.isActive;
       this.$emit('click')
     }
   }
