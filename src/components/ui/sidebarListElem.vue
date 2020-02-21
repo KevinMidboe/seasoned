@@ -2,7 +2,7 @@
   <div>
     <a @click="$emit('click')">
       <li>
-        <figure :class="activeClassIfActive">
+        <figure v-if="iconRef" :class="activeClassIfActive">
           <svg class="icon"><use :xlink:href="iconRefNameIfActive"/></svg>
         </figure>
 
@@ -23,7 +23,7 @@ export default {
   props: {
     iconRef: {
       type: String,
-      required: true
+      required: false
     },
     iconRefActive: {
       type: String,
@@ -85,11 +85,11 @@ li {
   border-bottom: 1px solid $text-color-5;
 
   &:hover {
-    color: $text-color-70;
+    color: $text-color;
     cursor: pointer;
 
     .icon {
-      fill: $text-color-70;
+      fill: $text-color;
       cursor: pointer;
         transform: scale(1.1, 1.1);
     }

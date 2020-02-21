@@ -252,6 +252,21 @@ const getRequestStatus = (id, type, authorization_token=undefined) => {
     .catch(err => Promise.reject(err))
 }
 
+const watchLink = (title, year, authorization_token=undefined) => {
+  const url = new URL('v1/plex/watch-link', SEASONED_URL)
+  url.searchParams.append('title', title)
+  url.searchParams.append('year', year)
+
+  const headers = {
+    'Authorization': authorization_token,
+    'Content-Type': 'application/json'
+  }
+
+  return fetch(url.href, { headers })
+    .then(resp => resp.json())
+    .then(response => response.link)
+}
+
 // - - - Seasoned user endpoints - - -
 
 const register = (username, password) => {
@@ -458,6 +473,7 @@ export {
   searchTorrents,
   addMagnet,
   request,
+  watchLink,
   getRequestStatus,
   linkPlexAccount,
   unlinkPlexAccount,

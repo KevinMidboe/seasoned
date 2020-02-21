@@ -47,6 +47,11 @@
 
             Request to be downloaded?
           </sidebar-list-element>
+
+          <sidebar-list-element v-if="isPlexAuthenticated && matched" @click="openInPlex" :iconString="'⏯ '">
+            Watch in plex now!
+          </sidebar-list-element>
+
           <sidebar-list-element v-if="admin" @click="showTorrents=!showTorrents"
             :iconRef="'#icon_torrents'" :active="showTorrents"
             :supplementaryText="numberOfTorrentResults">
@@ -143,7 +148,12 @@ import SidebarListElement from './ui/sidebarListElem'
 import store from '@/store'
 import LoadingPlaceholder from './ui/LoadingPlaceholder'
 
-import { getMovie, getPerson, getShow, request, getRequestStatus } from '@/api'
+import { getMovie,
+         getPerson,
+         getShow,
+         request,
+         getRequestStatus,
+         watchLink } from '@/api'
 
 export default {
   // props: ['id', 'type'],
@@ -199,6 +209,15 @@ export default {
     numberOfTorrentResults: () => {
       let numTorrents = store.getters['torrentModule/resultCount']
       return numTorrents !== null ? numTorrents + ' results' : null
+    },
+    isPlexAuthenticated: () => {
+      const settings = store.getters['userModule/settings']
+      console.log('fetchedSettings', settings)
+
+      if (settings == null || settings['plex_userid'] == null)
+        return false
+
+      return true
     }
   },
   methods: {
@@ -235,6 +254,10 @@ export default {
             this.requested = true
           }
         })
+    },
+    openInPlex() {
+      watchLink(this.title, this.movie.year, storage.token)
+        .then(watchLink => window.location = watchLink)
     },
     openTmdb(){
       const tmdbType = this.type === 'show' ? 'tv' : this.type
