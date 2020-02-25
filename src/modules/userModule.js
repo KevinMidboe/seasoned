@@ -71,8 +71,12 @@ export default {
       return undefined
     },
     isPlexAuthenticated: (state) => {
-      let hasPlexId = state.settings['plex_userid']
-      return hasPlexId != undefined
+      const settings = state.settings || getLocalStorageByKey('settings')
+      if (settings == null)
+        return false
+
+      const hasPlexId = settings['plex_userid']
+      return hasPlexId != null ? true : false
     }
   },
   mutations: {
