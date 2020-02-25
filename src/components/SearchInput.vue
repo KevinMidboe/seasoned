@@ -4,7 +4,7 @@
       <input
         ref="input"
         type="text"
-        placeholder="Search for a movie or show"
+        placeholder="Search for movie or show"
         aria-label="Search input for finding a movie or show"
         autocorrect="off"
         autocapitalize="off"
