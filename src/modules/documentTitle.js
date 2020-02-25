@@ -12,7 +12,7 @@ export default {
   namespaced: true,
   state: {
     emoji: '',
-    titlePrefix: 'request',
+    titlePrefix: 'seasoned',
     title: undefined
   },
   getters: {
