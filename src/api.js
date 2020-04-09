@@ -286,7 +286,7 @@ const register = (username, password) => {
     })
 }
 
-const login = (username, password) => {
+const login = (username, password, throwError=false) => {
   const url = new URL('v1/user/login', SEASONED_URL)
   const options = {
     method: 'POST',
@@ -295,11 +295,14 @@ const login = (username, password) => {
   }
 
   return fetch(url.href, options)
-    .then(resp => resp.json())
-    .catch(error => {
-      console.error('Unexpected error occured before receiving response. Error:', error)
-      // TODO log to sentry the issue here
-      throw error
+    .then(resp => {
+      if (resp.status == 200)
+        return resp.json();
+
+      if (throwError)
+        throw resp;
+      else
+        console.error("Error occured when trying to sign in.\nError:", resp);
     })
 }
 

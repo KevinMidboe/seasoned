@@ -66,6 +66,17 @@ let routes = [
     component: (resolve) => require(['./components/404.vue'], resolve)
   },
   {
+    name: 'logout',
+    path: '/logout',
+    component: {
+      template: '<div></div>',
+      created() {
+        localStorage.clear();
+        this.$router.push({ name: 'home' });
+      }
+    }
+  },
+  {
     path: '*',
     redirect: '/'
   },
