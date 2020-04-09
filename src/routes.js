@@ -54,6 +54,7 @@ let routes = [
   {
     name: 'signin',
     path: '/signin',
+    alias: '/login',
     component: (resolve) => require(['./components/Signin.vue'], resolve)
   },
   // {
@@ -107,7 +108,7 @@ router.beforeEach((to, from, next) => {
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (localStorage.getItem('token') == null) {
-      next({ path: '/login' });
+      next({ path: '/signin' });
     }
   }
 
