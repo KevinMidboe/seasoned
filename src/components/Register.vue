@@ -2,17 +2,14 @@
   <section>
     <h1>Register new user</h1>
 
-    <seasoned-input placeholder="username" icon="Email" type="username" :value.sync="username" />
+    <seasoned-input placeholder="username" icon="Email" type="username" :value.sync="username" @enter="submit"/>
 
-    <seasoned-input placeholder="password" icon="Keyhole" type="password"
-      :value.sync="password" @enter="requestNewUser"/>
+    <seasoned-input placeholder="password" icon="Keyhole" type="password" :value.sync="password" @enter="submit"/>
+    <seasoned-input placeholder="repeat password" icon="Keyhole" type="password" :value.sync="passwordRepeat" @enter="submit"/>
 
-    <seasoned-input placeholder="repeat password" icon="Keyhole" type="password"
-      :value.sync="passwordRepeat" @enter="requestNewUser"/>
-
-    <seasoned-button @click="requestNewUser">Register</seasoned-button>
-
+    <seasoned-button @click="submit">Register</seasoned-button>
     <router-link class="link" to="/signin">Have a user? Sign in here</router-link>
+
     <seasoned-messages :messages.sync="messages"></seasoned-messages>
   </section>
 </template>
@@ -34,57 +31,47 @@ export default {
     }
   },
   methods: {
-    requestNewUser(){
-      let { username, password, passwordRepeat } = this
+    submit() {
+      this.messages = [];
+      let { username, password, passwordRepeat } = this;
 
-      let verifyCredentials = this.checkCredentials(username, password, passwordRepeat);
+      if (username == null || username.length == 0) {
+        this.messages.push({ type: 'error', title: 'Missing username' })
+        return
+      } else if (password == null || password.length == 0) {
+        this.messages.push({ type: 'error', title: 'Missing password' })
+        return
+      } else if (passwordRepeat == null || passwordRepeat.length == 0) {
+        this.messages.push({ type: 'error', title: 'Missing repeat password' })
+        return
+      } else if (passwordRepeat != password) {
+        this.messages.push({ type: 'error', title: 'Passwords do not match' })
+        return
+      }
 
-      if (verifyCredentials.verified) {
+      this.registerUser(username, password)
+    },
+    registerUser(username, password) {
+      register(username, password, true)
+        .then(data => {
+          if (data.success){
+            localStorage.setItem('token', data.token);
+            const jwtData = parseJwt(data.token)
+            localStorage.setItem('username', jwtData['username']);
+            localStorage.setItem('admin', jwtData['admin'] || false);
 
-        register(username, password)
-          .then(data => {
-            if (data.success){
-              localStorage.setItem('token', data.token);
-              localStorage.setItem('username', username);
-              localStorage.setItem('admin', data.admin)
-
-              eventHub.$emit('setUserStatus');
-              this.$router.push({ name: 'profile' })
-            }
+            eventHub.$emit('setUserStatus');
+            this.$router.push({ name: 'profile' })
+          }
         })
         .catch(error => {
-          this.messages.push({ type: 'error', title: 'Unexpected error', message: error.message })
+          if (error.status === 401) {
+            this.messages.push({ type: 'error', title: 'Access denied', message: 'Incorrect username or password' })
+          }
+          else {
+            this.messages.push({ type: 'error', title: 'Unexpected error', message: error.message })
+          }
         });
-      } 
-      else {
-        this.messages.push({ type: 'warning', title: 'Parse error', message: verifyCredentials.reason })
-      }
-    },
-    checkCredentials(username, password, passwordRepeat) {
-      if (!username || username.length === 0) {
-        return {
-          verified: false,
-          reason: 'Fill inn username'
-        }
-      } 
-      else if (!password || !passwordRepeat) {
-        return {
-          verified: false,
-          reason: "Fill inn both password fields"
-        }
-      }
-      else if (password !== passwordRepeat) {
-        return {
-          verified: false,
-          reason: 'Passwords do not match'
-        }
-      } 
-      else {
-        return {
-          verified: true,
-          reason: 'Verified credentials'
-        }
-      }
     },
     logOut(){
       localStorage.clear();

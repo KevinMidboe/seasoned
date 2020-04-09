@@ -5,14 +5,14 @@
     <seasoned-input placeholder="username"
                     icon="Email"
                     type="email"
+                    @enter="submit"
                     :value.sync="username" />
-    <seasoned-input placeholder="password" icon="Keyhole" type="password" :value.sync="password" @enter="signin"/>
+    <seasoned-input placeholder="password" icon="Keyhole" type="password" :value.sync="password" @enter="submit"/>
 
-    <seasoned-button @click="signin">sign in</seasoned-button>
-
+    <seasoned-button @click="submit">sign in</seasoned-button>
     <router-link class="link" to="/register">Don't have a user? Register here</router-link>
-    <seasoned-messages :messages.sync="messages"></seasoned-messages>
 
+    <seasoned-messages :messages.sync="messages"></seasoned-messages>
   </section>
 </template>
 
@@ -39,11 +39,25 @@ export default {
     setValue(l, t) {
       this[l] = t
     },
-    signin(){
+    submit() {
+      this.messages = [];
       let username = this.username;
       let password = this.password;
 
-      login(username, password)
+      if (username == null || username.length == 0) {
+        this.messages.push({ type: 'error', title: 'Missing username' })
+        return
+      }
+
+      if (password == null || password.length == 0) {
+        this.messages.push({ type: 'error', title: 'Missing password' })
+        return
+      }
+
+      this.signin(username, password)
+    },
+    signin(username, password) {
+      login(username, password, true)
         .then(data => {
           if (data.success){
             const jwtData = parseJwt(data.token)
@@ -57,7 +71,7 @@ export default {
         })
         .catch(error => {
           if (error.status === 401) {
-            this.messages.push({ type: 'warning', title: 'Access denied', message: 'Incorrect username or password' })
+            this.messages.push({ type: 'error', title: 'Access denied', message: 'Incorrect username or password' })
           }
           else {
             this.messages.push({ type: 'error', title: 'Unexpected error', message: error.message })
