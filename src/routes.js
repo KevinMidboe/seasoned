@@ -14,11 +14,13 @@ let routes = [
   {
     name: 'activity',
     path: '/activity',
+    meta: { requiresAuth: true },
     component: (resolve) => require(['./components/ActivityPage.vue'], resolve)
   },
   {
     name: 'profile',
     path: '/profile',
+    meta: { requiresAuth: true },
     component: (resolve) => require(['./components/Profile.vue'], resolve)
   },
   {
@@ -46,6 +48,7 @@ let routes = [
   {
     name: 'settings',
     path: '/settings',
+    meta: { requiresAuth: true },
     component: (resolve) => require(['./components/Settings.vue'], resolve)
   },
   {
@@ -101,6 +104,13 @@ router.beforeEach((to, from, next) => {
     document.querySelector('.nav__hamburger').classList.remove('nav__hamburger--active');
     document.querySelector('.nav__list').classList.remove('nav__list--active');
   }
+
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (localStorage.getItem('token') == null) {
+      next({ path: '/login' });
+    }
+  }
+
   next();
 });
 
