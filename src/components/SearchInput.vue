@@ -4,7 +4,7 @@
       <input
         ref="input"
         type="text"
-        placeholder="Search for a movie or show"
+        placeholder="Search for movie or show"
         aria-label="Search input for finding a movie or show"
         autocorrect="off"
         autocapitalize="off"
@@ -250,7 +250,6 @@ export default {
 
     > :not(:first-child) {
       margin-left: 1rem;
-      // background-color: red !important;
     }
   }
 }
@@ -343,7 +342,7 @@ hr {
   input {
     display: block;
     width: 100%;
-    padding: 13px 20px 13px 45px;
+    padding: 13px 0 13px 45px;
     outline: none;
     margin: 0;
     border: 0;

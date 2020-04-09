@@ -11,8 +11,8 @@ const setDocumentTitle = (state) => {
 export default {
   namespaced: true,
   state: {
-    emoji: '🍕',
-    titlePrefix: 'request',
+    emoji: '',
+    titlePrefix: 'seasoned',
     title: undefined
   },
   getters: {
