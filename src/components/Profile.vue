@@ -5,7 +5,7 @@
         <h2 class="profile__title">{{ emoji }} Welcome {{ username }}</h2>
 
         <div class="button--group">
-          <seasoned-button @click="showSettings = !showSettings">{{ showSettings ? 'hide settings' : 'show settings' }}</seasoned-button>
+          <seasoned-button @click="toggleSettings">{{ showSettings ? 'hide settings' : 'show settings' }}</seasoned-button>
 
           <seasoned-button @click="logOut">Log out</seasoned-button>
         </div>
@@ -63,11 +63,15 @@ export default {
   methods: {
     toggleSettings() {
       this.showSettings = this.showSettings ? false : true;
+
+      if (this.showSettings) {
+        this.$router.replace({ query: { settings: true} })
+      } else {
+        this.$router.replace({ name: 'profile' })
+      }
     },
     logOut(){
-      localStorage.clear();
-      eventHub.$emit('setUserStatus');
-      this.$router.push({ name: 'home' });
+      this.$router.push('logout')
     }
   },
   created(){
@@ -75,6 +79,8 @@ export default {
       this.userLoggedIn = false;
     } else {
       this.userLoggedIn = true;
+
+      this.showSettings = window.location.toString().includes('settings=true')
 
       getUserRequests()
         .then(results => {
