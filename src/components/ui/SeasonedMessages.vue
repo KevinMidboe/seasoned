@@ -3,8 +3,8 @@
     <div class="message" v-for="(message, index) in reversedMessages" :class="message.type || 'warning'" :key="index">
       <span class="pinstripe"></span>
       <div>
-        <h2>{{ message.title || defaultTitles[message.type] }}</h2>
-        <span>{{ message.message }}</span>
+        <h2 class="title">{{ message.title || defaultTitles[message.type] }}</h2>
+        <span v-if="message.message" class="message">{{ message.message }}</span>
       </div>
 
       <button class="dismiss" @click="clicked(message)">X</button>
@@ -41,14 +41,7 @@ export default {
       const removedMessage = [...this.messages].filter(mes => mes !== e)
       this.$emit('update:messages', removedMessage)
     }
-  },
-  // watch: {
-  //   messages(propState, oldState) {
-  //     const newMessage = propState.filter(msg => !this.localMessages.includes(msg))
-  //     console.log('newMessage', newMessage)
-  //     this.localMessages = this.localMessages.concat(newMessage)
-  //   }
-  // }
+  }
 }
 
 </script>
@@ -70,7 +63,6 @@ export default {
 .message {
   width: 100%;
   max-width: 35rem;
-  min-height: 75px;
 
   display: flex;
   margin-top: 1rem;
@@ -78,12 +70,12 @@ export default {
   color: $text-color-70;
 
   > div {
-    margin: 6px 24px;
+    margin: 10px 24px;
     width: 100%;
 
   }
 
-  h2 {
+  .title {
     font-weight: 300;
     letter-spacing: 0.25px;
     margin: 0;
@@ -91,10 +83,11 @@ export default {
     color: $text-color;
     transition: color .5s ease;
   }
-  span {
+  .message {
     font-weight: 300;
     color: $text-color-70;
     transition: color .5s ease;
+    margin: 0.2rem 0 0.5rem;
   }
 
   @include mobile-only {
@@ -112,9 +105,8 @@ export default {
   }
 
   .pinstripe {
-    height: 100%;
     width: 0.5rem;
-    // background-color: $color-error-highlight;
+    background-color: $color-error-highlight;
   }
 
   .dismiss {
