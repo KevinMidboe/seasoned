@@ -91,7 +91,7 @@ let routes = [
 ];
 
 const router =  new VueRouter({
-  mode: 'hash',
+  mode: 'history',
   base: '/',
   routes,
   linkActiveClass: 'is-active'
