@@ -1,12 +1,17 @@
 <template>
   <section class="movie">
-
     <!-- HEADER w/ POSTER -->
-    <header ref="header" :class="compact ? 'compact' : ''" @click="compact=!compact">
+    <header
+      ref="header"
+      :class="compact ? 'compact' : ''"
+      @click="compact = !compact"
+    >
       <figure class="movie__poster">
-        <img class="movie-item__img is-loaded"
-             ref="poster-image"
-             src="~assets/placeholder.png">
+        <img
+          class="movie-item__img is-loaded"
+          ref="poster-image"
+          src="~assets/placeholder.png"
+        />
       </figure>
 
       <h1 class="movie__title" v-if="movie">{{ movie.title }}</h1>
@@ -16,29 +21,40 @@
     <!-- Siderbar and movie info -->
     <div class="movie__main">
       <div class="movie__wrap movie__wrap--main">
-
         <!-- SIDEBAR ACTIONS -->
         <div class="movie__actions" v-if="movie">
-
-          <sidebar-list-element :iconRef="'#iconNot_exsits'" :active="matched"
-            :iconRefActive="'#iconExists'" :textActive="'Already in plex 🎉'">
-
+          <sidebar-list-element
+            :iconRef="'#iconNot_exsits'"
+            :active="matched"
+            :iconRefActive="'#iconExists'"
+            :textActive="'Already in plex 🎉'"
+          >
             Not yet in plex
           </sidebar-list-element>
-          <sidebar-list-element @click="sendRequest" :iconRef="'#iconSent'"
-            :active="requested" :textActive="'Requested to be downloaded'">
-
+          <sidebar-list-element
+            @click="sendRequest"
+            :iconRef="'#iconSent'"
+            :active="requested"
+            :textActive="'Requested to be downloaded'"
+          >
             Request to be downloaded?
           </sidebar-list-element>
 
-          <sidebar-list-element v-if="isPlexAuthenticated && matched" @click="openInPlex" :iconString="'⏯ '">
+          <sidebar-list-element
+            v-if="isPlexAuthenticated && matched"
+            @click="openInPlex"
+            :iconString="'⏯ '"
+          >
             Watch in plex now!
           </sidebar-list-element>
 
-          <sidebar-list-element v-if="admin" @click="showTorrents=!showTorrents"
-            :iconRef="'#icon_torrents'" :active="showTorrents"
-            :supplementaryText="numberOfTorrentResults">
-
+          <sidebar-list-element
+            v-if="admin"
+            @click="showTorrents = !showTorrents"
+            :iconRef="'#icon_torrents'"
+            :active="showTorrents"
+            :supplementaryText="numberOfTorrentResults"
+          >
             Search for torrents
           </sidebar-list-element>
           <sidebar-list-element @click="openTmdb" :iconRef="'#icon_info'">
@@ -48,20 +64,28 @@
 
         <!-- Loading placeholder -->
         <div class="movie__actions text-input__loading" v-else>
-          <div class="movie__actions-link" v-for="_ in admin ? Array(4) : Array(3)">
-            <div class="movie__actions-text text-input__loading--line" style="margin:9px; margin-left: -3px;"></div>
+          <div
+            class="movie__actions-link"
+            v-for="_ in admin ? Array(4) : Array(3)"
+          >
+            <div
+              class="movie__actions-text text-input__loading--line"
+              style="margin: 9px; margin-left: -3px"
+            ></div>
           </div>
         </div>
 
-
         <!-- MOVIE INFO -->
         <div class="movie__info">
-
           <!-- Loading placeholder -->
-          <div class="movie__description noselect"
-               @click="truncatedDescription=!truncatedDescription"
-               v-if="!loading">
-            <span :class="truncatedDescription ? 'truncated':null">{{ movie.overview }}</span>
+          <div
+            class="movie__description noselect"
+            @click="truncatedDescription = !truncatedDescription"
+            v-if="!loading"
+          >
+            <span :class="truncatedDescription ? 'truncated' : null">{{
+              movie.overview
+            }}</span>
             <button class="truncate-toggle"><i>⬆</i></button>
           </div>
           <div v-else class="movie__description">
@@ -74,7 +98,7 @@
               <div class="text">{{ movie.year }}</div>
             </div>
 
-             <div v-if="movie.rating">
+            <div v-if="movie.rating">
               <h2 class="title">Rating</h2>
               <div class="text">{{ movie.rating }}</div>
             </div>
@@ -86,7 +110,7 @@
 
             <div v-if="movie.genres">
               <h2 class="title">Genres</h2>
-              <div class="text">{{ movie.genres.join(', ') }}</div>
+              <div class="text">{{ movie.genres.join(", ") }}</div>
             </div>
 
             <div v-if="movie.type == 'show'">
@@ -94,49 +118,56 @@
               <div class="text">{{ movie.production_status }}</div>
             </div>
 
-
             <div v-if="movie.type == 'show'">
               <h2 class="title">Runtime</h2>
               <div class="text">{{ movie.runtime[0] }} minutes</div>
             </div>
           </div>
-
         </div>
 
         <!-- TODO: change this classname, this is general  -->
 
         <div class="movie__admin" v-if="movie && movie.credits">
           <h2 class="movie__details-title">Cast</h2>
-          <div style="display: flex; flex-wrap: wrap;">
-            <person v-for="cast in movie.credits.cast" :info="cast"
-              style="flex-basis: 0;"></person>
-            </div>
+          <div style="display: flex; flex-wrap: wrap">
+            <person
+              v-for="cast in movie.credits.cast"
+              :info="cast"
+              style="flex-basis: 0"
+            ></person>
+          </div>
         </div>
-
       </div>
 
       <!-- TORRENT LIST -->
-      <TorrentList v-if="movie" :show="showTorrents" :query="title" :tmdb_id="id"
-                   :admin="admin"></TorrentList>
+      <TorrentList
+        v-if="movie"
+        :show="showTorrents"
+        :query="title"
+        :tmdb_id="id"
+        :admin="admin"
+      ></TorrentList>
     </div>
   </section>
 </template>
 
 <script>
-import storage from '@/storage'
-import img from '@/directives/v-image'
-import TorrentList from './TorrentList'
-import Person from './Person'
-import SidebarListElement from './ui/sidebarListElem'
-import store from '@/store'
-import LoadingPlaceholder from './ui/LoadingPlaceholder'
+import storage from "@/storage";
+import img from "@/directives/v-image";
+import TorrentList from "./TorrentList";
+import Person from "./Person";
+import SidebarListElement from "./ui/sidebarListElem";
+import store from "@/store";
+import LoadingPlaceholder from "./ui/LoadingPlaceholder";
 
-import { getMovie,
-         getPerson,
-         getShow,
-         request,
-         getRequestStatus,
-         watchLink } from '@/api'
+import {
+  getMovie,
+  getPerson,
+  getShow,
+  request,
+  getRequestStatus,
+  watchLink
+} from "@/api";
 
 export default {
   // props: ['id', 'type'],
@@ -145,17 +176,17 @@ export default {
       required: true,
       type: Number
     },
-    type: {
+    type: {
       required: false,
       type: String
     }
   },
   components: { TorrentList, Person, LoadingPlaceholder, SidebarListElement },
   directives: { img: img }, // TODO decide to remove or use
-  data(){
-    return{
-      ASSET_URL: 'https://image.tmdb.org/t/p/',
-      ASSET_SIZES: ['w500', 'w780', 'original'],
+  data() {
+    return {
+      ASSET_URL: "https://image.tmdb.org/t/p/",
+      ASSET_SIZES: ["w500", "w780", "original"],
       movie: undefined,
       title: undefined,
       poster: undefined,
@@ -163,111 +194,111 @@ export default {
       matched: false,
       userLoggedIn: storage.sessionId ? true : false,
       requested: false,
-      admin: localStorage.getItem('admin') == "true" ? true : false,
+      admin: localStorage.getItem("admin") == "true" ? true : false,
       showTorrents: false,
       compact: false,
       loading: true,
       truncatedDescription: true
-    }
+    };
   },
   watch: {
-    id: function(val){
-      if (this.type === 'movie') {
+    id: function (val) {
+      if (this.type === "movie") {
         this.fetchMovie(val);
       } else {
-        this.fetchShow(val)
+        this.fetchShow(val);
       }
     },
-    backdrop: function(backdrop) {
+    backdrop: function (backdrop) {
       if (backdrop != null) {
         const style = {
-          backgroundImage: 'url(' + this.ASSET_URL + this.ASSET_SIZES[1] + backdrop + ')'
-        }
+          backgroundImage:
+            "url(" + this.ASSET_URL + this.ASSET_SIZES[1] + backdrop + ")"
+        };
 
-        Object.assign(this.$refs.header.style, style)
+        Object.assign(this.$refs.header.style, style);
       }
     }
   },
   computed: {
     numberOfTorrentResults: () => {
-      let numTorrents = store.getters['torrentModule/resultCount']
-      return numTorrents !== null ? numTorrents + ' results' : null
+      let numTorrents = store.getters["torrentModule/resultCount"];
+      return numTorrents !== null ? numTorrents + " results" : null;
     },
     isPlexAuthenticated: () => {
-      return store.getters['userModule/isPlexAuthenticated']
+      return store.getters["userModule/isPlexAuthenticated"];
     }
   },
   methods: {
     parseResponse(movie) {
-      this.loading = false
-      this.movie = { ...movie }
-      this.title = movie.title
-      this.poster = movie.poster
-      this.backdrop = movie.backdrop
-      this.matched = movie.exists_in_plex || false
-      this.checkIfRequested(movie)
-        .then(status => this.requested = status)
+      this.loading = false;
+      this.movie = { ...movie };
+      this.title = movie.title;
+      this.poster = movie.poster;
+      this.backdrop = movie.backdrop;
+      this.matched = movie.exists_in_plex || false;
+      this.checkIfRequested(movie).then(status => (this.requested = status));
 
-
-      store.dispatch('documentTitle/updateTitle', movie.title)
-      this.setPosterSrc()
+      store.dispatch("documentTitle/updateTitle", movie.title);
+      this.setPosterSrc();
     },
     async checkIfRequested(movie) {
-      return await getRequestStatus(movie.id, movie.type)
+      return await getRequestStatus(movie.id, movie.type);
     },
     setPosterSrc() {
-      const poster = this.$refs['poster-image']
+      const poster = this.$refs["poster-image"];
       if (this.poster == null) {
-        poster.src = '/dist/no-image.png'
-        return
+        poster.src = "/no-image.png";
+        return;
       }
 
-      poster.src = `${this.ASSET_URL}${this.ASSET_SIZES[0]}${this.poster}`
+      poster.src = `${this.ASSET_URL}${this.ASSET_SIZES[0]}${this.poster}`;
     },
-    sendRequest(){
-      request(this.id, this.type, storage.token)
-        .then(resp => {
-          if (resp.success) {
-            this.requested = true
-          }
-        })
+    sendRequest() {
+      request(this.id, this.type, storage.token).then(resp => {
+        if (resp.success) {
+          this.requested = true;
+        }
+      });
     },
     openInPlex() {
-      watchLink(this.title, this.movie.year, storage.token)
-        .then(watchLink => window.location = watchLink)
+      watchLink(this.title, this.movie.year, storage.token).then(
+        watchLink => (window.location = watchLink)
+      );
     },
-    openTmdb(){
-      const tmdbType = this.type === 'show' ? 'tv' : this.type
-      window.location.href = 'https://www.themoviedb.org/' + tmdbType + '/' + this.id
-    },
+    openTmdb() {
+      const tmdbType = this.type === "show" ? "tv" : this.type;
+      window.location.href =
+        "https://www.themoviedb.org/" + tmdbType + "/" + this.id;
+    }
   },
   created() {
-    this.prevDocumentTitle = store.getters['documentTitle/title']
+    this.prevDocumentTitle = store.getters["documentTitle/title"];
 
-    if (this.type === 'movie') {
+    if (this.type === "movie") {
       getMovie(this.id, true)
         .then(this.parseResponse)
         .catch(error => {
-          this.$router.push({ name: '404' });
-        })
-    } else if (this.type == 'person') {
-       getPerson(this.id, true)
+          this.$router.push({ name: "404" });
+        });
+    } else if (this.type == "person") {
+      getPerson(this.id, true)
         .then(this.parseResponse)
         .catch(error => {
-          this.$router.push({ name: '404' });
-        })
+          this.$router.push({ name: "404" });
+        });
     } else {
       getShow(this.id, true)
         .then(this.parseResponse)
         .catch(error => {
-          this.$router.push({ name: '404' });
-        })
+          this.$router.push({ name: "404" });
+        });
     }
   },
   beforeDestroy() {
-    store.dispatch('documentTitle/updateTitle', this.prevDocumentTitle)
+    store.dispatch("documentTitle/updateTitle", this.prevDocumentTitle);
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -342,19 +373,20 @@ header {
     font-style: unset;
     font-size: 0.7rem;
     transition: 0.3s ease all;
-    transform: rotateY(180deg)
+    transform: rotateY(180deg);
   }
 
-  &::before, &::after {
-    content: '';
+  &::before,
+  &::after {
+    content: "";
     flex: 1;
     border-bottom: 1px solid $text-color-50;
   }
   &::before {
-      margin-right: 1rem;
+    margin-right: 1rem;
   }
   &::after {
-      margin-left: 1rem;
+    margin-left: 1rem;
   }
 }
 
@@ -369,7 +401,7 @@ header {
       display: flex;
       flex-wrap: wrap;
       flex-direction: column;
-      @include tablet-min{
+      @include tablet-min {
         flex-direction: row;
       }
 
@@ -420,105 +452,105 @@ header {
 
     height: 100%;
   }
-    &__actions {
-      text-align: center;
-      width: 100%;
-      order: 2;
-      padding: 20px;
-      border-top: 1px solid $text-color-5;
-      @include tablet-min {
-        order: 1;
-        width: 45%;
-        padding: 185px 0 40px 40px;
-        border-top: 0;
-      }
-    }
-    &__info {
-      width: 100%;
-      padding: 20px;
+  &__actions {
+    text-align: center;
+    width: 100%;
+    order: 2;
+    padding: 20px;
+    border-top: 1px solid $text-color-5;
+    @include tablet-min {
       order: 1;
-      @include tablet-min {
-        order: 2;
-        padding: 40px;
-        width: 55%;
-        margin-left: 45%;
+      width: 45%;
+      padding: 185px 0 40px 40px;
+      border-top: 0;
+    }
+  }
+  &__info {
+    width: 100%;
+    padding: 20px;
+    order: 1;
+    @include tablet-min {
+      order: 2;
+      padding: 40px;
+      width: 55%;
+      margin-left: 45%;
+    }
+  }
+  &__info {
+    margin-left: 0;
+  }
+  &__description {
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+
+    & .truncated {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+
+      & + .truncate-toggle > i {
+        transform: rotateY(0deg) rotateZ(180deg);
       }
     }
-    &__info {
-      margin-left: 0;
+
+    @include tablet-min {
+      margin-bottom: 30px;
+      font-size: 14px;
     }
-    &__description {
-      font-weight: 300;
-      font-size: 13px;
-      line-height: 1.8;
+  }
+  &__details {
+    display: flex;
+    flex-wrap: wrap;
+
+    > div {
       margin-bottom: 20px;
-
-      & .truncated {
-        display: -webkit-box;
-        overflow: hidden;
-        -webkit-line-clamp: 4;
-        -webkit-box-orient: vertical;
-
-        & + .truncate-toggle > i {
-          transform: rotateY(0deg) rotateZ(180deg);
-        } 
-      }
-
+      margin-right: 20px;
       @include tablet-min {
         margin-bottom: 30px;
+        margin-right: 30px;
+      }
+      & .title {
+        margin: 0;
+        font-weight: 400;
+        text-transform: uppercase;
         font-size: 14px;
-      }
-    }
-    &__details {
-      display: flex;
-      flex-wrap: wrap;
-
-      > div {
-        margin-bottom: 20px;
-        margin-right: 20px;
+        color: $green;
         @include tablet-min {
-          margin-bottom: 30px;
-          margin-right: 30px;
-        }
-        & .title {
-          margin: 0;
-          font-weight: 400;
-          text-transform: uppercase;
-          font-size: 14px;
-          color: $green;
-          @include tablet-min {
-            font-size: 16px;
-          }
-        }
-        & .text {
-          font-weight: 300;
-          font-size: 14px;
-          margin-top: 5px;
+          font-size: 16px;
         }
       }
+      & .text {
+        font-weight: 300;
+        font-size: 14px;
+        margin-top: 5px;
+      }
     }
-    &__admin {
+  }
+  &__admin {
+    width: 100%;
+    padding: 20px;
+    order: 2;
+    @include tablet-min {
+      order: 3;
+      padding: 40px;
+      padding-top: 0px;
       width: 100%;
-      padding: 20px;
-      order: 2;
-      @include tablet-min {
-        order: 3;
-        padding: 40px;
-        padding-top: 0px;
-        width: 100%;
-      }
-      &-title {
-          margin: 0;
-          font-weight: 400;
-          text-transform: uppercase;
-          text-align: center;
-          font-size: 14px;
-          color: $green;
-          padding-bottom: 20px;
-          @include tablet-min {
-            font-size: 16px;
-          }
-        }
     }
+    &-title {
+      margin: 0;
+      font-weight: 400;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 14px;
+      color: $green;
+      padding-bottom: 20px;
+      @include tablet-min {
+        font-size: 16px;
+      }
+    }
+  }
 }
 </style>

@@ -80,7 +80,7 @@ export default {
     if (this.movie.poster != null) {
       this.poster = "https://image.tmdb.org/t/p/w500" + this.movie.poster;
     } else {
-      this.poster = "/dist/no-image.png";
+      this.poster = "/no-image.png";
     }
   },
   mounted() {

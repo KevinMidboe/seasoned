@@ -12,74 +12,76 @@
 </template>
 
 <script>
-import LandingBanner from '@/components/LandingBanner'
-import ListHeader from '@/components/ListHeader'
-import ResultsList from '@/components/ResultsList'
-import Loader from '@/components/ui/Loader'
+import LandingBanner from "@/components/LandingBanner";
+import ListHeader from "@/components/ListHeader";
+import ResultsList from "@/components/ResultsList";
+import Loader from "@/components/ui/Loader";
 
-import { getTmdbMovieListByName, getRequests } from '@/api'
+import { getTmdbMovieListByName, getRequests } from "@/api";
 
 export default {
-  name: 'home',
+  name: "home",
   components: { LandingBanner, ResultsList, ListHeader, Loader },
-  data(){
+  data() {
     return {
-      imageFile: 'dist/pulp-fiction.jpg',
+      imageFile: "/pulp-fiction.jpg",
       requests: [],
       nowplaying: [],
       upcoming: [],
       popular: []
-    }
+    };
   },
   computed: {
     lists() {
       return [
         {
-          title: 'Requests',
-          route: 'request',
+          title: "Requests",
+          route: "request",
           data: this.requests
         },
         {
-          title: 'Now playing',
-          route: 'now_playing',
+          title: "Now playing",
+          route: "now_playing",
           data: this.nowplaying
         },
         {
-          title: 'Upcoming',
-          route: 'upcoming',
+          title: "Upcoming",
+          route: "upcoming",
           data: this.upcoming
         },
         {
-          title: 'Popular',
-          route: 'popular',
+          title: "Popular",
+          route: "popular",
           data: this.popular
         }
-      ]
+      ];
     }
   },
   methods: {
     fetchRequests() {
-      getRequests()
-        .then(results => this.requests = results.results)
+      getRequests().then(results => (this.requests = results.results));
     },
     fetchNowPlaying() {
-      getTmdbMovieListByName('now_playing')
-        .then(results => this.nowplaying = results.results)
+      getTmdbMovieListByName("now_playing").then(
+        results => (this.nowplaying = results.results)
+      );
     },
     fetchUpcoming() {
-      getTmdbMovieListByName('upcoming')
-        .then(results => this.upcoming = results.results)
+      getTmdbMovieListByName("upcoming").then(
+        results => (this.upcoming = results.results)
+      );
     },
     fetchPopular() {
-      getTmdbMovieListByName('popular')
-        .then(results => this.popular = results.results)
+      getTmdbMovieListByName("popular").then(
+        results => (this.popular = results.results)
+      );
     }
   },
-  created(){
-    this.fetchRequests()
-    this.fetchNowPlaying()
-    this.fetchUpcoming()
-    this.fetchPopular()
+  created() {
+    this.fetchRequests();
+    this.fetchNowPlaying();
+    this.fetchUpcoming();
+    this.fetchPopular();
   }
-}
+};
 </script>

@@ -17,15 +17,15 @@ export default {
   },
   data() {
     return {
-      imageFile: 'dist/pulp-fiction.jpg'
-    }
+      imageFile: "/pulp-fiction.jpg"
+    };
   },
   beforeMount() {
     if (this.image && this.image.length > 0) {
-      this.imageFile = this.image
+      this.imageFile = this.image;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -55,15 +55,15 @@ header {
     width: 100%;
     height: 100%;
     background-color: $background-70;
-    transition: background-color .5s ease;
+    transition: background-color 0.5s ease;
   }
-  
+
   .container {
     text-align: center;
     position: relative;
-    transition: color .5s ease;
+    transition: color 0.5s ease;
   }
-  
+
   .title {
     font-weight: 500;
     font-size: 22px;
@@ -72,7 +72,7 @@ header {
     color: $text-color;
     margin: 0;
 
-    @include tablet-min{
+    @include tablet-min {
       font-size: 28px;
     }
   }
@@ -84,7 +84,7 @@ header {
     color: $text-color-70;
     margin: 5px 0;
 
-    @include tablet-min{
+    @include tablet-min {
       font-size: 16px;
     }
   }
