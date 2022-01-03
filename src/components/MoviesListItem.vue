@@ -2,7 +2,7 @@
   <li class="movie-item" :class="{ shortList: shortList }">
     <figure class="movie-item__poster">
       <img
-        class="movie-item__img is-loaded"
+        class="movie-item__img"
         ref="poster-image"
         @click="openMoviePopup(movie.id, movie.type)"
         :alt="posterAltText"
@@ -92,6 +92,7 @@ export default {
         if (entry.isIntersecting && this.observed == false) {
           const lazyImage = entry.target;
           lazyImage.src = lazyImage.dataset.src;
+          lazyImage.className = lazyImage.className + " is-loaded";
           this.observed = true;
         }
       });
