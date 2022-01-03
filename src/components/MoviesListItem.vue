@@ -149,7 +149,7 @@ export default {
       width: 100%;
       opacity: 0;
       transform: scale(0.97) translateZ(0);
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transition: opacity 1s ease, transform 0.5s ease;
       &.is-loaded {
         opacity: 1;
         transform: scale(1);
