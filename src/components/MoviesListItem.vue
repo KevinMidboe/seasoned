@@ -1,12 +1,14 @@
 <template>
-  <li class="movie-item" :class="{'shortList': shortList}">
+  <li class="movie-item" :class="{ shortList: shortList }">
     <figure class="movie-item__poster">
-      <img class="movie-item__img is-loaded"
-           ref="poster-image"
-           @click="openMoviePopup(movie.id, movie.type)"
-           :alt="posterAltText"
-           :data-src="poster"
-           src="~assets/placeholder.png">
+      <img
+        class="movie-item__img is-loaded"
+        ref="poster-image"
+        @click="openMoviePopup(movie.id, movie.type)"
+        :alt="posterAltText"
+        :data-src="poster"
+        src="~assets/placeholder.png"
+      />
 
       <div v-if="movie.download" class="progress">
         <progress :value="movie.download.progress" max="100"></progress>
@@ -17,13 +19,15 @@
     <div class="movie-item__info">
       <p v-if="movie.title || movie.name">{{ movie.title || movie.name }}</p>
       <p v-if="movie.year">{{ movie.year }}</p>
-      <p v-if="movie.type == 'person'">Known for: {{ movie.known_for_department }}</p>
+      <p v-if="movie.type == 'person'">
+        Known for: {{ movie.known_for_department }}
+      </p>
     </div>
   </li>
 </template>
 
 <script>
-import img from '../directives/v-image'
+import img from "../directives/v-image";
 
 export default {
   props: {
@@ -39,62 +43,68 @@ export default {
   directives: {
     img: img
   },
-  data(){
+  data() {
     return {
       poster: undefined,
       observed: false,
-      posterSizes: [{
-        id: 'w500',
-        minWidth: 500
-      }, {
-        id: 'w342',
-        minWidth: 342
-      }, {
-        id: 'w185',
-        minWidth: 185
-      }, {
-        id: 'w154',
-        minWidth: 0
-      }]
-    }
+      posterSizes: [
+        {
+          id: "w500",
+          minWidth: 500
+        },
+        {
+          id: "w342",
+          minWidth: 342
+        },
+        {
+          id: "w185",
+          minWidth: 185
+        },
+        {
+          id: "w154",
+          minWidth: 0
+        }
+      ]
+    };
   },
   computed: {
-    posterAltText: function() {
-      const type = this.movie.type || ''
-      const title = this.movie.title || this.movie.name
-      return this.movie.poster ? `Poster for ${type} ${title}` : `Missing image for ${type} ${title}`
+    posterAltText: function () {
+      const type = this.movie.type || "";
+      const title = this.movie.title || this.movie.name;
+      return this.movie.poster
+        ? `Poster for ${type} ${title}`
+        : `Missing image for ${type} ${title}`;
     }
   },
   beforeMount() {
     if (this.movie.poster != null) {
-      this.poster = 'https://image.tmdb.org/t/p/w500' + this.movie.poster
+      this.poster = "https://image.tmdb.org/t/p/w500" + this.movie.poster;
     } else {
-      this.poster = '/dist/no-image.png'
+      this.poster = "/dist/no-image.png";
     }
   },
   mounted() {
-    const poster = this.$refs['poster-image']
-    if (poster == null)
-      return
+    const poster = this.$refs["poster-image"];
+    if (poster == null) return;
 
     const imageObserver = new IntersectionObserver((entries, imgObserver) => {
-      entries.forEach((entry) => {
+      entries.forEach(entry => {
         if (entry.isIntersecting && this.observed == false) {
-          const lazyImage = entry.target
-          lazyImage.src = lazyImage.dataset.src
-          this.observed = true
+          const lazyImage = entry.target;
+          lazyImage.src = lazyImage.dataset.src;
+          this.observed = true;
         }
-      })
+      });
     });
 
     imageObserver.observe(poster);
   },
   methods: {
     openMoviePopup(id, type) {
-      this.$popup.open(id, type)
+      this.$popup.open(id, type);
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -140,7 +150,7 @@ export default {
       opacity: 0;
       transform: scale(0.97) translateZ(0);
       transition: opacity 0.5s ease, transform 0.5s ease;
-      &.is-loaded{
+      &.is-loaded {
         opacity: 1;
         transform: scale(1);
       }
@@ -163,18 +173,15 @@ export default {
       letter-spacing: 0.5px;
       transition: color 0.5s ease;
       cursor: pointer;
-      @include mobile-ls-min{
+      @include mobile-ls-min {
         font-size: 12px;
       }
-      @include tablet-min{
+      @include tablet-min {
         font-size: 14px;
       }
     }
   }
 }
-
-
-
 
 .no-image {
   background-color: var(--text-color);
@@ -232,7 +239,6 @@ export default {
   progress::-webkit-progress-value {
     background-color: $green-70;
     border-radius: 4px;
-
   }
   progress::-moz-progress-bar {
     /* style rules */
