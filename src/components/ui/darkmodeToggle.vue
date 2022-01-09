@@ -1,40 +1,35 @@
 <template>
-
   <div class="darkToggle">
     <span @click="toggleDarkmode()">{{ darkmodeToggleIcon }}</span>
   </div>
-
 </template>
 
 <script>
 export default {
-
   data() {
     return {
       darkmode: this.supported
-    }
+    };
   },
   methods: {
     toggleDarkmode() {
       this.darkmode = !this.darkmode;
-      document.body.className = this.darkmode ? 'dark' : 'light'
+      document.body.className = this.darkmode ? "dark" : "light";
     },
     supported() {
-      const computedStyle = window.getComputedStyle(document.body)
-      if (computedStyle['colorScheme'] != null)
-        return computedStyle.colorScheme.includes('dark')
-      return false
+      const computedStyle = window.getComputedStyle(document.body);
+      if (computedStyle["colorScheme"] != null)
+        return computedStyle.colorScheme.includes("dark");
+      return false;
     }
   },
   computed: {
     darkmodeToggleIcon() {
-      return this.darkmode ? '🌝' : '🌚'
+      return this.darkmode ? "🌝" : "🌚";
     }
   }
-}
-
+};
 </script>
-
 
 <style lang="scss" scoped>
 .darkToggle {
