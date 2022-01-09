@@ -9,16 +9,19 @@
         autocorrect="off"
         autocapitalize="off"
         tabindex="1"
-        v-model="query" 
-        @input="handleInput" 
+        v-model="query"
+        @input="handleInput"
         @click="focus = true"
         @keydown.escape="handleEscape"
         @keyup.enter="handleSubmit"
         @keydown.up="navigateUp"
-        @keydown.down="navigateDown" />
+        @keydown.down="navigateDown"
+      />
 
-      <svg class="search-icon" fill="currentColor" @click="handleSubmit"><use xlink:href="#iconSearch"></use></svg>
-    </div> 
+      <svg class="search-icon" fill="currentColor" @click="handleSubmit">
+        <use xlink:href="#iconSearch"></use>
+      </svg>
+    </div>
 
     <transition name="fade">
       <div class="dropdown" v-if="!disabled && focus && query.length > 0">
@@ -26,10 +29,14 @@
           <h2>Filter your search:</h2>
 
           <div class="filter-items">
-            <toggle-button :options="searchTypes" :selected.sync="selectedSearchType" />
+            <toggle-button
+              :options="searchTypes"
+              :selected.sync="selectedSearchType"
+            />
 
-            <label>Adult
-              <input type="checkbox" value="adult" v-model="adult">
+            <label
+              >Adult
+              <input type="checkbox" value="adult" v-model="adult" />
             </label>
           </div>
         </div>
@@ -37,49 +44,57 @@
         <hr />
 
         <div class="dropdown-results" v-if="elasticSearchResults.length">
-          <ul v-for="(item, index) in elasticSearchResults"
-              @click="openResult(item, index + 1)"
-              :class="{ active: index + 1 === selectedResult}">
-                
-              {{ item.name }}
+          <ul
+            v-for="(item, index) in elasticSearchResults"
+            @click="openResult(item, index + 1)"
+            :class="{ active: index + 1 === selectedResult }"
+          >
+            {{
+              item.name
+            }}
           </ul>
         </div>
 
         <div v-else class="dropdown">
           <div class="dropdown-results">
-            <h2 class="not-found">No results for query: <b>{{ query }}</b></h2>
+            <h2 class="not-found">
+              No results for query: <b>{{ query }}</b>
+            </h2>
           </div>
         </div>
 
-        <seasoned-button class="end-section" fullWidth="true" 
-          @click="focus = false" :active="elasticSearchResults.length + 1 === selectedResult">
+        <seasoned-button
+          class="end-section"
+          fullWidth="true"
+          @click="focus = false"
+          :active="elasticSearchResults.length + 1 === selectedResult"
+        >
           close
         </seasoned-button>
       </div>
-
     </transition>
   </div>
 </template>
 
 <script>
-import SeasonedButton from '@/components/ui/SeasonedButton'
-import ToggleButton from '@/components/ui/ToggleButton';
+import SeasonedButton from "@/components/ui/SeasonedButton";
+import ToggleButton from "@/components/ui/ToggleButton";
 
-import { elasticSearchMoviesAndShows } from '@/api'
-import config from '@/config.json'
+import { elasticSearchMoviesAndShows } from "@/api";
+import config from "@/config.json";
 
 export default {
-  name: 'SearchInput',
+  name: "SearchInput",
   components: {
     SeasonedButton,
     ToggleButton
   },
-  props: ['value'],
+  props: ["value"],
   data() {
     return {
       adult: true,
-      searchTypes: ['all', 'movie', 'show', 'person'],
-      selectedSearchType: 'all',
+      searchTypes: ["all", "movie", "show", "person"],
+      selectedSearchType: "all",
 
       query: this.value,
       focus: false,
@@ -87,144 +102,150 @@ export default {
       scrollListener: undefined,
       scrollDistance: 0,
       elasticSearchResults: [],
-      selectedResult: 0,
-    }
+      selectedResult: 0
+    };
   },
   watch: {
-    focus: function(val) {
+    focus: function (val) {
       if (val === true) {
-        window.addEventListener('scroll', this.disableFocus)
+        window.addEventListener("scroll", this.disableFocus);
       } else {
-        window.removeEventListener('scroll', this.disableFocus)
-        this.scrollDistance = 0
+        window.removeEventListener("scroll", this.disableFocus);
+        this.scrollDistance = 0;
       }
     },
-    adult: function(value) {
-      this.handleInput()
+    adult: function (value) {
+      this.handleInput();
     }
   },
   beforeMount() {
-    const elasticUrl = config.ELASTIC_URL
-    if (elasticUrl === undefined || elasticUrl === false || elasticUrl === '') {
-      this.disabled = true
+    const elasticUrl = config.ELASTIC_URL;
+    if (elasticUrl === undefined || elasticUrl === false || elasticUrl === "") {
+      this.disabled = true;
     }
   },
   beforeDestroy() {
-    console.log('scroll eventlistener not removed, destroying!')
-    window.removeEventListener('scroll', this.disableFocus)
+    console.log("scroll eventlistener not removed, destroying!");
+    window.removeEventListener("scroll", this.disableFocus);
   },
   methods: {
     navigateDown() {
-      this.focus = true
-      this.selectedResult++
+      this.focus = true;
+      this.selectedResult++;
     },
     navigateUp() {
-      this.focus = true
-      this.selectedResult--
+      this.focus = true;
+      this.selectedResult--;
       const input = this.$refs.input;
-      const textLength = input.value.length
+      const textLength = input.value.length;
 
       setTimeout(() => {
-        input.focus()
-        input.setSelectionRange(textLength, textLength + 1)
-      }, 1)
+        input.focus();
+        input.setSelectionRange(textLength, textLength + 1);
+      }, 1);
     },
     openResult(item, index) {
       this.selectedResult = index;
-      this.$popup.open(item.id, item.type)
+      this.$popup.open(item.id, item.type);
     },
-    handleInput(e){
-      this.selectedResult = 0
-      this.$emit('input', this.query);
+    handleInput(e) {
+      this.selectedResult = 0;
+      this.$emit("input", this.query);
 
-      if (! this.focus) {
+      if (!this.focus) {
         this.focus = true;
       }
 
-      elasticSearchMoviesAndShows(this.query)
-      .then(resp => {
-        const data = resp.hits.hits
+      elasticSearchMoviesAndShows(this.query).then(resp => {
+        const data = resp.hits.hits;
 
         let results = data.map(item => {
-          const index = item._index.slice(0, -1)
-          if (index === 'movie' || item._source.original_title) {
+          const index = item._index.slice(0, -1);
+          if (index === "movie" || item._source.original_title) {
             return {
               name: item._source.original_title,
               id: item._source.id,
               adult: item._source.adult,
-              type: 'movie'
-            }
-          } else if (index === 'show' || item._source.original_name) {
+              type: "movie"
+            };
+          } else if (index === "show" || item._source.original_name) {
             return {
               name: item._source.original_name,
               id: item._source.id,
               adult: item._source.adult,
-              type: 'show'
-            }
+              type: "show"
+            };
           }
-        })
-        results = this.removeDuplicates(results)
-        this.elasticSearchResults = results
-      })
+        });
+        results = this.removeDuplicates(results);
+        this.elasticSearchResults = results;
+      });
     },
     removeDuplicates(searchResults) {
-      let filteredResults = []
+      let filteredResults = [];
       searchResults.map(result => {
-        const numberOfDuplicates = filteredResults.filter(filterItem => filterItem.id == result.id)
+        const numberOfDuplicates = filteredResults.filter(
+          filterItem => filterItem.id == result.id
+        );
         if (numberOfDuplicates.length >= 1) {
-          return null
+          return null;
         }
-        filteredResults.push(result)
-      })
+        filteredResults.push(result);
+      });
 
       if (this.adult == false) {
-        filteredResults = filteredResults.filter(result => result.adult == false)
+        filteredResults = filteredResults.filter(
+          result => result.adult == false
+        );
       }
 
-      return filteredResults
+      return filteredResults;
     },
     handleSubmit() {
-      let searchResults = this.elasticSearchResults
+      let searchResults = this.elasticSearchResults;
 
       if (this.selectedResult > searchResults.length) {
-        this.focus = false
-        this.selectedResult = 0
+        this.focus = false;
+        this.selectedResult = 0;
       } else if (this.selectedResult > 0) {
-        const resultItem = searchResults[this.selectedResult - 1]
-        this.$popup.open(resultItem.id, resultItem.type)
+        const resultItem = searchResults[this.selectedResult - 1];
+        this.$popup.open(resultItem.id, resultItem.type);
       } else {
-        const encodedQuery = encodeURI(this.query.replace('/ /g, "+"'))
-        const media_type = this.selectedSearchType !== 'all' ? this.selectedSearchType : null
-        this.$router.push({ name: 'search', query: { query: encodedQuery, adult: this.adult, media_type }});
-        this.focus = false
-        this.selectedResult = 0
+        const encodedQuery = encodeURI(this.query.replace('/ /g, "+"'));
+        const media_type =
+          this.selectedSearchType !== "all" ? this.selectedSearchType : null;
+        this.$router.push({
+          name: "search",
+          query: { query: encodedQuery, adult: this.adult, media_type }
+        });
+        this.focus = false;
+        this.selectedResult = 0;
       }
     },
     handleEscape() {
       if (this.$popup.isOpen) {
-        console.log('THIS WAS FUCKOING OPEN!')
+        console.log("THIS WAS FUCKOING OPEN!");
       } else {
-        this.focus = false
+        this.focus = false;
       }
     },
     disableFocus(_) {
-      this.focus = false
+      this.focus = false;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
-@import './src/scss/main';
-
+@import "./src/scss/main";
 
 .fade-enter-active {
-  transition: opacity .2s;
+  transition: opacity 0.2s;
 }
 .fade-leave-active {
-  transition: opacity .2s;
+  transition: opacity 0.2s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
@@ -300,7 +321,7 @@ hr {
       width: calc(100% - 25px);
       max-width: fit-content;
 
-      list-style: none;      
+      list-style: none;
       color: rgba(0, 0, 0, 0.5);
       text-transform: capitalize;
       cursor: pointer;
@@ -311,7 +332,9 @@ hr {
       overflow: hidden;
       color: $text-color-50;
 
-      &.active, &:hover, &:active {
+      &.active,
+      &:hover,
+      &:active {
         color: $text-color;
         border-bottom: 2px solid $text-color;
       }
@@ -333,7 +356,7 @@ hr {
   top: 0;
   right: 55px;
 
-  @include tablet-min{
+  @include tablet-min {
     position: relative;
     width: 100%;
     right: 0px;
@@ -348,16 +371,16 @@ hr {
     border: 0;
     background-color: $background-color-secondary;
     font-weight: 300;
-    font-size: 19px;
+    font-size: 18px;
     color: $text-color;
-    transition: background-color .5s ease, color .5s ease;
 
     @include tablet-min {
+      font-size: 24px;
       padding: 13px 30px 13px 60px;
     }
   }
 
-  &-icon{
+  &-icon {
     width: 20px;
     height: 20px;
     fill: $text-color-50;
@@ -365,11 +388,13 @@ hr {
     pointer-events: none;
     position: absolute;
     left: 15px;
-    top: 15px;
+    top: calc(50% - 10px);
 
-    @include tablet-min{
-      top: 27px;
-      left: 25px;
+    @include tablet-min {
+      width: 24px;
+      height: 24px;
+      top: calc(50% - 12px);
+      left: 22px;
     }
   }
 }

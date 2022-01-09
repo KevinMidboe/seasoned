@@ -1,12 +1,15 @@
-<template> 
-  <ul class="results" :class="{'shortList': shortList}">
-    <movies-list-item v-for='movie in results' :movie="movie" />
+<template>
+  <ul class="results" :class="{ shortList: shortList }">
+    <movies-list-item
+      v-for="movie in results"
+      :movie="movie"
+      :key="movie.title"
+    />
   </ul>
 </template>
 
-
 <script>
-import MoviesListItem from '@/components/MoviesListItem'
+import MoviesListItem from "@/components/MoviesListItem";
 
 export default {
   components: { MoviesListItem },
