@@ -86,7 +86,12 @@
             <span :class="truncatedDescription ? 'truncated' : null">{{
               movie.overview
             }}</span>
-            <button class="truncate-toggle"><i>⬆</i></button>
+            <button
+              v-if="movie.overview && movie.overview.length > 220"
+              class="truncate-toggle"
+            >
+              <i>⬆</i>
+            </button>
           </div>
           <div v-else class="movie__description">
             <loading-placeholder :count="5" />

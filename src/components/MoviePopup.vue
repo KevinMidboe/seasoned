@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Movie from './Movie';
+import Movie from "./Movie";
 
 export default {
   props: {
@@ -26,27 +26,50 @@ export default {
   methods: {
     checkEventForEscapeKey(event) {
       if (event.keyCode == 27) {
-        this.$popup.close()
+        this.$popup.close();
       }
+    },
+    updateQueryParams(id = false) {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("movie")) {
+        params.delete("movie");
+      }
+
+      if (id) {
+        params.append("movie", id);
+      }
+
+      console.log(params.toString());
+
+      window.history.replaceState(
+        {},
+        "search",
+        `${window.location.protocol}//${window.location.hostname}${
+          window.location.port ? `:${window.location.port}` : ""
+        }${window.location.pathname}${
+          params.toString().length ? `?${params}` : ""
+        }`
+      );
     }
   },
-  created(){
-    window.addEventListener('keyup', this.checkEventForEscapeKey)
-    document.getElementsByTagName("body")[0].classList += " no-scroll";
+  created() {
+    this.updateQueryParams(this.id);
+    window.addEventListener("keyup", this.checkEventForEscapeKey);
+    document.getElementsByTagName("body")[0].classList.add("no-scroll");
   },
   beforeDestroy() {
-    window.removeEventListener('keyup', this.checkEventForEscapeKey)
+    this.updateQueryParams();
+    window.removeEventListener("keyup", this.checkEventForEscapeKey);
     document.getElementsByTagName("body")[0].classList.remove("no-scroll");
   }
-
-}
+};
 </script>
 
 <style lang="scss">
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
 
-.movie-popup{
+.movie-popup {
   position: fixed;
   top: 0;
   left: 0;
@@ -56,19 +79,20 @@ export default {
   background: rgba($dark, 0.93);
   -webkit-overflow-scrolling: touch;
   overflow: auto;
-  &__box{
+  &__box {
     width: 100%;
+    height: 0;
     max-width: 768px;
     position: relative;
     z-index: 5;
-    background: $background-color-secondary;
+    background: var(--background-40);
     padding-bottom: 50px;
-    @include tablet-min{
+    @include tablet-min {
       padding-bottom: 0;
       margin: 40px auto;
     }
   }
-  &__close{
+  &__close {
     display: block;
     position: absolute;
     top: 0;
@@ -80,7 +104,7 @@ export default {
     transition: background 0.5s ease;
     cursor: pointer;
     &:before,
-    &:after{
+    &:after {
       content: "";
       display: block;
       position: absolute;
@@ -90,13 +114,13 @@ export default {
       height: 2px;
       background: $white;
     }
-    &:before{
+    &:before {
       transform: rotate(45deg);
     }
-    &:after{
+    &:after {
       transform: rotate(-45deg);
     }
-    &:hover{
+    &:hover {
       background: $green;
     }
   }
