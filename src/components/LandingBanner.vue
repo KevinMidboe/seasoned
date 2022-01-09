@@ -1,8 +1,10 @@
 <template>
   <header v-bind:style="{ 'background-image': 'url(' + imageFile + ')' }">
     <div class="container">
-      <h1 class="title">Request new movies or tv shows for plex</h1>
-      <strong class="subtitle">Made with Vue.js</strong>
+      <h1 class="title">Request movies or tv shows</h1>
+      <strong class="subtitle"
+        >Create a profile to track and view requests</strong
+      >
     </div>
   </header>
 </template>
@@ -73,7 +75,7 @@ header {
     margin: 0;
 
     @include tablet-min {
-      font-size: 28px;
+      font-size: 2.5rem;
     }
   }
 
@@ -85,7 +87,7 @@ header {
     margin: 5px 0;
 
     @include tablet-min {
-      font-size: 16px;
+      font-size: 1.3rem;
     }
   }
 }
