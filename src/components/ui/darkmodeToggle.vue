@@ -46,7 +46,7 @@ export default {
   z-index: 10;
 
   @include mobile-only {
-    margin-bottom: 3.5rem;
+    margin-bottom: 5rem;
   }
 
   -webkit-user-select: none;

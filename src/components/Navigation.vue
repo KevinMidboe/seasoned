@@ -104,7 +104,7 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 50px;
+  height: var(--header-size);
   z-index: 10;
   display: block;
   color: $text-color;
@@ -117,20 +117,25 @@ export default {
     height: 100vh;
   }
   &__logo {
-    width: 55px;
+    width: 95px;
     height: $header-size;
     display: flex;
     align-items: center;
     justify-content: center;
     background: $background-nav-logo;
-    @include tablet-min {
-      width: 95px;
+
+    @include mobile-only {
+      align-items: flex-start;
+      padding-top: 0.5rem;
+      width: 55px;
     }
+
     &-image {
       width: 35px;
       height: 31px;
       fill: $green;
       transition: transform 0.5s ease;
+
       @include tablet-min {
         width: 45px;
         height: 40px;
@@ -145,7 +150,7 @@ export default {
     position: fixed;
     width: 55px;
     height: 50px;
-    bottom: 0;
+    bottom: 1.5rem;
     right: 0;
     cursor: pointer;
     z-index: 10;

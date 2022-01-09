@@ -1,28 +1,28 @@
 <template>
-  <div>
-    <div class="search">
-      <input
-        ref="input"
-        type="text"
-        placeholder="Search for movie or show"
-        aria-label="Search input for finding a movie or show"
-        autocorrect="off"
-        autocapitalize="off"
-        tabindex="1"
-        v-model="query"
-        @input="handleInput"
-        @click="focus = true"
-        @keydown.escape="handleEscape"
-        @keyup.enter="handleSubmit"
-        @keydown.up="navigateUp"
-        @keydown.down="navigateDown"
-      />
+  <!-- <div> -->
+  <div class="search">
+    <input
+      ref="input"
+      type="text"
+      placeholder="Search for movie or show"
+      aria-label="Search input for finding a movie or show"
+      autocorrect="off"
+      autocapitalize="off"
+      tabindex="1"
+      v-model="query"
+      @input="handleInput"
+      @click="focus = true"
+      @keydown.escape="handleEscape"
+      @keyup.enter="handleSubmit"
+      @keydown.up="navigateUp"
+      @keydown.down="navigateDown"
+    />
 
-      <svg class="search-icon" fill="currentColor" @click="handleSubmit">
-        <use xlink:href="#iconSearch"></use>
-      </svg>
-    </div>
-
+    <svg class="search-icon" fill="currentColor" @click="handleSubmit">
+      <use xlink:href="#iconSearch"></use>
+    </svg>
+  </div>
+  <!-- 
     <transition name="fade">
       <div class="dropdown" v-if="!disabled && focus && query.length > 0">
         <div class="filter">
@@ -73,7 +73,7 @@
         </seasoned-button>
       </div>
     </transition>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -347,7 +347,7 @@ hr {
   display: flex;
   position: fixed;
   flex-wrap: wrap;
-  z-index: 5;
+  z-index: 16;
   border: 0;
   background-color: $background-color-secondary;
 
@@ -364,10 +364,12 @@ hr {
 
   input {
     display: block;
+    height: calc($header-size - 1.5rem);
     width: 100%;
     padding: 13px 0 13px 45px;
     outline: none;
     margin: 0;
+    margin-bottom: auto;
     border: 0;
     background-color: $background-color-secondary;
     font-weight: 300;
@@ -376,6 +378,7 @@ hr {
     transition: background-color 0.5s ease, color 0.5s ease;
 
     @include tablet-min {
+      height: calc($header-size);
       padding: 13px 30px 13px 60px;
     }
   }
