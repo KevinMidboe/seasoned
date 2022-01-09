@@ -1,22 +1,15 @@
 <template>
-  <ResultsSection :title="listName" :apiFunction="getTmdbMovieListByName" />
+  <ResultsSection title="Requests" :apiFunction="getRequests" />
 </template>
 
 <script>
 import ResultsSection from "./ResultsSection";
-import { getTmdbMovieListByName } from "@/api";
+import { getRequests } from "@/api";
 
 export default {
   components: { ResultsSection },
-  computed: {
-    listName() {
-      return this.$route.params.name;
-    }
-  },
   methods: {
-    getTmdbMovieListByName(page) {
-      return getTmdbMovieListByName(this.listName, page);
-    }
+    getRequests: getRequests
   }
 };
 </script>

@@ -3,7 +3,7 @@
     <LandingBanner />
 
     <div v-for="list in lists">
-      <list-header :title="list.title" :link="'/list/' + list.route" />
+      <list-header :title="list.title" :link="list.route" />
 
       <results-list :results="list.data" :shortList="true" />
       <loader v-if="!list.data.length" />
@@ -36,22 +36,22 @@ export default {
       return [
         {
           title: "Requests",
-          route: "request",
+          route: "/requests",
           data: this.requests
         },
         {
           title: "Now playing",
-          route: "now_playing",
+          route: "/list/now_playing",
           data: this.nowplaying
         },
         {
           title: "Upcoming",
-          route: "upcoming",
+          route: "/list/upcoming",
           data: this.upcoming
         },
         {
           title: "Popular",
-          route: "popular",
+          route: "/list/popular",
           data: this.popular
         }
       ];

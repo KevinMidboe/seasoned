@@ -24,12 +24,11 @@ export default {
       default: false
     }
   }
-}  
+};
 </script>
 
-
 <style lang="scss" scoped>
-@import './src/scss/media-queries';
+@import "./src/scss/media-queries";
 
 .results {
   display: flex;
@@ -41,31 +40,30 @@ export default {
   &.shortList > li {
     display: none;
 
-    &:nth-child(-n+4) {
+    &:nth-child(-n + 4) {
       display: block;
     }
   }
 }
 
 @include tablet-min {
-  .results.shortList > li:nth-child(-n+6) {
+  .results.shortList > li:nth-child(-n + 6) {
     display: block;
   }
 }
 @include tablet-landscape-min {
-  .results.shortList > li:nth-child(-n+8) {
+  .results.shortList > li:nth-child(-n + 8) {
     display: block;
   }
 }
 @include desktop-min {
-  .results.shortList > li:nth-child(-n+10) {
+  .results.shortList > li:nth-child(-n + 10) {
     display: block;
   }
 }
 @include desktop-lg-min {
-  .results.shortList > li:nth-child(-n+16) {
+  .results.shortList > li:nth-child(-n + 16) {
     display: block;
   }
 }
-
 </style>

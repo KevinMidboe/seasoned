@@ -80,7 +80,7 @@ export default {
     if (this.movie.poster != null) {
       this.poster = "https://image.tmdb.org/t/p/w500" + this.movie.poster;
     } else {
-      this.poster = "/no-image.png";
+      this.poster = "/assets/no-image.png";
     }
   },
   mounted() {
@@ -117,7 +117,6 @@ export default {
   padding: 10px;
   width: 50%;
   background-color: $background-color;
-  transition: background-color 0.5s ease;
 
   @include tablet-min {
     padding: 15px;
