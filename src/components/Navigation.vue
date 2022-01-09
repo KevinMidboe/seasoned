@@ -1,78 +1,93 @@
 <template>
-  <div>
-    <nav class="nav">
-      <router-link class="nav__logo" :to="{name: 'home'}" exact title="Vue.js — TMDb App">
-        <svg class="nav__logo-image">
-          <use xlink:href="#svgLogo"></use>
-        </svg>
-      </router-link>
+  <nav class="nav">
+    <router-link
+      class="nav__logo"
+      :to="{ name: 'home' }"
+      exact
+      title="Vue.js — TMDb App"
+    >
+      <svg class="nav__logo-image">
+        <use xlink:href="#svgLogo"></use>
+      </svg>
+    </router-link>
 
-      <div class="nav__hamburger" @click="toggleNav">
-        <div v-for="_ in 3" class="bar"></div>
-      </div>
+    <div class="nav__hamburger" @click="toggleNav">
+      <div v-for="_ in 3" class="bar"></div>
+    </div>
 
-      <ul class="nav__list">
-        <li class="nav__item" v-for="item in listTypes">
-          <router-link class="nav__link" :to="'/list/' + item.route">
-            <div class="nav__link-wrap">
-              <svg class="nav__link-icon">
-                <use :xlink:href="'#icon_' + item.route"></use>
-              </svg>
-              <span class="nav__link-title">{{ item.title }}</span>
-            </div>
-          </router-link>
-        </li>
+    <ul class="nav__list">
+      <li class="nav__item" v-for="item in listTypes">
+        <router-link class="nav__link" :to="'/list/' + item.route">
+          <div class="nav__link-wrap">
+            <svg class="nav__link-icon">
+              <use :xlink:href="'#icon_' + item.route"></use>
+            </svg>
+            <span class="nav__link-title">{{ item.title }}</span>
+          </div>
+        </router-link>
+      </li>
 
-        <li class="nav__item nav__item--profile">
-          <router-link class="nav__link nav__link--profile" :to="{name: 'signin'}" v-if="!userLoggedIn">
-            <div class="nav__link-wrap">
-              <svg class="nav__link-icon">
-                <use xlink:href="#iconLogin"></use>
-              </svg>
-              <span class="nav__link-title">Sign in</span>
-            </div>
-          </router-link>
+      <li class="nav__item mobile-only"></li>
 
-          <router-link class="nav__link nav__link--profile" :to="{name: 'profile'}" v-if="userLoggedIn">
-            <div class="nav__link-wrap">
-              <svg class="nav__link-icon">
-                <use xlink:href="#iconLogin"></use>
-              </svg>
-              <span class="nav__link-title">Profile</span>
-            </div>
-          </router-link>
-        </li>
-      </ul>
-    </nav>
+      <li class="nav__item nav__item--profile">
+        <router-link
+          class="nav__link nav__link--profile"
+          :to="{ name: 'signin' }"
+          v-if="!userLoggedIn"
+        >
+          <div class="nav__link-wrap">
+            <svg class="nav__link-icon">
+              <use xlink:href="#iconLogin"></use>
+            </svg>
+            <span class="nav__link-title">Sign in</span>
+          </div>
+        </router-link>
 
-    <div class="spacer"></div>
-  </div>
+        <router-link
+          class="nav__link nav__link--profile"
+          :to="{ name: 'profile' }"
+          v-if="userLoggedIn"
+        >
+          <div class="nav__link-wrap">
+            <svg class="nav__link-icon">
+              <use xlink:href="#iconLogin"></use>
+            </svg>
+            <span class="nav__link-title">Profile</span>
+          </div>
+        </router-link>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script>
-import storage from '@/storage'
+import storage from "@/storage";
 
 export default {
-  data(){
+  data() {
     return {
       listTypes: storage.homepageLists,
-      userLoggedIn: localStorage.getItem('token') ? true : false
-    }
+      userLoggedIn: localStorage.getItem("token") ? true : false
+    };
   },
   methods: {
-    setUserStatus(){
-      this.userLoggedIn = localStorage.getItem('token') ? true : false;
+    setUserStatus() {
+      this.userLoggedIn = localStorage.getItem("token") ? true : false;
     },
-    toggleNav(){
-      document.querySelector('.nav__hamburger').classList.toggle('nav__hamburger--active');
-      document.querySelector('.nav__list').classList.toggle('nav__list--active');
+    toggleNav() {
+      document
+        .querySelector(".nav__hamburger")
+        .classList.toggle("nav__hamburger--active");
+      document
+        .querySelector(".nav__list")
+        .classList.toggle("nav__list--active");
     }
   },
-  created(){
+  created() {
     // TODO move this to state manager
-    eventHub.$on('setUserStatus', this.setUserStatus);
+    eventHub.$on("setUserStatus", this.setUserStatus);
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -83,17 +98,10 @@ export default {
   width: 30px;
 }
 
-.spacer {
-  @include mobile-only {
-    width: 100%;
-    height: $header-size;
-  }
-}
-
 .nav {
-  transition: background .5s ease;
+  transition: background 0.5s ease;
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
   width: 100%;
   height: 50px;
@@ -102,7 +110,9 @@ export default {
   color: $text-color;
   background-color: $background-color-secondary;
 
-  @include tablet-min{
+  @include tablet-min {
+    top: 0;
+    bottom: unset;
     width: 95px;
     height: 100vh;
   }
@@ -113,15 +123,15 @@ export default {
     align-items: center;
     justify-content: center;
     background: $background-nav-logo;
-    @include tablet-min{
+    @include tablet-min {
       width: 95px;
     }
-    &-image{
+    &-image {
       width: 35px;
       height: 31px;
       fill: $green;
       transition: transform 0.5s ease;
-      @include tablet-min{
+      @include tablet-min {
         width: 45px;
         height: 40px;
       }
@@ -135,12 +145,12 @@ export default {
     position: fixed;
     width: 55px;
     height: 50px;
-    top: 0;
+    bottom: 0;
     right: 0;
     cursor: pointer;
     z-index: 10;
     border-left: 1px solid $background-color;
-    @include tablet-min{
+    @include tablet-min {
       display: none;
     }
     .bar {
@@ -172,9 +182,9 @@ export default {
       }
     }
     &--active {
-      .bar{
+      .bar {
         &:nth-child(1),
-        &:nth-child(3){
+        &:nth-child(3) {
           width: 0;
         }
         &:nth-child(2) {
@@ -198,15 +208,21 @@ export default {
     left: 0;
     top: 50px;
     border-top: 1px solid $background-color;
+
     @include mobile-only {
       display: flex;
+      position: absolute;
+      top: unset;
+      bottom: var(--header-size);
+      height: min-content;
       flex-wrap: wrap;
       font-size: 0;
       opacity: 0;
       visibility: hidden;
       background-color: $background-95;
       text-align: left;
-      &--active{
+
+      &--active {
         opacity: 1;
         visibility: visible;
       }
@@ -221,15 +237,15 @@ export default {
     }
   }
   &__item {
-    transition: background .5s ease, color .5s ease, border .5s ease;
+    transition: background 0.5s ease, color 0.5s ease, border 0.5s ease;
     background-color: $background-color-secondary;
     color: $text-color-70;
 
     @include mobile-only {
-      flex: 0 0 50%;
+      flex: 0 0 33.3%;
       text-align: center;
       border-bottom: 1px solid $background-color;
-      &:nth-child(odd){
+      &:nth-child(odd) {
         border-right: 1px solid $background-color;
 
         &:last-child {
@@ -251,7 +267,8 @@ export default {
         border-left: 1px solid $background-color;
       }
     }
-    &:hover, .is-active {
+    &:hover,
+    .is-active {
       color: $text-color;
       background-color: $background-color;
     }
@@ -299,14 +316,14 @@ export default {
         height: 20px;
         margin-bottom: 5px;
       }
-
     }
     &-title {
       margin-top: 5px;
       display: block;
       width: 100%;
     }
-    &:hover &-icon, &.is-active &-icon {
+    &:hover &-icon,
+    &.is-active &-icon {
       fill: $text-color;
     }
   }
