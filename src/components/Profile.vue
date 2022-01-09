@@ -5,13 +5,20 @@
         <h2 class="profile__title">{{ emoji }} Welcome {{ username }}</h2>
 
         <div class="button--group">
-          <seasoned-button @click="toggleSettings">{{ showSettings ? 'hide settings' : 'show settings' }}</seasoned-button>
+          <seasoned-button @click="toggleSettings">{{
+            showSettings ? "hide settings" : "show settings"
+          }}</seasoned-button>
+          <seasoned-button @click="toggleActivity">{{
+            showActivity ? "hide activity" : "show activity"
+          }}</seasoned-button>
 
           <seasoned-button @click="logOut">Log out</seasoned-button>
         </div>
       </header>
 
-      <settings v-if="showSettings"></settings>
+      <settings v-if="showSettings" />
+
+      <activity v-if="showActivity" />
 
       <list-header title="User requests" :info="resultCount" />
       <results-list v-if="results" :results="results" />
@@ -20,7 +27,7 @@
     <section class="not-found" v-if="!userLoggedIn">
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
-        <router-link :to="{name: 'signin'}" exact title="Sign in here">
+        <router-link :to="{ name: 'signin' }" exact title="Sign in here">
           <button class="not-found__button button">Sign In</button>
         </router-link>
       </div>
@@ -29,74 +36,93 @@
 </template>
 
 <script>
-import storage from '@/storage'
-import store from '@/store'
-import ListHeader from '@/components/ListHeader'
-import ResultsList from '@/components/ResultsList'
-import Settings from '@/components/Settings'
-import SeasonedButton from '@/components/ui/SeasonedButton'
+import storage from "@/storage";
+import store from "@/store";
+import ListHeader from "@/components/ListHeader";
+import ResultsList from "@/components/ResultsList";
+import Settings from "@/components/Settings";
+import Activity from "@/components/ActivityPage";
+import SeasonedButton from "@/components/ui/SeasonedButton";
 
-import { getEmoji, getUserRequests } from '@/api'
+import { getEmoji, getUserRequests } from "@/api";
 
 export default {
-  components: { ListHeader, ResultsList, Settings, SeasonedButton },
-  data(){
-    return{
-      userLoggedIn: '',
-      emoji: '',
+  components: { ListHeader, ResultsList, Settings, Activity, SeasonedButton },
+  data() {
+    return {
+      userLoggedIn: "",
+      emoji: "",
       results: undefined,
       totalResults: undefined,
-      showSettings: false
-    }
+      showSettings: false,
+      showActivity: false
+    };
   },
   computed: {
     resultCount() {
-      if (this.results === undefined)
-        return
+      if (this.results === undefined) return;
 
-      const loadedResults = this.results.length
-      const totalResults = this.totalResults < 10000 ? this.totalResults : '∞'
-      return `${loadedResults} of ${totalResults} results`
+      const loadedResults = this.results.length;
+      const totalResults = this.totalResults < 10000 ? this.totalResults : "∞";
+      return `${loadedResults} of ${totalResults} results`;
     },
-    username: () => store.getters['userModule/username']
+    username: () => store.getters["userModule/username"]
   },
   methods: {
     toggleSettings() {
       this.showSettings = this.showSettings ? false : true;
 
-      if (this.showSettings) {
-        this.$router.replace({ query: { settings: true} })
-      } else {
-        this.$router.replace({ name: 'profile' })
-      }
+      this.updateQueryParams("settings", this.showSettings);
     },
-    logOut(){
-      this.$router.push('logout')
+    updateQueryParams(key, value = false) {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has(key)) {
+        params.delete(key);
+      }
+
+      if (value) {
+        params.append(key, value);
+      }
+
+      window.history.replaceState(
+        {},
+        "search",
+        `${window.location.protocol}//${window.location.hostname}${
+          window.location.port ? `:${window.location.port}` : ""
+        }${window.location.pathname}${
+          params.toString().length ? `?${params}` : ""
+        }`
+      );
+    },
+    toggleActivity() {
+      this.showActivity = this.showActivity == true ? false : true;
+      this.updateQueryParams("activity", this.showActivity);
+    },
+    logOut() {
+      this.$router.push("logout");
     }
   },
-  created(){
-    if(!localStorage.getItem('token')){
+  created() {
+    if (!localStorage.getItem("token")) {
       this.userLoggedIn = false;
     } else {
       this.userLoggedIn = true;
 
-      this.showSettings = window.location.toString().includes('settings=true')
+      this.showSettings = window.location.toString().includes("settings=true");
+      this.showActivity = window.location.toString().includes("activity=true");
 
-      getUserRequests()
-        .then(results => {
-          this.results = results.results
-          this.totalResults = results.total_results
-        })
+      getUserRequests().then(results => {
+        this.results = results.results;
+        this.totalResults = results.total_results;
+      });
 
-      getEmoji()
-        .then(resp => {
-          const { emoji } = resp
-          this.emoji = emoji
-          store.dispatch('documentTitle/updateEmoji', emoji)
-        })
+      getEmoji().then(resp => {
+        const { emoji } = resp;
+        this.emoji = emoji;
+      });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -108,8 +134,8 @@ export default {
 }
 
 // DUPLICATE CODE
-.profile{
-  &__header{
+.profile {
+  &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -125,23 +151,23 @@ export default {
       }
     }
 
-    @include tablet-min{
+    @include tablet-min {
       padding: 29px 30px;
     }
-    @include tablet-landscape-min{
+    @include tablet-landscape-min {
       padding: 29px 50px;
     }
-    @include desktop-min{
+    @include desktop-min {
       padding: 29px 60px;
     }
   }
-  &__title{
+  &__title {
     margin: 0;
     font-size: 16px;
     line-height: 16px;
     color: $text-color;
     font-weight: 300;
-    @include tablet-min{
+    @include tablet-min {
       font-size: 18px;
       line-height: 18px;
     }
