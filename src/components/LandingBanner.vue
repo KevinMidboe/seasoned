@@ -19,12 +19,22 @@ export default {
   },
   data() {
     return {
-      imageFile: "/pulp-fiction.jpg"
+      images: [
+        "pulp-fiction.jpg",
+        "arrival.jpg",
+        "dune.jpg",
+        "mandalorian.jpg"
+      ],
+      imageFile: undefined
     };
   },
   beforeMount() {
     if (this.image && this.image.length > 0) {
       this.imageFile = this.image;
+    } else {
+      this.imageFile = `/dist/${
+        this.images[Math.floor(Math.random() * this.images.length)]
+      }`;
     }
   }
 };
@@ -56,8 +66,8 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: $background-70;
-    transition: background-color 0.5s ease;
+    background-color: var(--background-70);
+    transition: inherit;
   }
 
   .container {
