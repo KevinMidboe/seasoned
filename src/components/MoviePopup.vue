@@ -75,10 +75,11 @@ export default {
   left: 0;
   z-index: 20;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background: rgba($dark, 0.93);
   -webkit-overflow-scrolling: touch;
   overflow: auto;
+
   &__box {
     width: 100%;
     height: 0;
