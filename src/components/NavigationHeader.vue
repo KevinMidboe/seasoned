@@ -140,8 +140,6 @@ export default {
   transition: transform 0.3s ease, color 0.3s ease, stoke 0.3s ease,
     fill 0.3s ease, background-color 0.5s ease;
 
-  height: var(--header-size);
-
   @include mobile {
     padding: 1rem;
     width: 50vw;
