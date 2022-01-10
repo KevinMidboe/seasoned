@@ -1,6 +1,6 @@
 <template>
   <div class="darkToggle">
-    <span @click="toggleDarkmode()">{{ darkmodeToggleIcon }}</span>
+    <span @click="toggleDarkmode">{{ darkmodeToggleIcon }}</span>
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 export default {
   data() {
     return {
-      darkmode: this.supported
+      darkmode: this.supported()
     };
   },
   methods: {
@@ -18,8 +18,9 @@ export default {
     },
     supported() {
       const computedStyle = window.getComputedStyle(document.body);
-      if (computedStyle["colorScheme"] != null)
+      if (computedStyle["colorScheme"] != null) {
         return computedStyle.colorScheme.includes("dark");
+      }
       return false;
     }
   },
@@ -36,9 +37,8 @@ export default {
   height: 25px;
   width: 25px;
   cursor: pointer;
-  // background-color: red;
   position: fixed;
-  margin-bottom: 10px;
+  margin-bottom: 1.5rem;
   margin-right: 2px;
   bottom: 0;
   right: 0;

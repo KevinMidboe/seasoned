@@ -1,10 +1,6 @@
 <template>
   <ul class="results" :class="{ shortList: shortList }">
-    <movies-list-item
-      v-for="movie in results"
-      :movie="movie"
-      :key="movie.title"
-    />
+    <movies-list-item v-for="movie in results" :movie="movie" />
   </ul>
 </template>
 

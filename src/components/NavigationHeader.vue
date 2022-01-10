@@ -31,11 +31,7 @@
           </li>
         </router-link>
 
-        <router-link
-          v-if="userLoggedIn"
-          class="profile"
-          to="/profile?activity=true"
-        >
+        <router-link v-if="userLoggedIn" class="profile" to="/activity">
           <li class="navigation-link">
             <icon-activity class="navigation-icon stroke" />
             <span>Activity</span>
@@ -129,6 +125,12 @@ export default {
 <style lang="scss">
 @import "./src/scss/media-queries";
 
+.profile.desktop-only .navigation-link,
+.navigation-link {
+  border-bottom: none;
+  border-left: 1px solid var(--text-color-5);
+}
+
 .navigation-link {
   display: grid;
   place-items: center;
@@ -159,6 +161,7 @@ export default {
       fill: var(--text-color);
 
       &.stroke {
+        fill: none;
         stroke: var(--text-color);
       }
     }
@@ -182,6 +185,7 @@ a {
   transition: inherit;
 
   &.stroke {
+    fill: none;
     stroke: var(--text-color-70);
   }
 }

@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       inputValue: this.value || undefined,
-      tempType: undefined
+      tempType: this.type
     };
   },
   methods: {

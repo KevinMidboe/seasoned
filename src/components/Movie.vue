@@ -449,14 +449,7 @@ header {
       }
     }
   }
-  &__main {
-    min-height: calc(100vh - 250px);
-    @include tablet-min {
-      min-height: 0;
-    }
 
-    height: 100%;
-  }
   &__actions {
     text-align: center;
     width: 100%;

@@ -39,8 +39,6 @@ export default {
         params.append("movie", id);
       }
 
-      console.log(params.toString());
-
       window.history.replaceState(
         {},
         "search",

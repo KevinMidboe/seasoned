@@ -2,7 +2,10 @@
   <div>
     <list-header :title="prettify(title)" :info="info" :sticky="true" />
 
-    <div v-if="!loadedPages.includes(1)" class="load-button">
+    <div
+      v-if="!loadedPages.includes(1) && loading == false"
+      class="load-button"
+    >
       <seasoned-button @click="loadLess" :fullWidth="true"
         >load previous</seasoned-button
       >

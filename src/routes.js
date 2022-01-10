@@ -35,7 +35,7 @@ let routes = [
   {
     name: "search",
     path: "/search",
-    component: resolve => require(["./components/Search.vue"], resolve)
+    component: resolve => require(["./components/SearchPage.vue"], resolve)
   },
   {
     name: "register",
