@@ -5,8 +5,10 @@
 :root {
   color-scheme: light;
   --text-color: #081c24;
+  --text-color-90: rgba(8, 28, 36, 0.9);
   --text-color-70: rgba(8, 28, 36, 0.7);
   --text-color-50: rgba(8, 28, 36, 0.5);
+  --text-color-10: rgba(8, 28, 36, 0.1);
   --text-color-5: rgba(8, 28, 36, 0.05);
   --text-color-secondary: orange;
   --background-color: #f8f8f8;
@@ -40,16 +42,18 @@
   :root {
     color-scheme: light dark;
     --text-color: #fff;
+    --text-color-90: rgba(255, 255, 255, 0.9);
     --text-color-70: rgba(255, 255, 255, 0.7);
     --text-color-50: rgba(255, 255, 255, 0.5);
+    --text-color-10: rgba(255, 255, 255, 0.1);
     --text-color-5: rgba(255, 255, 255, 0.05);
     --text-color-secondary: orange;
     --background-color: rgba(17, 17, 17, 1);
     --background-color-secondary: rgba(6, 7, 8, 1);
     --background-ui: #202125;
-    --background-95: rgba(17, 17, 17, 0.95);
-    --background-70: rgba(17, 17, 17, 0.8);
-    --background-40: rgba(17, 17, 17, 0.4);
+    --background-95: rgba(6, 7, 8, 0.95);
+    --background-70: rgba(6, 7, 8, 0.7);
+    --background-40: rgba(6, 7, 8, 0.4);
   }
 }
 
@@ -72,6 +76,7 @@ $white: #fff;
 $white-80: rgba(255, 255, 255, 0.8);
 
 $text-color: var(--text-color) !default;
+$text-color-90: var(--text-color-90) !default;
 $text-color-70: var(--text-color-70) !default;
 $text-color-50: var(--text-color-50) !default;
 $text-color-5: var(--text-color-5) !default;
@@ -100,6 +105,7 @@ $color-error-highlight: var(--color-error-highlight) !default;
 
 .dark {
   --text-color: #fff;
+  --text-color-90: rgba(255, 255, 255, 0.9);
   --text-color-70: rgba(255, 255, 255, 0.7);
   --text-color-50: rgba(255, 255, 255, 0.5);
   --text-color-5: rgba(255, 255, 255, 0.05);
@@ -114,6 +120,7 @@ $color-error-highlight: var(--color-error-highlight) !default;
 
 .light {
   --text-color: #081c24;
+  --text-color-90: rgba(8, 28, 36, 0.9);
   --text-color-70: rgba(8, 28, 36, 0.7);
   --text-color-50: rgba(8, 28, 36, 0.5);
   --text-color-5: rgba(8, 28, 36, 0.05);
