@@ -1,6 +1,15 @@
 <template>
   <div>
-    <div class="search">
+    <div class="search" :class="{ active: focusingInput }">
+      <svg
+        class="search-icon"
+        tabindex="-1"
+        fill="currentColor"
+        @click="handleSubmit"
+      >
+        <use xlink:href="#iconSearch"></use>
+      </svg>
+
       <input
         ref="input"
         type="text"
@@ -8,7 +17,7 @@
         aria-label="Search input for finding a movie or show"
         autocorrect="off"
         autocapitalize="off"
-        tabindex="1"
+        tabindex="0"
         v-model="query"
         @input="handleInput"
         @click="focus = true"
@@ -16,126 +25,86 @@
         @keyup.enter="handleSubmit"
         @keydown.up="navigateUp"
         @keydown.down="navigateDown"
+        @focus="focusingInput = true"
+        @blur="focusingInput = false"
       />
 
-      <svg class="search-icon" fill="currentColor" @click="handleSubmit">
-        <use xlink:href="#iconSearch"></use>
-      </svg>
+      <IconClose
+        tabindex="0"
+        aria-label="button"
+        v-if="query && query.length"
+        @click="resetQuery"
+        @keydown.enter.stop="resetQuery"
+        class="close-icon"
+      />
     </div>
 
-    <transition name="fade">
-      <div class="dropdown" v-if="!disabled && focus && query.length > 0">
-        <div class="filter">
-          <h2>Filter your search:</h2>
-
-          <div class="filter-items">
-            <toggle-button
-              :options="searchTypes"
-              :selected.sync="selectedSearchType"
-            />
-
-            <label
-              >Adult
-              <input type="checkbox" value="adult" v-model="adult" />
-            </label>
-          </div>
-        </div>
-
-        <hr />
-
-        <div class="dropdown-results" v-if="elasticSearchResults.length">
-          <ul
-            v-for="(item, index) in elasticSearchResults"
-            @click="openResult(item, index + 1)"
-            :class="{ active: index + 1 === selectedResult }"
-          >
-            {{
-              item.name
-            }}
-          </ul>
-        </div>
-
-        <div v-else class="dropdown">
-          <div class="dropdown-results">
-            <h2 class="not-found">
-              No results for query: <b>{{ query }}</b>
-            </h2>
-          </div>
-        </div>
-
-        <seasoned-button
-          class="end-section"
-          fullWidth="true"
-          @click="focus = false"
-          :active="elasticSearchResults.length + 1 === selectedResult"
-        >
-          close
-        </seasoned-button>
-      </div>
-    </transition>
+    <AutocompleteDropdown
+      v-if="showAutocompleteResults"
+      :query="query"
+      :index="dropdownIndex"
+      :results.sync="dropdownResults"
+    />
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import SeasonedButton from "@/components/ui/SeasonedButton";
-import ToggleButton from "@/components/ui/ToggleButton";
+import AutocompleteDropdown from "@/components/AutocompleteDropdown";
 
-import { elasticSearchMoviesAndShows } from "@/api";
+import IconClose from "src/icons/IconClose";
 import config from "@/config.json";
 
 export default {
   name: "SearchInput",
   components: {
     SeasonedButton,
-    ToggleButton
+    AutocompleteDropdown,
+    IconClose
   },
-  props: ["value"],
   data() {
     return {
-      adult: true,
-      searchTypes: ["all", "movie", "show", "person"],
-      selectedSearchType: "all",
-
-      query: this.value,
-      focus: false,
+      query: null,
       disabled: false,
-      scrollListener: undefined,
-      scrollDistance: 0,
-      elasticSearchResults: [],
-      selectedResult: 0
+      dropdownIndex: -1,
+      dropdownResults: [],
+      focusingInput: false,
+      showAutocomplete: false
     };
   },
-  watch: {
-    focus: function (val) {
-      if (val === true) {
-        window.addEventListener("scroll", this.disableFocus);
-      } else {
-        window.removeEventListener("scroll", this.disableFocus);
-        this.scrollDistance = 0;
-      }
-    },
-    adult: function (value) {
-      this.handleInput();
+  computed: {
+    ...mapGetters("popup", ["isOpen"]),
+    showAutocompleteResults() {
+      return (
+        !this.disabled &&
+        this.focusingInput &&
+        this.query &&
+        this.query.length > 0
+      );
     }
   },
-  beforeMount() {
+  created() {
+    const params = new URLSearchParams(window.location.search);
+    if (params && params.has("query")) {
+      this.query = decodeURIComponent(params.get("query"));
+    }
+
     const elasticUrl = config.ELASTIC_URL;
     if (elasticUrl === undefined || elasticUrl === false || elasticUrl === "") {
       this.disabled = true;
     }
   },
-  beforeDestroy() {
-    console.log("scroll eventlistener not removed, destroying!");
-    window.removeEventListener("scroll", this.disableFocus);
-  },
   methods: {
+    ...mapActions("popup", ["open"]),
     navigateDown() {
-      this.focus = true;
-      this.selectedResult++;
+      if (this.dropdownIndex < this.dropdownResults.length - 1) {
+        this.dropdownIndex++;
+      }
     },
     navigateUp() {
-      this.focus = true;
-      this.selectedResult--;
+      if (this.dropdownIndex > -1) this.dropdownIndex--;
+
       const input = this.$refs.input;
       const textLength = input.value.length;
 
@@ -144,93 +113,48 @@ export default {
         input.setSelectionRange(textLength, textLength + 1);
       }, 1);
     },
-    openResult(item, index) {
-      this.selectedResult = index;
-      this.$popup.open(item.id, item.type);
+    search() {
+      const encodedQuery = encodeURI(this.query.replace('/ /g, "+"'));
+
+      this.$router.push({
+        name: "search",
+        query: {
+          ...this.$route.query,
+          query: encodedQuery
+        }
+      });
+    },
+    resetQuery(event) {
+      this.query = "";
+      this.$refs.input.focus();
     },
     handleInput(e) {
-      this.selectedResult = 0;
       this.$emit("input", this.query);
-
-      if (!this.focus) {
-        this.focus = true;
-      }
-
-      elasticSearchMoviesAndShows(this.query).then(resp => {
-        const data = resp.hits.hits;
-
-        let results = data.map(item => {
-          const index = item._index.slice(0, -1);
-          if (index === "movie" || item._source.original_title) {
-            return {
-              name: item._source.original_title,
-              id: item._source.id,
-              adult: item._source.adult,
-              type: "movie"
-            };
-          } else if (index === "show" || item._source.original_name) {
-            return {
-              name: item._source.original_name,
-              id: item._source.id,
-              adult: item._source.adult,
-              type: "show"
-            };
-          }
-        });
-        results = this.removeDuplicates(results);
-        this.elasticSearchResults = results;
-      });
-    },
-    removeDuplicates(searchResults) {
-      let filteredResults = [];
-      searchResults.map(result => {
-        const numberOfDuplicates = filteredResults.filter(
-          filterItem => filterItem.id == result.id
-        );
-        if (numberOfDuplicates.length >= 1) {
-          return null;
-        }
-        filteredResults.push(result);
-      });
-
-      if (this.adult == false) {
-        filteredResults = filteredResults.filter(
-          result => result.adult == false
-        );
-      }
-
-      return filteredResults;
+      this.dropdownIndex = -1;
     },
     handleSubmit() {
-      let searchResults = this.elasticSearchResults;
+      if (!this.query || this.query.length == 0) return;
 
-      if (this.selectedResult > searchResults.length) {
-        this.focus = false;
-        this.selectedResult = 0;
-      } else if (this.selectedResult > 0) {
-        const resultItem = searchResults[this.selectedResult - 1];
-        this.$popup.open(resultItem.id, resultItem.type);
-      } else {
-        const encodedQuery = encodeURI(this.query.replace('/ /g, "+"'));
-        const media_type =
-          this.selectedSearchType !== "all" ? this.selectedSearchType : null;
-        this.$router.push({
-          name: "search",
-          query: { query: encodedQuery, adult: this.adult, media_type }
+      if (this.dropdownIndex >= 0) {
+        const resultItem = this.dropdownResults[this.dropdownIndex];
+
+        console.log("resultItem:", resultItem);
+        this.open({
+          id: resultItem.id,
+          type: resultItem.type
         });
-        this.focus = false;
-        this.selectedResult = 0;
+        return;
       }
+
+      this.search();
+      this.$refs.input.blur();
+      this.dropdownIndex = -1;
     },
     handleEscape() {
-      if (this.$popup.isOpen) {
-        console.log("THIS WAS FUCKOING OPEN!");
-      } else {
-        this.focus = false;
+      if (!this.isOpen) {
+        this.$refs.input.blur();
+        this.dropdownIndex = -1;
       }
-    },
-    disableFocus(_) {
-      this.focus = false;
     }
   }
 };
@@ -240,6 +164,17 @@ export default {
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
 @import "./src/scss/main";
+
+.close-icon {
+  position: absolute;
+  top: calc(50% - 12px);
+  right: 0;
+  cursor: pointer;
+
+  @include tablet-min {
+    right: 6px;
+  }
+}
 
 .fade-enter-active {
   transition: opacity 0.2s;
@@ -252,7 +187,6 @@ export default {
 }
 
 .filter {
-  // background-color: rgba(004, 122, 125, 0.2);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -285,60 +219,13 @@ hr {
   width: 90%;
 }
 
-.dropdown {
-  width: 100%;
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  z-index: 5;
-  min-height: $header-size;
-  right: 0px;
-  background-color: $background-color-secondary;
-
-  @include mobile-only {
-    position: fixed;
-    top: 50px;
-    padding-top: 20px;
-    width: calc(100%);
+.search.active {
+  input {
+    border-color: var(--color-green);
   }
 
-  .not-found {
-    font-weight: 400;
-  }
-
-  &-results {
-    padding-left: 60px;
-    width: 100%;
-
-    @include mobile-only {
-      padding-left: 45px;
-    }
-
-    > ul {
-      font-size: 1.3rem;
-      padding: 0;
-      margin: 0.2rem 0;
-      width: calc(100% - 25px);
-      max-width: fit-content;
-
-      list-style: none;
-      color: rgba(0, 0, 0, 0.5);
-      text-transform: capitalize;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      color: $text-color-50;
-
-      &.active,
-      &:hover,
-      &:active {
-        color: $text-color;
-        border-bottom: 2px solid $text-color;
-      }
-    }
+  .search-icon {
+    fill: var(--color-green);
   }
 }
 
@@ -365,7 +252,7 @@ hr {
   input {
     display: block;
     width: 100%;
-    padding: 13px 0 13px 45px;
+    padding: 13px 28px 13px 45px;
     outline: none;
     margin: 0;
     border: 0;
@@ -373,10 +260,15 @@ hr {
     font-weight: 300;
     font-size: 18px;
     color: $text-color;
+    // border-bottom: 1px solid transparent;
+
+    &:focus {
+      border-color: var(--text-color);
+    }
 
     @include tablet-min {
       font-size: 24px;
-      padding: 13px 30px 13px 60px;
+      padding: 13px 40px 13px 60px;
     }
   }
 

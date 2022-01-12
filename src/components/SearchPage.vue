@@ -1,16 +1,30 @@
 <template>
   <div>
-    <button @click="updateQueryParams">Shows</button>
+    <div style="display: flex; flex-direction: row">
+      <label class="filter">
+        <span>Search filter:</span>
+
+        <toggle-button
+          :options="['All', 'movie', 'show']"
+          :selected="mediaType"
+          @change="toggleChanged"
+        />
+      </label>
+    </div>
+
     <ResultsSection :title="title" :apiFunction="searchTmdb" />
   </div>
 </template>
 
 <script>
-import ResultsSection from "./ResultsSection";
 import { searchTmdb } from "@/api";
 
+import ResultsSection from "./ResultsSection";
+import ListHeader from "@/components/ListHeader";
+import ToggleButton from "@/components/ui/ToggleButton";
+
 export default {
-  components: { ResultsSection },
+  components: { ResultsSection, ListHeader, ToggleButton },
   data() {
     return {
       query: "",
@@ -19,16 +33,6 @@ export default {
       mediaType: null
     };
   },
-  watch: {
-    $route(to, from) {
-      console.log("query", to, from);
-      const { query, page, adult, media_type } = this.$route.query;
-      if (query != this.query) console.log("query updated");
-      if (page != this.page) console.log("page updated");
-      if (adult != this.adult) console.log("adult updated");
-      if (media_type != this.media_type) console.log("media_type updated");
-    }
-  },
   computed: {
     title() {
       return `Search results: ${this.query}`;
@@ -36,18 +40,25 @@ export default {
   },
   methods: {
     searchTmdb(page = this.page) {
-      return searchTmdb(this.query, page, this.adult, this.mediaType);
+      if (this.query && this.query.length)
+        return searchTmdb(this.query, page, this.adult, this.mediaType);
+    },
+    toggleChanged(value) {
+      if (["movie", "show"].includes(value.toLowerCase())) {
+        this.mediaType = value.toLowerCase();
+      } else {
+        this.mediaType = null;
+      }
+      this.updateQueryParams();
     },
     updateQueryParams() {
-      console.log("updating");
       const { query, page, adult, media_type } = this.$route.query;
-      this.media_type = media_type == "show" ? "movie" : "show";
 
       this.$router.push({
         path: "search",
         query: {
           ...this.$route.query,
-          media_type: this.media_type
+          media_type: this.mediaType
         }
       });
     }
@@ -69,4 +80,18 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.filter {
+  margin-top: 0.5rem;
+  margin-left: 1.25rem;
+  display: inline-flex;
+  flex-direction: column;
+
+  span {
+    font-size: 1.1rem;
+    line-height: 1;
+    margin: 0.5rem 0;
+    font-weight: 300;
+  }
+}
+</style>
