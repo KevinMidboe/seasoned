@@ -3,26 +3,31 @@
     <section class="not-found">
       <h1 class="not-found__title">Page Not Found</h1>
     </section>
-    <seasoned-button class="button" @click="goBack">go back to previous page</seasoned-button>
+    <seasoned-button class="button" @click="goBack"
+      >go back to previous page</seasoned-button
+    >
   </div>
 </template>
 
 <script>
-import store from '@/store'
-import SeasonedButton from '@/components/ui/SeasonedButton'
+import { mapActions, mapGetters } from "vuex";
+import SeasonedButton from "@/components/ui/SeasonedButton";
 
 export default {
   components: { SeasonedButton },
+  computed: {
+    ...mapGetters("popup", ["isOpen"])
+  },
   methods: {
+    ...mapActions("popup", ["close"]),
     goBack() {
-      this.$router.go(-1)
+      this.$router.go(-1);
     }
   },
   created() {
-    if (this.$popup.isOpen == true)
-      this.$popup.close()
+    if (this.isOpen) this.close();
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -47,7 +52,7 @@ export default {
 .not-found {
   display: flex;
   height: calc(100vh - var(--header-size));
-  background: url('~assets/pulp-fiction.jpg') no-repeat 50% 50%;
+  background: url("~assets/pulp-fiction.jpg") no-repeat 50% 50%;
   background-size: cover;
   align-items: center;
   flex-direction: column;

@@ -46,18 +46,13 @@
     <router-view class="content" :key="$route.fullPath"></router-view>
 
     <!-- Movie popup that will show above existing rendered content -->
-    <movie-popup
-      v-if="moviePopupIsVisible"
-      :id="popupID"
-      :type="popupType"
-    ></movie-popup>
+    <movie-popup></movie-popup>
 
     <darkmode-toggle />
   </div>
 </template>
 
 <script>
-import Vue from "vue";
 import NavigationHeader from "@/components/NavigationHeader";
 import NavigationIcons from "@/components/NavigationIcons";
 import MoviePopup from "@/components/MoviePopup";
@@ -70,37 +65,6 @@ export default {
     NavigationIcons,
     MoviePopup,
     DarkmodeToggle
-  },
-  data() {
-    return {
-      query: "",
-      moviePopupIsVisible: false,
-      popupID: 0,
-      popupType: "movie"
-    };
-  },
-  created() {
-    let that = this;
-    Vue.prototype.$popup = {
-      get isOpen() {
-        return that.moviePopupIsVisible;
-      },
-      open: (id, type) => {
-        this.popupID = id || this.popupID;
-        this.popupType = type || this.popupType;
-        this.moviePopupIsVisible = true;
-        console.log("opened");
-      },
-      close: () => {
-        this.moviePopupIsVisible = false;
-        console.log("closed");
-      }
-    };
-
-    const movieId = new URLSearchParams(window.location.search).get("movie");
-    if (movieId) {
-      this.$popup.open(movieId, "movie");
-    }
   }
 };
 </script>
@@ -126,7 +90,8 @@ body {
   transition: background-color 0.5s ease, color 0.5s ease;
 
   * {
-    transition: background-color 0.5s ease, color 0.5s ease;
+    transition: background-color 0.5s ease, color 0.5s ease,
+      border-color 0.5s ease;
   }
 
   &.hidden {
@@ -158,20 +123,6 @@ img {
 .wrapper {
   position: relative;
 }
-// .header {
-//   position: fixed;
-//   z-index: 15;
-//   display: flex;
-//   flex-direction: column;
-
-//   @include tablet-min {
-//     width: calc(100% - 170px);
-//     margin-left: 95px;
-//     border-top: 0;
-//     border-bottom: 0;
-//     top: 0;
-//   }
-// }
 
 // router view transition
 .fade-enter-active,

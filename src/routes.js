@@ -67,17 +67,6 @@ let routes = [
     component: resolve => require(["./components/404.vue"], resolve)
   },
   {
-    name: "logout",
-    path: "/logout",
-    component: {
-      template: "<div></div>",
-      created() {
-        localStorage.clear();
-        this.$router.push({ name: "home" });
-      }
-    }
-  },
-  {
     path: "*",
     redirect: "/"
   },
@@ -94,8 +83,12 @@ const router = new VueRouter({
   linkActiveClass: "is-active"
 });
 
+const loggedIn = () => store.getters["user/loggedIn"];
+const isOpen = () => store.getters["user/isOpen"];
+
 router.beforeEach((to, from, next) => {
   store.dispatch("documentTitle/updateTitle", to.name);
+  if (isOpen()) store.dispatch("popup/close");
 
   // Toggle mobile nav
   if (document.querySelector(".nav__hamburger--active")) {
@@ -106,7 +99,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (localStorage.getItem("token") == null) {
+    if (!loggedIn) {
       next({ path: "/signin" });
     }
   }

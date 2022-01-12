@@ -1,64 +1,58 @@
 <template>
-  <div class="movie-popup" @click="$popup.close()">
+  <div v-if="isOpen" class="movie-popup" @click="close">
     <div class="movie-popup__box" @click.stop>
       <movie :id="id" :type="type"></movie>
-      <button class="movie-popup__close" @click="$popup.close()"></button>
+      <button class="movie-popup__close" @click="close"></button>
     </div>
     <i class="loader"></i>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import Movie from "./Movie";
 
 export default {
-  props: {
-    id: {
-      type: Number,
-      required: true
-    },
-    type: {
-      type: String,
-      required: true
+  components: { Movie },
+  computed: {
+    ...mapGetters("popup", ["isOpen", "id", "type"])
+  },
+  watch: {
+    isOpen(value) {
+      value
+        ? document.getElementsByTagName("body")[0].classList.add("no-scroll")
+        : document
+            .getElementsByTagName("body")[0]
+            .classList.remove("no-scroll");
     }
   },
-  components: { Movie },
   methods: {
+    ...mapActions("popup", ["close", "open"]),
     checkEventForEscapeKey(event) {
-      if (event.keyCode == 27) {
-        this.$popup.close();
-      }
-    },
-    updateQueryParams(id = false) {
-      const params = new URLSearchParams(window.location.search);
-      if (params.has("movie")) {
-        params.delete("movie");
-      }
-
-      if (id) {
-        params.append("movie", id);
-      }
-
-      window.history.replaceState(
-        {},
-        "search",
-        `${window.location.protocol}//${window.location.hostname}${
-          window.location.port ? `:${window.location.port}` : ""
-        }${window.location.pathname}${
-          params.toString().length ? `?${params}` : ""
-        }`
-      );
+      if (event.keyCode == 27) this.close();
     }
   },
   created() {
-    this.updateQueryParams(this.id);
+    const params = new URLSearchParams(window.location.search);
+    let id = null;
+    let type = null;
+
+    if (params.has("movie")) {
+      id = Number(params.get("movie"));
+      type = "movie";
+    } else if (params.has("show")) {
+      id = Number(params.get("show"));
+      type = "show";
+    }
+
+    if (id && type) {
+      this.open({ id, type });
+    }
+
     window.addEventListener("keyup", this.checkEventForEscapeKey);
-    document.getElementsByTagName("body")[0].classList.add("no-scroll");
   },
   beforeDestroy() {
-    this.updateQueryParams();
     window.removeEventListener("keyup", this.checkEventForEscapeKey);
-    document.getElementsByTagName("body")[0].classList.remove("no-scroll");
   }
 };
 </script>

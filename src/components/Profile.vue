@@ -1,6 +1,6 @@
 <template>
   <section class="profile">
-    <div class="profile__content" v-if="userLoggedIn">
+    <div class="profile__content" v-if="loggedIn">
       <header class="profile__header">
         <h2 class="profile__title">{{ emoji }} Welcome {{ username }}</h2>
 
@@ -12,7 +12,7 @@
             showActivity ? "hide activity" : "show activity"
           }}</seasoned-button>
 
-          <seasoned-button @click="logOut">Log out</seasoned-button>
+          <seasoned-button @click="_logout">Log out</seasoned-button>
         </div>
       </header>
 
@@ -24,7 +24,7 @@
       <results-list v-if="results" :results="results" />
     </div>
 
-    <section class="not-found" v-if="!userLoggedIn">
+    <section class="not-found" v-if="!loggedIn">
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
         <router-link :to="{ name: 'signin' }" exact title="Sign in here">
@@ -36,21 +36,19 @@
 </template>
 
 <script>
-import storage from "@/storage";
-import store from "@/store";
+import { mapGetters, mapActions } from "vuex";
 import ListHeader from "@/components/ListHeader";
 import ResultsList from "@/components/ResultsList";
 import Settings from "@/components/Settings";
 import Activity from "@/components/ActivityPage";
 import SeasonedButton from "@/components/ui/SeasonedButton";
 
-import { getEmoji, getUserRequests } from "@/api";
+import { getEmoji, getUserRequests, getSettings } from "@/api";
 
 export default {
   components: { ListHeader, ResultsList, Settings, Activity, SeasonedButton },
   data() {
     return {
-      userLoggedIn: "",
       emoji: "",
       results: undefined,
       totalResults: undefined,
@@ -59,16 +57,17 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("user", ["loggedIn", "username", "settings"]),
     resultCount() {
       if (this.results === undefined) return;
 
       const loadedResults = this.results.length;
       const totalResults = this.totalResults < 10000 ? this.totalResults : "∞";
       return `${loadedResults} of ${totalResults} results`;
-    },
-    username: () => store.getters["userModule/username"]
+    }
   },
   methods: {
+    ...mapActions("user", ["logout", "updateSettings"]),
     toggleSettings() {
       this.showSettings = this.showSettings ? false : true;
 
@@ -98,16 +97,20 @@ export default {
       this.showActivity = this.showActivity == true ? false : true;
       this.updateQueryParams("activity", this.showActivity);
     },
-    logOut() {
-      this.$router.push("logout");
+    _logout() {
+      this.logout();
+      this.$router.push("home");
     }
   },
   created() {
-    if (!localStorage.getItem("token")) {
-      this.userLoggedIn = false;
-    } else {
-      this.userLoggedIn = true;
+    if (!this.settings) {
+      getSettings().then(resp => {
+        const { settings } = resp;
+        if (settings) updateSettings(settings);
+      });
+    }
 
+    if (this.loggedIn) {
       this.showSettings = window.location.toString().includes("settings=true");
       this.showActivity = window.location.toString().includes("activity=true");
 

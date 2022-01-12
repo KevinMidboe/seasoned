@@ -4,7 +4,7 @@
       <img
         class="movie-item__img"
         ref="poster-image"
-        @click="openMoviePopup(movie.id, movie.type)"
+        @click="openMoviePopup"
         :alt="posterAltText"
         :data-src="poster"
         src="~assets/placeholder.png"
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import img from "../directives/v-image";
 
 export default {
@@ -101,8 +102,12 @@ export default {
     imageObserver.observe(poster);
   },
   methods: {
-    openMoviePopup(id, type) {
-      this.$popup.open(id, type);
+    ...mapActions("popup", ["open"]),
+    openMoviePopup() {
+      this.open({
+        id: this.movie.id,
+        type: this.movie.type
+      });
     }
   }
 };

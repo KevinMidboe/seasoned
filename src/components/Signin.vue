@@ -2,88 +2,94 @@
   <section>
     <h1>Sign in</h1>
 
-    <seasoned-input placeholder="username"
-                    icon="Email"
-                    type="email"
-                    @enter="submit"
-                    :value.sync="username" />
-    <seasoned-input placeholder="password" icon="Keyhole" type="password" :value.sync="password" @enter="submit"/>
+    <seasoned-input
+      placeholder="username"
+      icon="Email"
+      type="email"
+      @enter="submit"
+      :value.sync="username"
+    />
+    <seasoned-input
+      placeholder="password"
+      icon="Keyhole"
+      type="password"
+      :value.sync="password"
+      @enter="submit"
+    />
 
     <seasoned-button @click="submit">sign in</seasoned-button>
-    <router-link class="link" to="/register">Don't have a user? Register here</router-link>
+    <router-link class="link" to="/register"
+      >Don't have a user? Register here</router-link
+    >
 
     <seasoned-messages :messages.sync="messages"></seasoned-messages>
   </section>
 </template>
 
-
-
 <script>
-import { login } from '@/api'
-import storage from '../storage'
-import SeasonedInput from '@/components/ui/SeasonedInput'
-import SeasonedButton from '@/components/ui/SeasonedButton'
-import SeasonedMessages from '@/components/ui/SeasonedMessages'
-import { parseJwt } from '@/utils'
+import { mapActions } from "vuex";
+import { login } from "@/api";
+import storage from "../storage";
+import SeasonedInput from "@/components/ui/SeasonedInput";
+import SeasonedButton from "@/components/ui/SeasonedButton";
+import SeasonedMessages from "@/components/ui/SeasonedMessages";
 
 export default {
   components: { SeasonedInput, SeasonedButton, SeasonedMessages },
-  data(){
-    return{
+  data() {
+    return {
       messages: [],
       username: null,
       password: null
-    }
+    };
   },
   methods: {
-    setValue(l, t) {
-      this[l] = t
-    },
+    ...mapActions("user", ["login"]),
     submit() {
       this.messages = [];
-      let username = this.username;
-      let password = this.password;
+      let { username, password } = this;
 
-      if (username == null || username.length == 0) {
-        this.messages.push({ type: 'error', title: 'Missing username' })
-        return
+      if (!username || username.length == 0) {
+        this.messages.push({ type: "error", title: "Missing username" });
+        return;
       }
 
-      if (password == null || password.length == 0) {
-        this.messages.push({ type: 'error', title: 'Missing password' })
-        return
+      if (!password || password.length == 0) {
+        this.messages.push({ type: "error", title: "Missing password" });
+        return;
       }
 
-      this.signin(username, password)
+      this.signin(username, password);
     },
     signin(username, password) {
       login(username, password, true)
         .then(data => {
-          if (data.success){
-            const jwtData = parseJwt(data.token)
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('username', jwtData['username']);
-            localStorage.setItem('admin', jwtData['admin'] || false);
-
-            eventHub.$emit('setUserStatus');
-            this.$router.push({ name: 'profile' })
+          if (data.success && this.login(data.token)) {
+            this.$router.push({ name: "profile" });
           }
         })
         .catch(error => {
           if (error.status === 401) {
-            this.messages.push({ type: 'error', title: 'Access denied', message: 'Incorrect username or password' })
-          }
-          else {
-            this.messages.push({ type: 'error', title: 'Unexpected error', message: error.message })
+            this.messages.push({
+              type: "error",
+              title: "Access denied",
+              message: "Incorrect username or password"
+            });
+          } else {
+            this.messages.push({
+              type: "error",
+              title: "Unexpected error",
+              message: error.message
+            });
           }
         });
     }
   },
-  created(){
-    document.title = 'Sign in' + storage.pageTitlePostfix;
+  created() {
+    document.title = "Sign in" + storage.pageTitlePostfix;
     storage.backTitle = document.title;
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
