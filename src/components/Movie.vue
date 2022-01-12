@@ -100,47 +100,49 @@
           <div class="movie__details" v-if="movie">
             <div v-if="movie.year">
               <h2 class="title">Release Date</h2>
-              <div class="text">{{ movie.year }}</div>
+              <span class="info">{{ movie.year }}</span>
             </div>
 
             <div v-if="movie.rating">
               <h2 class="title">Rating</h2>
-              <div class="text">{{ movie.rating }}</div>
+              <span class="info">{{ movie.rating }}</span>
             </div>
 
             <div v-if="movie.type == 'show'">
               <h2 class="title">Seasons</h2>
-              <div class="text">{{ movie.seasons }}</div>
+              <span class="info">{{ movie.seasons }}</span>
             </div>
 
             <div v-if="movie.genres">
               <h2 class="title">Genres</h2>
-              <div class="text">{{ movie.genres.join(", ") }}</div>
+              <span class="info">{{ movie.genres.join(", ") }}</span>
             </div>
 
             <div v-if="movie.type == 'show'">
               <h2 class="title">Production status</h2>
-              <div class="text">{{ movie.production_status }}</div>
+              <span class="info">{{ movie.production_status }}</span>
             </div>
 
             <div v-if="movie.type == 'show'">
               <h2 class="title">Runtime</h2>
-              <div class="text">{{ movie.runtime[0] }} minutes</div>
+              <span class="info">{{ movie.runtime[0] }} minutes</span>
             </div>
           </div>
         </div>
 
         <!-- TODO: change this classname, this is general  -->
 
-        <div class="movie__admin" v-if="movie && movie.credits">
-          <h2 class="movie__details-title">Cast</h2>
-          <div style="display: flex; flex-wrap: wrap">
-            <person
-              v-for="cast in movie.credits.cast"
-              :info="cast"
-              style="flex-basis: 0"
-            ></person>
-          </div>
+        <div
+          class="movie__admin"
+          v-if="
+            movie &&
+            movie.credits &&
+            movie.credits.cast &&
+            movie.credits.cast.length
+          "
+        >
+          <h2 class="title">Cast</h2>
+          <Cast :cast="movie.credits.cast" />
         </div>
       </div>
 
@@ -157,10 +159,10 @@
 </template>
 
 <script>
-import storage from "@/storage";
+import { mapGetters } from "vuex";
 import img from "@/directives/v-image";
 import TorrentList from "./TorrentList";
-import Person from "./Person";
+import Cast from "./Cast";
 import SidebarListElement from "./ui/sidebarListElem";
 import store from "@/store";
 import LoadingPlaceholder from "./ui/LoadingPlaceholder";
@@ -186,7 +188,7 @@ export default {
       type: String
     }
   },
-  components: { TorrentList, Person, LoadingPlaceholder, SidebarListElement },
+  components: { TorrentList, Cast, LoadingPlaceholder, SidebarListElement },
   directives: { img: img }, // TODO decide to remove or use
   data() {
     return {
@@ -197,9 +199,7 @@ export default {
       poster: undefined,
       backdrop: undefined,
       matched: false,
-      userLoggedIn: storage.sessionId ? true : false,
       requested: false,
-      admin: localStorage.getItem("admin") == "true" ? true : false,
       showTorrents: false,
       compact: false,
       loading: true,
@@ -226,6 +226,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("user", ["loggedIn", "admin"]),
     numberOfTorrentResults: () => {
       let numTorrents = store.getters["torrentModule/resultCount"];
       return numTorrents !== null ? numTorrents + " results" : null;
@@ -260,14 +261,14 @@ export default {
       poster.src = `${this.ASSET_URL}${this.ASSET_SIZES[0]}${this.poster}`;
     },
     sendRequest() {
-      request(this.id, this.type, storage.token).then(resp => {
+      request(this.id, this.type).then(resp => {
         if (resp.success) {
           this.requested = true;
         }
       });
     },
     openInPlex() {
-      watchLink(this.title, this.movie.year, storage.token).then(
+      watchLink(this.title, this.movie.year).then(
         watchLink => (window.location = watchLink)
       );
     },
@@ -395,6 +396,21 @@ header {
   }
 }
 
+h2.title {
+  margin: 0;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  color: $green;
+}
+
+span.info {
+  font-weight: 300;
+  font-size: 1rem;
+  letter-spacing: 0.8px;
+  margin-top: 5px;
+}
+
 .movie {
   &__wrap {
     display: flex;
@@ -509,21 +525,6 @@ header {
       @include tablet-min {
         margin-bottom: 30px;
         margin-right: 30px;
-      }
-      & .title {
-        margin: 0;
-        font-weight: 400;
-        text-transform: uppercase;
-        font-size: 14px;
-        color: $green;
-        @include tablet-min {
-          font-size: 16px;
-        }
-      }
-      & .text {
-        font-weight: 300;
-        font-size: 14px;
-        margin-top: 5px;
       }
     }
   }
