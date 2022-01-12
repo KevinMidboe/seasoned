@@ -6,75 +6,15 @@
 
     <SearchInput />
 
-    <div class="nav__hamburger" @click="toggleNav">
-      <div v-for="_ in 3" class="bar"></div>
-    </div>
+    <Hamburger @click="toggleNav" />
 
-    <router-link class="profile desktop-only" to="/profile">
-      <li class="navigation-link">
-        <icon-profile class="navigation-icon" />
-        <span>{{ !userLoggedIn ? "Signin" : "Profile" }}</span>
-      </li>
-    </router-link>
-    <!-- <NavigationIcons class="desktop-only" /> -->
+    <NavigationIcon class="desktop-only" :route="profileRoute" />
 
-    <div class="nav__list mobile-only">
+    <div class="nav__list mobile-only" :class="{ open: hamburgerMenuOpen }">
       <NavigationIcons>
-        <router-link
-          v-if="userLoggedIn"
-          class="settings"
-          to="/profile?settings=true"
-        >
-          <li class="navigation-link">
-            <icon-settings class="navigation-icon stroke" />
-            <span>Settings</span>
-          </li>
-        </router-link>
-
-        <router-link v-if="userLoggedIn" class="profile" to="/activity">
-          <li class="navigation-link">
-            <icon-activity class="navigation-icon stroke" />
-            <span>Activity</span>
-          </li>
-        </router-link>
-
-        <router-link class="profile" to="/profile">
-          <li class="navigation-link">
-            <icon-profile class="navigation-icon" />
-            <span>{{ !userLoggedIn ? "Signin" : "Profile" }}</span>
-          </li>
-        </router-link>
+        <NavigationIcon :route="profileRoute" />
       </NavigationIcons>
-
-      <!--       <li class="nav__item nav__item--profile">
-        <router-link
-          class="nav__link nav__link--profile"
-          :to="{ name: 'signin' }"
-          v-if="!userLoggedIn"
-        >
-          <div class="nav__link-wrap">
-            <svg class="nav__link-icon">
-              <use xlink:href="#iconLogin"></use>
-            </svg>
-            <span class="nav__link-title">Sign in</span>
-          </div>
-        </router-link>
-
-        <router-link
-          class="nav__link nav__link--profile"
-          :to="{ name: 'profile' }"
-          v-if="userLoggedIn"
-        >
-          <div class="nav__link-wrap">
-            <svg class="nav__link-icon">
-              <use xlink:href="#iconLogin"></use>
-            </svg>
-            <span class="nav__link-title">Profile</span>
-          </div>
-        </router-link>
-      </li> -->
     </div>
-    <div style="z-index: -1"></div>
   </nav>
 </template>
 
@@ -86,110 +26,45 @@ import IconSettings from "../icons/IconSettings";
 import IconActivity from "../icons/IconActivity";
 import SearchInput from "@/components/SearchInput";
 import NavigationIcons from "src/components/NavigationIcons";
+import NavigationIcon from "src/components/ui/NavigationIcon";
+import Hamburger from "@/components/ui/Hamburger";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
     NavigationIcons,
+    NavigationIcon,
     SearchInput,
     TmdbLogo,
     IconProfile,
     IconSettings,
-    IconActivity
+    IconActivity,
+    Hamburger
   },
   data() {
     return {
       listTypes: storage.homepageLists,
-      userLoggedIn: localStorage.getItem("token") ? true : false
+      hamburgerMenuOpen: false
     };
   },
   methods: {
-    setUserStatus() {
-      this.userLoggedIn = localStorage.getItem("token") ? true : false;
-    },
     toggleNav() {
-      document
-        .querySelector(".nav__hamburger")
-        .classList.toggle("nav__hamburger--active");
-      document
-        .querySelector(".nav__list")
-        .classList.toggle("nav__list--active");
+      this.hamburgerMenuOpen = !this.hamburgerMenuOpen;
     }
   },
-  created() {
-    // TODO move this to state manager
-    eventHub.$on("setUserStatus", this.setUserStatus);
+  computed: {
+    ...mapGetters("user", ["loggedIn"]),
+    profileRoute() {
+      return {
+        title: !this.loggedIn ? "Signin" : "Profile",
+        route: !this.loggedIn ? "/signin" : "/profile",
+        icon: IconProfile
+      };
+    }
   }
 };
 </script>
 
-<style lang="scss">
-@import "./src/scss/media-queries";
-
-.profile.desktop-only .navigation-link,
-.navigation-link {
-  border-bottom: none;
-  border-left: 1px solid var(--text-color-5);
-}
-
-.navigation-link {
-  display: grid;
-  place-items: center;
-  list-style: none;
-  padding: 1rem 0.15rem;
-  margin: 0;
-  text-align: center;
-  background-color: var(--background-color-secondary);
-  transition: transform 0.3s ease, color 0.3s ease, stoke 0.3s ease,
-    fill 0.3s ease, background-color 0.5s ease;
-
-  @include mobile {
-    padding: 1rem;
-    width: 50vw;
-  }
-
-  &:hover {
-    transform: scale(1.05);
-  }
-
-  &:hover,
-  &.active {
-    background-color: var(--background-color);
-
-    span,
-    .navigation-icon {
-      color: var(--text-color);
-      fill: var(--text-color);
-
-      &.stroke {
-        fill: none;
-        stroke: var(--text-color);
-      }
-    }
-  }
-
-  span {
-    text-transform: uppercase;
-    margin-top: 0.75rem;
-    font-size: 11px;
-    color: var(--text-color-70);
-  }
-}
-
-a {
-  text-decoration: none;
-}
-
-.navigation-icon {
-  width: 28px;
-  fill: var(--text-color-70);
-  transition: inherit;
-
-  &.stroke {
-    fill: none;
-    stroke: var(--text-color-70);
-  }
-}
-</style>
 <style lang="scss" scoped>
 @import "./src/scss/variables";
 @import "./src/scss/media-queries";
@@ -213,6 +88,12 @@ nav {
 .logo {
   padding: 1rem;
   fill: var(--color-green);
+  width: var(--header-size);
+  height: var(--header-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $background-nav-logo;
   transition: transform 0.3s ease;
 
   &:hover {
@@ -224,123 +105,21 @@ nav {
   }
 }
 
-.nav {
-  // transition: background 0.5s ease;
-  // position: fixed;
-  // top: 0;
-  // left: 0;
-  // width: 100%;
-  // height: 50px;
-  // z-index: 10;
-  // display: block;
-  // color: $text-color;
-  // background-color: $background-color-secondary;
+.nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  position: fixed;
+  top: var(--header-size);
+  left: 0;
+  width: 100%;
+  background-color: $background-95;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 
-  &__logo {
-    width: var(--header-size);
-    height: var(--header-size);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: $background-nav-logo;
-
-    // &-image {
-    //   width: 35px;
-    //   height: 31px;
-    //   fill: $green;
-    //   transition: transform 0.5s ease;
-    //   @include tablet-min {
-    //     width: 45px;
-    //     height: 40px;
-    //   }
-    // }
-    // &:hover &-image {
-    //   transform: scale(1.04);
-    // }
-  }
-  &__hamburger {
-    display: block;
-    position: relative;
-    width: var(--header-size);
-    height: var(--header-size);
-    cursor: pointer;
-    border-left: 1px solid $background-color;
-    background-color: var(--background-color-secondary);
-
-    @include tablet-min {
-      display: none;
-    }
-    .bar {
-      position: absolute;
-      width: 23px;
-      height: 1px;
-      background-color: $text-color-70;
-      transition: all 300ms ease;
-      &:nth-child(1) {
-        left: 16px;
-        top: 17px;
-      }
-      &:nth-child(2) {
-        left: 16px;
-        top: 25px;
-        &:after {
-          content: "";
-          position: absolute;
-          left: 0px;
-          top: 0px;
-          width: 23px;
-          height: 1px;
-          transition: all 300ms ease;
-        }
-      }
-      &:nth-child(3) {
-        right: 15px;
-        top: 33px;
-      }
-    }
-    &--active {
-      .bar {
-        &:nth-child(1),
-        &:nth-child(3) {
-          width: 0;
-        }
-        &:nth-child(2) {
-          transform: rotate(-45deg);
-        }
-        &:nth-child(2):after {
-          transform: rotate(-90deg);
-          // background: rgba($c-dark, 0.5);
-          background-color: $text-color-70;
-        }
-      }
-    }
-  }
-  &__list {
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: var(--header-size);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    visibility: hidden;
-
-    @include mobile-only {
-      display: flex;
-      flex-wrap: wrap;
-      background-color: $background-95;
-      &--active {
-        opacity: 1;
-        visibility: visible;
-      }
-    }
-    @include tablet-min {
-      display: flex;
-      position: relative;
-      display: block;
-      width: 100%;
-      border-top: 0;
-      top: 0;
-    }
+  &.open {
+    opacity: 1;
+    visibility: visible;
   }
 }
 </style>

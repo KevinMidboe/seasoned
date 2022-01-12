@@ -1,32 +1,34 @@
 <template>
   <ul class="navigation-icons">
-    <router-link
-      :to="{ path: route.route }"
+    <NavigationIcon
       v-for="route in routes"
-      :key="route.title"
-    >
-      <li
-        class="navigation-link"
-        :class="{ active: route.route == activeRoute }"
-      >
-        <component class="navigation-icon" :is="route.icon"></component>
-        <span>{{ route.title }}</span>
-      </li>
-    </router-link>
-
+      :route="route"
+      :active="activeRoute"
+    />
     <slot></slot>
   </ul>
 </template>
 
 <script>
+import NavigationIcon from "./ui/NavigationIcon";
 import IconRequest from "../icons/IconRequest";
 import IconNowPlaying from "../icons/IconNowPlaying";
 import IconPopular from "../icons/IconPopular";
 import IconUpcoming from "../icons/IconUpcoming";
+import IconSettings from "../icons/IconSettings";
+import IconActivity from "../icons/IconActivity";
 
 export default {
   name: "NavigationIcons",
-  components: { IconRequest, IconPopular, IconNowPlaying, IconUpcoming },
+  components: {
+    NavigationIcon,
+    IconRequest,
+    IconPopular,
+    IconNowPlaying,
+    IconUpcoming,
+    IconSettings,
+    IconActivity
+  },
   data() {
     return {
       routes: [],
@@ -68,6 +70,18 @@ export default {
           route: "/list/upcoming",
           apiPath: "/v2/movie/upcoming",
           icon: IconUpcoming
+        },
+        {
+          title: "Activity",
+          route: "/activity",
+          requiresAuth: true,
+          icon: IconActivity
+        },
+        {
+          title: "Settings",
+          route: "/profile?settings=true",
+          requiresAuth: true,
+          icon: IconSettings
         }
       ];
     }
