@@ -23,25 +23,23 @@
       <div class="movie__wrap movie__wrap--main">
         <!-- SIDEBAR ACTIONS -->
         <div class="movie__actions" v-if="movie">
-          <sidebar-list-element
-            :iconRef="'#iconNot_exsits'"
-            :active="matched"
-            :iconRefActive="'#iconExists'"
-            :textActive="'Already in plex 🎉'"
-          >
-            Not yet in plex
+          <sidebar-list-element :active="matched" :disabled="true">
+            <IconThumbsUp v-if="matched" />
+            <IconThumbsDown v-else class="stroke" />
+            {{ !matched ? "Not yet in plex" : "Already in plex 🎉" }}
           </sidebar-list-element>
-          <sidebar-list-element
-            @click="sendRequest"
-            :iconRef="'#iconSent'"
-            :active="requested"
-            :textActive="'Requested to be downloaded'"
-          >
-            Request to be downloaded?
+
+          <sidebar-list-element @click="sendRequest" :active="requested">
+            <IconMail />
+            {{
+              !requested
+                ? "Request to be downloaded?"
+                : "Requested to be downloaded"
+            }}
           </sidebar-list-element>
 
           <sidebar-list-element
-            v-if="isPlexAuthenticated && matched"
+            v-if="plexId && matched"
             @click="openInPlex"
             :iconString="'⏯ '"
           >
@@ -49,15 +47,30 @@
           </sidebar-list-element>
 
           <sidebar-list-element
+            v-if="
+              movie &&
+              movie.credits &&
+              movie.credits.cast &&
+              movie.credits.cast.length
+            "
+            :active="showCast"
+            @click="() => (showCast = !showCast)"
+          >
+            <IconProfile class="icon stroke" />
+            {{ showCast ? "Hide cast" : "Show cast" }}
+          </sidebar-list-element>
+
+          <sidebar-list-element
             v-if="admin"
             @click="showTorrents = !showTorrents"
-            :iconRef="'#icon_torrents'"
             :active="showTorrents"
-            :supplementaryText="numberOfTorrentResults"
           >
+            <IconMagnet class="rotate" />
             Search for torrents
+            <span class="meta">{{ numberOfTorrentResults || 123 }}</span>
           </sidebar-list-element>
-          <sidebar-list-element @click="openTmdb" :iconRef="'#icon_info'">
+          <sidebar-list-element @click="openTmdb">
+            <IconInfo />
             See more info
           </sidebar-list-element>
         </div>
@@ -78,55 +91,43 @@
         <!-- MOVIE INFO -->
         <div class="movie__info">
           <!-- Loading placeholder -->
-          <div
-            class="movie__description noselect"
-            @click="truncatedDescription = !truncatedDescription"
-            v-if="!loading"
-          >
-            <span :class="truncatedDescription ? 'truncated' : null">{{
-              movie.overview
-            }}</span>
-            <button
-              v-if="movie.overview && movie.overview.length > 220"
-              class="truncate-toggle"
-            >
-              <i>⬆</i>
-            </button>
-          </div>
-          <div v-else class="movie__description">
+          <div v-if="loading">
             <loading-placeholder :count="5" />
           </div>
 
+          <MovieDescription v-else :description="movie.overview" />
+
           <div class="movie__details" v-if="movie">
-            <div v-if="movie.year">
-              <h2 class="title">Release Date</h2>
-              <span class="info">{{ movie.year }}</span>
-            </div>
-
-            <div v-if="movie.rating">
-              <h2 class="title">Rating</h2>
-              <span class="info">{{ movie.rating }}</span>
-            </div>
-
-            <div v-if="movie.type == 'show'">
-              <h2 class="title">Seasons</h2>
-              <span class="info">{{ movie.seasons }}</span>
-            </div>
-
-            <div v-if="movie.genres">
-              <h2 class="title">Genres</h2>
-              <span class="info">{{ movie.genres.join(", ") }}</span>
-            </div>
-
-            <div v-if="movie.type == 'show'">
-              <h2 class="title">Production status</h2>
-              <span class="info">{{ movie.production_status }}</span>
-            </div>
-
-            <div v-if="movie.type == 'show'">
-              <h2 class="title">Runtime</h2>
-              <span class="info">{{ movie.runtime[0] }} minutes</span>
-            </div>
+            <MovieDetail
+              v-if="movie.year"
+              title="Release date"
+              :detail="movie.year"
+            />
+            <MovieDetail
+              v-if="movie.rating"
+              title="Rating"
+              :detail="movie.rating"
+            />
+            <MovieDetail
+              v-if="movie.type == 'show'"
+              title="Seasons"
+              :detail="movie.seasons"
+            />
+            <MovieDetail
+              v-if="movie.genres"
+              title="Genres"
+              :detail="movie.genres.join(', ')"
+            />
+            <MovieDetail
+              v-if="movie.type == 'show'"
+              title="Production status"
+              :detail="movie.production_status"
+            />
+            <MovieDetail
+              v-if="movie.type == 'show'"
+              title="Runtime"
+              :detail="movie.runtime[0]"
+            />
           </div>
         </div>
 
@@ -135,14 +136,16 @@
         <div
           class="movie__admin"
           v-if="
+            showCast &&
             movie &&
             movie.credits &&
             movie.credits.cast &&
             movie.credits.cast.length
           "
         >
-          <h2 class="title">Cast</h2>
-          <Cast :cast="movie.credits.cast" />
+          <MovieDetail title="cast">
+            <Cast :cast="movie.credits.cast" />
+          </MovieDetail>
         </div>
       </div>
 
@@ -161,9 +164,17 @@
 <script>
 import { mapGetters } from "vuex";
 import img from "@/directives/v-image";
+import IconProfile from "../icons/IconProfile";
+import IconThumbsUp from "../icons/IconThumbsUp";
+import IconThumbsDown from "../icons/IconThumbsDown";
+import IconInfo from "../icons/IconInfo";
+import IconMail from "../icons/IconMail";
+import IconMagnet from "../icons/IconMagnet";
 import TorrentList from "./TorrentList";
 import Cast from "./Cast";
+import MovieDetail from "./ui/MovieDetail";
 import SidebarListElement from "./ui/sidebarListElem";
+import MovieDescription from "./ui/MovieDescription";
 import store from "@/store";
 import LoadingPlaceholder from "./ui/LoadingPlaceholder";
 
@@ -188,7 +199,20 @@ export default {
       type: String
     }
   },
-  components: { TorrentList, Cast, LoadingPlaceholder, SidebarListElement },
+  components: {
+    MovieDescription,
+    MovieDetail,
+    IconProfile,
+    IconThumbsUp,
+    IconThumbsDown,
+    IconMail,
+    IconInfo,
+    IconMagnet,
+    TorrentList,
+    Cast,
+    LoadingPlaceholder,
+    SidebarListElement
+  },
   directives: { img: img }, // TODO decide to remove or use
   data() {
     return {
@@ -201,9 +225,9 @@ export default {
       matched: false,
       requested: false,
       showTorrents: false,
+      showCast: false,
       compact: false,
-      loading: true,
-      truncatedDescription: true
+      loading: true
     };
   },
   watch: {
@@ -226,13 +250,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("user", ["loggedIn", "admin"]),
+    ...mapGetters("user", ["loggedIn", "admin", "plexId"]),
     numberOfTorrentResults: () => {
       let numTorrents = store.getters["torrentModule/resultCount"];
       return numTorrents !== null ? numTorrents + " results" : null;
-    },
-    isPlexAuthenticated: () => {
-      return store.getters["userModule/isPlexAuthenticated"];
     }
   },
   methods: {
@@ -282,19 +303,19 @@ export default {
     this.prevDocumentTitle = store.getters["documentTitle/title"];
 
     if (this.type === "movie") {
-      getMovie(this.id, true)
+      getMovie(this.id, false, true)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: "404" });
         });
     } else if (this.type == "person") {
-      getPerson(this.id, true)
+      getPerson(this.id, false)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: "404" });
         });
     } else {
-      getShow(this.id, true)
+      getShow(this.id, false)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: "404" });
@@ -364,51 +385,6 @@ header {
       width: 100%;
     }
   }
-}
-
-.truncate-toggle {
-  border: none;
-  background: none;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: $text-color;
-
-  > i {
-    font-style: unset;
-    font-size: 0.7rem;
-    transition: 0.3s ease all;
-    transform: rotateY(180deg);
-  }
-
-  &::before,
-  &::after {
-    content: "";
-    flex: 1;
-    border-bottom: 1px solid $text-color-50;
-  }
-  &::before {
-    margin-right: 1rem;
-  }
-  &::after {
-    margin-left: 1rem;
-  }
-}
-
-h2.title {
-  margin: 0;
-  font-weight: 400;
-  text-transform: uppercase;
-  font-size: 1.2rem;
-  color: $green;
-}
-
-span.info {
-  font-weight: 300;
-  font-size: 1rem;
-  letter-spacing: 0.8px;
-  margin-top: 5px;
 }
 
 .movie {
@@ -493,40 +469,9 @@ span.info {
   &__info {
     margin-left: 0;
   }
-  &__description {
-    font-weight: 300;
-    font-size: 13px;
-    line-height: 1.8;
-    margin-bottom: 20px;
-
-    & .truncated {
-      display: -webkit-box;
-      overflow: hidden;
-      -webkit-line-clamp: 4;
-      -webkit-box-orient: vertical;
-
-      & + .truncate-toggle > i {
-        transform: rotateY(0deg) rotateZ(180deg);
-      }
-    }
-
-    @include tablet-min {
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-  }
   &__details {
     display: flex;
     flex-wrap: wrap;
-
-    > div {
-      margin-bottom: 20px;
-      margin-right: 20px;
-      @include tablet-min {
-        margin-bottom: 30px;
-        margin-right: 30px;
-      }
-    }
   }
   &__admin {
     width: 100%;
