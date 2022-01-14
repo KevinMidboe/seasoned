@@ -1,9 +1,9 @@
 <template>
   <div
     class="nav__hamburger"
-    :class="{ open }"
-    @click="toggleNav"
-    @keydown.enter="toggleNav"
+    :class="{ open: isOpen }"
+    @click="toggle"
+    @keydown.enter="toggle"
     tabindex="0"
   >
     <div v-for="_ in 3" class="bar"></div>
@@ -11,17 +11,14 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
-  data() {
-    return {
-      open: false
-    };
+  computed: {
+    ...mapGetters("hamburger", ["isOpen"])
   },
   methods: {
-    toggleNav() {
-      this.open = !this.open;
-      this.$emit("click", this.open);
-    }
+    ...mapActions("hamburger", ["toggle"])
   }
 };
 </script>

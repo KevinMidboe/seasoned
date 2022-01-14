@@ -84,11 +84,13 @@ const router = new VueRouter({
 });
 
 const loggedIn = () => store.getters["user/loggedIn"];
-const isOpen = () => store.getters["user/isOpen"];
+const popupIsOpen = () => store.getters["popup/isOpen"];
+const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
 router.beforeEach((to, from, next) => {
   store.dispatch("documentTitle/updateTitle", to.name);
-  if (isOpen()) store.dispatch("popup/close");
+  if (popupIsOpen()) store.dispatch("popup/close");
+  if (hamburgerIsOpen()) store.dispatch("hamburger/close");
 
   // Toggle mobile nav
   if (document.querySelector(".nav__hamburger--active")) {

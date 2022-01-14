@@ -6,11 +6,11 @@
 
     <SearchInput />
 
-    <Hamburger @click="toggleNav" />
+    <Hamburger />
 
     <NavigationIcon class="desktop-only" :route="profileRoute" />
 
-    <div class="nav__list mobile-only" :class="{ open: hamburgerMenuOpen }">
+    <div class="nav__list mobile-only" :class="{ open: isOpen }">
       <NavigationIcons>
         <NavigationIcon :route="profileRoute" />
       </NavigationIcons>
@@ -43,17 +43,12 @@ export default {
   },
   data() {
     return {
-      listTypes: storage.homepageLists,
-      hamburgerMenuOpen: false
+      listTypes: storage.homepageLists
     };
-  },
-  methods: {
-    toggleNav() {
-      this.hamburgerMenuOpen = !this.hamburgerMenuOpen;
-    }
   },
   computed: {
     ...mapGetters("user", ["loggedIn"]),
+    ...mapGetters("hamburger", ["isOpen"]),
     profileRoute() {
       return {
         title: !this.loggedIn ? "Signin" : "Profile",
