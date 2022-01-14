@@ -466,7 +466,7 @@ const elasticSearchMoviesAndShows = query => {
 
   return fetch(url.href, {
     method: "POST",
-    headers: AUTHORIZATION_HEADERS(),
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   })
     .then(resp => resp.json())
