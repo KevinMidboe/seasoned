@@ -1,14 +1,7 @@
 <template>
   <div>
     <div class="search" :class="{ active: focusingInput }">
-      <svg
-        class="search-icon"
-        tabindex="-1"
-        fill="currentColor"
-        @click="handleSubmit"
-      >
-        <use xlink:href="#iconSearch"></use>
-      </svg>
+      <IconSearch class="search-icon" tabindex="-1" />
 
       <input
         ref="input"
@@ -53,6 +46,7 @@ import { mapActions, mapGetters } from "vuex";
 import SeasonedButton from "@/components/ui/SeasonedButton";
 import AutocompleteDropdown from "@/components/AutocompleteDropdown";
 
+import IconSearch from "src/icons/IconSearch";
 import IconClose from "src/icons/IconClose";
 import config from "@/config.json";
 
@@ -61,7 +55,8 @@ export default {
   components: {
     SeasonedButton,
     AutocompleteDropdown,
-    IconClose
+    IconClose,
+    IconSearch
   },
   data() {
     return {
@@ -225,7 +220,7 @@ hr {
   }
 
   .search-icon {
-    fill: var(--color-green);
+    stroke: var(--color-green);
   }
 }
 
@@ -275,8 +270,8 @@ hr {
   &-icon {
     width: 20px;
     height: 20px;
-    fill: $text-color-50;
-    transition: fill 0.5s ease;
+    stroke: var(--text-color-50);
+    transition: stroke 0.5s ease;
     pointer-events: none;
     position: absolute;
     left: 15px;
