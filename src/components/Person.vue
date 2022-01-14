@@ -58,7 +58,7 @@ li.card {
   background-color: var(--background-color-secondary);
   color: var(--text-color);
 
-  transition: transform 0.5s ease, color 0.4s ease, border-color 0.4s ease;
+  transition: all 0.3s ease;
   transform: scale(0.97) translateZ(0);
 
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -68,6 +68,7 @@ li.card {
   }
 
   &:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     transform: scale(1.03);
   }
 
@@ -82,6 +83,10 @@ li.card {
   .meta {
     font-size: 0.9em;
     color: var(--text-color-70);
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
   }
 
   a {
@@ -92,6 +97,9 @@ li.card {
   img {
     width: 100%;
     height: 100%;
+    min-width: 140px;
+    min-height: 210px;
+    background-color: var(--text-color-90);
   }
 }
 </style>

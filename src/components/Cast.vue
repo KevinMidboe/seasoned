@@ -29,12 +29,16 @@ export default {
 
   ol {
     overflow-x: scroll;
-    padding-bottom: 10px;
-
+    padding: 0;
     list-style-type: none;
     margin: 0;
-    padding: 0;
     display: flex;
+
+    scrollbar-width: none; /* for Firefox */
+
+    &::-webkit-scrollbar {
+      display: none; /* for Chrome, Safari, and Opera */
+    }
   }
 }
 </style>
