@@ -11,7 +11,7 @@
 
 <script>
 import NavigationIcon from "./ui/NavigationIcon";
-import IconRequest from "../icons/IconRequest";
+import IconInbox from "../icons/IconInbox";
 import IconNowPlaying from "../icons/IconNowPlaying";
 import IconPopular from "../icons/IconPopular";
 import IconUpcoming from "../icons/IconUpcoming";
@@ -22,7 +22,7 @@ export default {
   name: "NavigationIcons",
   components: {
     NavigationIcon,
-    IconRequest,
+    IconInbox,
     IconPopular,
     IconNowPlaying,
     IconUpcoming,
@@ -51,7 +51,7 @@ export default {
           title: "Requests",
           route: "/requests",
           apiPath: "/v2/requests",
-          icon: IconRequest
+          icon: IconInbox
         },
         {
           title: "Now Playing",
