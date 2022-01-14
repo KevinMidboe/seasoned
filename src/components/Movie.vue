@@ -303,7 +303,7 @@ export default {
     this.prevDocumentTitle = store.getters["documentTitle/title"];
 
     if (this.type === "movie") {
-      getMovie(this.id, false, true)
+      getMovie(this.id, true, true)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: "404" });
@@ -315,7 +315,7 @@ export default {
           this.$router.push({ name: "404" });
         });
     } else {
-      getShow(this.id, false)
+      getShow(this.id, true, true)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: "404" });
