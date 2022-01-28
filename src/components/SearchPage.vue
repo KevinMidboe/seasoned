@@ -5,7 +5,7 @@
         <span>Search filter:</span>
 
         <toggle-button
-          :options="['All', 'movie', 'show']"
+          :options="['All', 'movie', 'show', 'person']"
           :selected="mediaType"
           @change="toggleChanged"
         />
@@ -44,7 +44,7 @@ export default {
         return searchTmdb(this.query, page, this.adult, this.mediaType);
     },
     toggleChanged(value) {
-      if (["movie", "show"].includes(value.toLowerCase())) {
+      if (["movie", "show", "person"].includes(value.toLowerCase())) {
         this.mediaType = value.toLowerCase();
       } else {
         this.mediaType = null;

@@ -7,12 +7,16 @@ const updateQueryParams = (id = null, type = null) => {
   let params = new URLSearchParams(window.location.search);
   params = removeIncludedQueryParams(params, "movie");
   params = removeIncludedQueryParams(params, "show");
+  params = removeIncludedQueryParams(params, "person");
 
   if (id && type === "movie") {
     params.append("movie", id);
   }
   if (id && type === "show") {
     params.append("show", id);
+  }
+  if (id && type === "person") {
+    params.append("person", id);
   }
 
   let url = `${window.location.protocol}//${window.location.hostname}${

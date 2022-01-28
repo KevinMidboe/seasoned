@@ -1,7 +1,8 @@
 <template>
   <div v-if="isOpen" class="movie-popup" @click="close">
     <div class="movie-popup__box" @click.stop>
-      <movie :id="id" :type="type"></movie>
+      <person v-if="type === 'person'" :id="id" type="person" />
+      <movie v-else :id="id" :type="type"></movie>
       <button class="movie-popup__close" @click="close"></button>
     </div>
     <i class="loader"></i>
@@ -11,9 +12,10 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import Movie from "./Movie";
+import Person from "./Person";
 
 export default {
-  components: { Movie },
+  components: { Movie, Person },
   computed: {
     ...mapGetters("popup", ["isOpen", "id", "type"])
   },
@@ -43,6 +45,9 @@ export default {
     } else if (params.has("show")) {
       id = Number(params.get("show"));
       type = "show";
+    } else if (params.has("person")) {
+      id = Number(params.get("person"));
+      type = "person";
     }
 
     if (id && type) {

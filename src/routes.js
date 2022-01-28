@@ -89,7 +89,12 @@ const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
 router.beforeEach((to, from, next) => {
   store.dispatch("documentTitle/updateTitle", to.name);
-  if (popupIsOpen()) store.dispatch("popup/close");
+  const { movie, show, person } = to.query;
+  if (movie) store.dispatch("popup/open", { id: movie, type: "movie" });
+  else if (show) store.dispatch("popup/open", { id: show, type: "show" });
+  else if (person) store.dispatch("popup/open", { id: person, type: "person" });
+  else store.dispatch("popup/close");
+
   if (hamburgerIsOpen()) store.dispatch("hamburger/close");
 
   // Toggle mobile nav
