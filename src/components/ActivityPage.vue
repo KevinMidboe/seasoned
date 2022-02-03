@@ -110,6 +110,9 @@ export default {
     },
     selectedChartDataType(selectedChartDataType) {
       this.fetchChartData(this.charts);
+    },
+    plexId(newValue) {
+      if (newValue) return this.fetchChartData(this.charts);
     }
   },
   beforeMount() {
