@@ -33,7 +33,7 @@
     "css-loader": "^3.4.2",
     "documentation": "^11.0.0",
     "file-loader": "^0.9.0",
-    "node-sass": "^4.5.0",
+    "node-sass": "^7.0.0",
     "sass-loader": "^5.0.1",
     "schema-utils": "^2.4.1",
     "vue-loader": "^10.0.0",
