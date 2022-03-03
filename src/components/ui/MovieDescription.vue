@@ -42,8 +42,11 @@ export default {
       const elementWithoutOverflow = document.createElement("div");
       elementWithoutOverflow.setAttribute(
         "style",
-        `max-width: ${width}px; display: block; font-size: ${fontSize}; line-height: ${lineHeight};`
+        `max-width: ${Math.ceil(
+          width + 10
+        )}px; display: block; font-size: ${fontSize}; line-height: ${lineHeight};`
       );
+      // Don't know why need to add 10px to width, but works out perfectly
 
       elementWithoutOverflow.classList.add("dummy-non-overflow");
       elementWithoutOverflow.innerText = this.description;
@@ -96,11 +99,9 @@ span.truncated {
 
   svg {
     transition: 0.4s ease all;
-
-    @include mobile {
-      height: 20px;
-      width: 20px;
-    }
+    height: 22px;
+    width: 22px;
+    fill: var(--text-color);
 
     &.rotate {
       transform: rotateX(180deg);
