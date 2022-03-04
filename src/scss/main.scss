@@ -1,3 +1,5 @@
+@import "./src/scss/variables";
+
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -5,6 +7,62 @@
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently */
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  height: 100%;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  line-height: 1.6;
+  background: $background-color;
+  color: $text-color;
+  transition: background-color 0.5s ease, color 0.5s ease;
+
+  * {
+    transition: background-color 0.5s ease, color 0.5s ease,
+      border-color 0.5s ease, fill 0.2s ease;
+  }
+
+  &.hidden {
+    overflow: hidden;
+  }
+}
+a:any-link {
+  color: inherit;
+}
+input,
+textarea,
+button {
+  font-family: "Roboto", sans-serif;
+}
+figure {
+  padding: 0;
+  margin: 0;
+}
+img {
+  display: block;
+  height: auto;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+@mixin noscrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar {
+    /* WebKit */
+    width: 0;
+    height: 0;
+  }
 }
 
 .button--group {
