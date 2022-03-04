@@ -6,7 +6,7 @@
     @keydown.enter="toggle"
     tabindex="0"
   >
-    <div v-for="_ in 3" class="bar"></div>
+    <div v-for="(_, index) in 3" :key="index" class="bar"></div>
   </div>
 </template>
 
@@ -14,12 +14,8 @@
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  computed: {
-    ...mapGetters("hamburger", ["isOpen"])
-  },
-  methods: {
-    ...mapActions("hamburger", ["toggle"])
-  }
+  computed: { ...mapGetters("hamburger", ["isOpen"]) },
+  methods: { ...mapActions("hamburger", ["toggle"]) }
 };
 </script>
 
@@ -78,7 +74,6 @@ export default {
       }
       &:nth-child(2):after {
         transform: rotate(-90deg);
-        // background: rgba($c-dark, 0.5);
         background-color: var(--text-color-70);
       }
     }
