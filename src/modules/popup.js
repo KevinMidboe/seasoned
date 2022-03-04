@@ -52,6 +52,7 @@ export default {
   },
   actions: {
     open: ({ commit }, { id, type = "movie" }) => {
+      if (!isNaN(id)) id = Number(id);
       commit("SET_OPEN", { id, type });
       updateQueryParams(id, type);
     },
