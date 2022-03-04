@@ -2,6 +2,7 @@
   <ul class="navigation-icons">
     <NavigationIcon
       v-for="route in routes"
+      :key="route.route"
       :route="route"
       :active="activeRoute"
     />
@@ -49,7 +50,7 @@ export default {
       return [
         {
           title: "Requests",
-          route: "/requests",
+          route: "/list/requests",
           apiPath: "/v2/requests",
           icon: IconInbox
         },
