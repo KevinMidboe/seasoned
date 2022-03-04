@@ -29,6 +29,10 @@ export default {
   margin-bottom: 20px;
   margin-right: 20px;
 
+  &:last-of-type {
+    margin-bottom: 0px;
+  }
+
   @include tablet-min {
     margin-bottom: 30px;
     margin-right: 30px;
@@ -40,6 +44,10 @@ export default {
     text-transform: uppercase;
     font-size: 1.2rem;
     color: var(--color-green);
+
+    @include mobile {
+      font-size: 1.1rem;
+    }
   }
 
   span.info {
