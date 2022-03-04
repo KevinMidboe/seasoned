@@ -1,16 +1,8 @@
 <template>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <line x1="12" y1="5" x2="12" y2="19"></line>
-    <polyline points="19 12 12 19 5 12"></polyline>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <path
+      xmlns="http://www.w3.org/2000/svg"
+      d="M28.725 8.058l-12.725 12.721-12.725-12.721-1.887 1.887 13.667 13.667c0.258 0.258 0.6 0.392 0.942 0.392s0.683-0.129 0.942-0.392l13.667-13.667-1.879-1.887z"
+    />
   </svg>
 </template>
