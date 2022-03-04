@@ -1,5 +1,9 @@
 <template>
-  <li @click="event => $emit('click', event)" :class="{ active, disabled }">
+  <li
+    class="sidebar-list-element"
+    @click="event => $emit('click', event)"
+    :class="{ active, disabled }"
+  >
     <slot></slot>
   </li>
 </template>
@@ -19,10 +23,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "./src/scss/media-queries";
 
-li {
+li.sidebar-list-element {
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -33,39 +37,33 @@ li {
   border-bottom: 1px solid var(--text-color-5);
   cursor: pointer;
 
-  svg {
-    margin-right: 1rem;
-    transition: all 0.5s ease;
-    stroke: var(--text-color-70);
+  &:first-of-type {
+    padding-top: 0;
+  }
 
-    &[data-fill] {
-      stroke: none;
-      fill: vaR(--text-color-70);
-    }
+  div > svg,
+  svg {
+    width: 26px;
+    height: 26px;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+    fill: var(--text-color-70);
   }
 
   &:hover,
   &.active {
     color: var(--text-color);
 
+    div > svg,
     svg {
-      stroke: var(--text-color);
+      fill: var(--text-color);
       transform: scale(1.1, 1.1);
-
-      &[data-fill] {
-        stroke: none;
-        fill: var(--text-color);
-      }
     }
   }
 
-  &.active svg {
-    stroke: var(--color-green);
-
-    &[data-fill] {
-      stroke: none;
-      fill: var(--color-green);
-    }
+  &.active > div > svg,
+  &.active > svg {
+    fill: var(--color-green);
   }
 
   &.disabled {
