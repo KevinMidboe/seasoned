@@ -1,17 +1,17 @@
 <template>
   <div class="cast">
     <ol class="persons">
-      <Person v-for="person in cast" :person="person" />
+      <CastPerson v-for="person in cast" :person="person" :key="person.id" />
     </ol>
   </div>
 </template>
 
 <script>
-import Person from "src/components/Person";
+import CastPerson from "src/components/CastPerson";
 
 export default {
   name: "Cast",
-  components: { Person },
+  components: { CastPerson },
   props: {
     cast: {
       type: Array,
