@@ -13,7 +13,7 @@
         tabindex="0"
         v-model="query"
         @input="handleInput"
-        @click="focus = true"
+        @click="focusingInput = true"
         @keydown.escape="handleEscape"
         @keyup.enter="handleSubmit"
         @keydown.up="navigateUp"
@@ -177,7 +177,8 @@ export default {
 .fade-leave-active {
   transition: opacity 0.2s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
@@ -215,12 +216,14 @@ hr {
 }
 
 .search.active {
+  transition: border-color 0.3s ease, fill 0.3s ease;
+
   input {
     border-color: var(--color-green);
   }
 
   .search-icon {
-    stroke: var(--color-green);
+    fill: var(--color-green);
   }
 }
 
@@ -255,10 +258,11 @@ hr {
     font-weight: 300;
     font-size: 18px;
     color: $text-color;
-    // border-bottom: 1px solid transparent;
+    border-bottom: 1px solid transparent;
 
     &:focus {
-      border-color: var(--text-color);
+      // border-bottom: 1px solid var(--color-green);
+      border-color: var(--color-green);
     }
 
     @include tablet-min {
@@ -270,8 +274,7 @@ hr {
   &-icon {
     width: 20px;
     height: 20px;
-    stroke: var(--text-color-50);
-    transition: stroke 0.5s ease;
+    fill: var(--text-color-50);
     pointer-events: none;
     position: absolute;
     left: 15px;
