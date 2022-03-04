@@ -2,22 +2,24 @@
   <section>
     <h1>Sign in</h1>
 
-    <seasoned-input
-      placeholder="username"
-      icon="Email"
-      type="email"
-      @enter="submit"
-      :value.sync="username"
-    />
-    <seasoned-input
-      placeholder="password"
-      icon="Keyhole"
-      type="password"
-      :value.sync="password"
-      @enter="submit"
-    />
+    <div class="form">
+      <seasoned-input
+        placeholder="username"
+        icon="Email"
+        type="email"
+        @enter="submit"
+        :value.sync="username"
+      />
+      <seasoned-input
+        placeholder="password"
+        icon="Keyhole"
+        type="password"
+        :value.sync="password"
+        @enter="submit"
+      />
 
-    <seasoned-button @click="submit">sign in</seasoned-button>
+      <seasoned-button @click="submit">sign in</seasoned-button>
+    </div>
     <router-link class="link" to="/register"
       >Don't have a user? Register here</router-link
     >
@@ -64,7 +66,7 @@ export default {
     signin(username, password) {
       login(username, password, true)
         .then(data => {
-          if (data.success && this.login(data.token)) {
+          if (data.success && this.login()) {
             this.$router.push({ name: "profile" });
           }
         })
@@ -100,6 +102,16 @@ section {
 
   @include tablet-min {
     padding: 4rem;
+  }
+
+  .form > div,
+  input,
+  button {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0px;
+    }
   }
 
   h1 {

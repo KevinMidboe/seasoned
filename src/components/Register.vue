@@ -2,23 +2,47 @@
   <section>
     <h1>Register new user</h1>
 
-    <seasoned-input placeholder="username" icon="Email" type="username" :value.sync="username" @enter="submit"/>
+    <div class="form">
+      <seasoned-input
+        placeholder="username"
+        icon="Email"
+        type="email"
+        :value.sync="username"
+        @enter="submit"
+      />
 
-    <seasoned-input placeholder="password" icon="Keyhole" type="password" :value.sync="password" @enter="submit"/>
-    <seasoned-input placeholder="repeat password" icon="Keyhole" type="password" :value.sync="passwordRepeat" @enter="submit"/>
+      <seasoned-input
+        placeholder="password"
+        icon="Keyhole"
+        type="password"
+        :value.sync="password"
+        @enter="submit"
+      />
+      <seasoned-input
+        placeholder="repeat password"
+        icon="Keyhole"
+        type="password"
+        :value.sync="passwordRepeat"
+        @enter="submit"
+      />
 
-    <seasoned-button @click="submit">Register</seasoned-button>
-    <router-link class="link" to="/signin">Have a user? Sign in here</router-link>
+      <seasoned-button @click="submit">Register</seasoned-button>
+    </div>
+
+    <router-link class="link" to="/signin"
+      >Have a user? Sign in here</router-link
+    >
 
     <seasoned-messages :messages.sync="messages"></seasoned-messages>
   </section>
 </template>
 
 <script>
-import { register } from '@/api'
-import SeasonedButton from '@/components/ui/SeasonedButton'
-import SeasonedInput from '@/components/ui/SeasonedInput'
-import SeasonedMessages from '@/components/ui/SeasonedMessages'
+import { mapActions } from "vuex";
+import { register } from "@/api";
+import SeasonedButton from "@/components/ui/SeasonedButton";
+import SeasonedInput from "@/components/ui/SeasonedInput";
+import SeasonedMessages from "@/components/ui/SeasonedMessages";
 
 export default {
   components: { SeasonedButton, SeasonedInput, SeasonedMessages },
@@ -28,58 +52,56 @@ export default {
       username: null,
       password: null,
       passwordRepeat: null
-    }
+    };
   },
   methods: {
+    ...mapActions("user", ["login"]),
     submit() {
       this.messages = [];
       let { username, password, passwordRepeat } = this;
 
       if (username == null || username.length == 0) {
-        this.messages.push({ type: 'error', title: 'Missing username' })
-        return
+        this.messages.push({ type: "error", title: "Missing username" });
+        return;
       } else if (password == null || password.length == 0) {
-        this.messages.push({ type: 'error', title: 'Missing password' })
-        return
+        this.messages.push({ type: "error", title: "Missing password" });
+        return;
       } else if (passwordRepeat == null || passwordRepeat.length == 0) {
-        this.messages.push({ type: 'error', title: 'Missing repeat password' })
-        return
+        this.messages.push({ type: "error", title: "Missing repeat password" });
+        return;
       } else if (passwordRepeat != password) {
-        this.messages.push({ type: 'error', title: 'Passwords do not match' })
-        return
+        this.messages.push({ type: "error", title: "Passwords do not match" });
+        return;
       }
 
-      this.registerUser(username, password)
+      this.registerUser(username, password);
     },
     registerUser(username, password) {
       register(username, password, true)
         .then(data => {
-          if (data.success){
-            localStorage.setItem('token', data.token);
-            const jwtData = parseJwt(data.token)
-            localStorage.setItem('username', jwtData['username']);
-            localStorage.setItem('admin', jwtData['admin'] || false);
-
-            eventHub.$emit('setUserStatus');
-            this.$router.push({ name: 'profile' })
+          if (data.success && this.login()) {
+            eventHub.$emit("setUserStatus");
+            this.$router.push({ name: "profile" });
           }
         })
         .catch(error => {
           if (error.status === 401) {
-            this.messages.push({ type: 'error', title: 'Access denied', message: 'Incorrect username or password' })
-          }
-          else {
-            this.messages.push({ type: 'error', title: 'Unexpected error', message: error.message })
+            this.messages.push({
+              type: "error",
+              title: "Access denied",
+              message: "Incorrect username or password"
+            });
+          } else {
+            this.messages.push({
+              type: "error",
+              title: "Unexpected error",
+              message: error.message
+            });
           }
         });
-    },
-    logOut(){
-      localStorage.clear();
-      eventHub.$emit('setUserStatus');
-      this.$router.push({ name: 'home' });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -90,6 +112,16 @@ section {
 
   @include tablet-min {
     padding: 4rem;
+  }
+
+  .form > div,
+  input,
+  button {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0px;
+    }
   }
 
   h1 {
