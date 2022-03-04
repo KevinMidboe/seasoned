@@ -13,16 +13,16 @@
           <form class="form">
             <seasoned-input
               placeholder="plex username"
-              icon="Email"
+              type="email"
               :value.sync="plexUsername"
             />
             <seasoned-input
               placeholder="plex password"
-              icon="Keyhole"
               type="password"
               :value.sync="plexPassword"
-              @submit="authenticatePlex"
-            />
+              @enter="authenticatePlex"
+            >
+            </seasoned-input>
 
             <seasoned-button @click="authenticatePlex"
               >link plex account</seasoned-button
@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import storage from "@/storage";
 import SeasonedInput from "@/components/ui/SeasonedInput";
 import SeasonedButton from "@/components/ui/SeasonedButton";
@@ -104,24 +104,30 @@ export default {
     ...mapGetters("user", ["loggedIn", "plexId", "settings"])
   },
   methods: {
-    ...mapActions("user", ["login", "updateSettings"]),
+    ...mapActions("user", ["setSettings"]),
     changePassword() {
       return;
     },
     created() {
-      if (!this.settings) {
-        console.log("settings does not exists.", this.settings);
-        getSettings().then(resp => {
-          const { settings } = resp;
-          if (settings) updateSettings(settings);
-        });
-      }
+      if (!this.settings) this.reloadSettings();
+    },
+    reloadSettings() {
+      return getSettings().then(response => {
+        const { settings } = response;
+        if (settings) this.setSettings(settings);
+      });
     },
     async authenticatePlex() {
       let username = this.plexUsername;
       let password = this.plexPassword;
 
       const { success, message } = await linkPlexAccount(username, password);
+
+      if (success) {
+        this.reloadSettings();
+        this.plexUsername = "";
+        this.plexPassword = "";
+      }
 
       this.messages.push({
         type: success ? "success" : "error",
@@ -131,6 +137,8 @@ export default {
     },
     async unauthenticatePlex() {
       const response = await unlinkPlexAccount();
+
+      if (response.success) this.reloadSettings();
 
       this.messages.push({
         type: response.success ? "success" : "error",
@@ -154,8 +162,14 @@ a {
 
 // DUPLICATE CODE
 .form {
-  > div:last-child {
-    margin-top: 1rem;
+  > div,
+  input,
+  button {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0px;
+    }
   }
 
   &__group {

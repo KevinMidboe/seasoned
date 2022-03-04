@@ -1,28 +1,51 @@
 import { refreshToken } from "@/api";
 import { parseJwt } from "@/utils";
 
-function setLocalStorageByKey(key, value) {
-  if (value instanceof Object || value instanceof Array) {
-    value = JSON.stringify(value);
+function getCookie(name) {
+  console.debug("getting cookie with name:", name);
+
+  var arrayb = document.cookie.split(";");
+  for (const item of arrayb) {
+    const query = `${name}=`;
+
+    if (!item.startsWith(query)) continue;
+    console.debug("found from cookies:", item);
+    return item.substr(query.length);
   }
-  const buff = Buffer.from(value);
-  const encodedValue = buff.toString("base64");
-  localStorage.setItem(key, encodedValue);
+
+  console.debug("no token found");
+  return null;
 }
 
-function getLocalStorageByKey(key) {
-  const encodedValue = localStorage.getItem(key);
-  if (encodedValue == null) {
-    return null;
-  }
-  const buff = new Buffer(encodedValue, "base64");
-  const value = buff.toString("utf-8");
+function setCookie(name, value, options = {}) {
+  options = {
+    path: "/",
+    // add other defaults here if necessary
+    ...options
+  };
 
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
+  if (options.expires instanceof Date) {
+    options.expires = options.expires.toUTCString();
   }
+
+  let updatedCookie =
+    encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+  for (let optionKey in options) {
+    updatedCookie += "; " + optionKey;
+    let optionValue = options[optionKey];
+    if (optionValue !== true) {
+      updatedCookie += "=" + optionValue;
+    }
+  }
+
+  document.cookie = updatedCookie;
+}
+
+function deleteCookie(name) {
+  setCookie(name, "", {
+    "max-age": Date.now()
+  });
 }
 
 export default {
@@ -38,7 +61,7 @@ export default {
     settings: state => state.settings,
     token: state => state.token,
     loggedIn: state => state && state.username !== null,
-    admin: state => state && state.admin !== null,
+    admin: state => state.admin,
     plexId: state => {
       if (state && state.settings && state.settings.plex_userid)
         return state.settings.plex_userid;
@@ -55,32 +78,40 @@ export default {
       state.username = null;
       state.settings = null;
       state.admin = false;
-      localStorage.removeItem("token");
+      // deleteCookie('authorization');
     }
   },
   actions: {
-    initFromLocalStorage: async ({ dispatch }) => {
-      const token = getLocalStorageByKey("token");
-      if (token) await dispatch("setupStateFromToken", token);
+    initUserFromCookie: async ({ dispatch }) => {
+      const jwtToken = getCookie("authorization");
+      if (!jwtToken) return null;
 
-      const settings = getLocalStorageByKey("settings");
-      if (settings) await dispatch("setSettings", settings);
+      const token = parseJwt(jwtToken);
+      console.debug("has token: ", token);
+      return await dispatch("setupStateFromToken", token);
     },
     setupStateFromToken: ({ commit }, token) => {
       try {
-        const jwtData = parseJwt(token);
-        const { username, admin } = jwtData;
+        const { username, admin, settings } = token;
 
         if (!username) {
           return false;
         }
 
+        console.debug("setting:", {
+          username,
+          admin: admin != undefined,
+          settings,
+          token
+        });
+
         commit("SET_TOKEN", token);
         commit("SET_USERNAME", username);
-        commit("SET_ADMIN", admin != undefined ? true : false);
+        commit("SET_SETTINGS", settings);
+        commit("SET_ADMIN", admin != undefined);
         return true;
       } catch (error) {
-        console.log("Unable to parse JWT, failed with error:", error);
+        console.error("Unable to parse JWT, failed with error:", error);
         return false;
       }
     },
@@ -90,14 +121,8 @@ export default {
       }
 
       commit("SET_SETTINGS", settings);
-      setLocalStorageByKey("settings", settings);
     },
     logout: ({ commit }) => commit("LOGOUT"),
-    login: async ({ dispatch }, token) => {
-      const loggedIn = await dispatch("setupStateFromToken", token);
-      if (loggedIn) setLocalStorageByKey("token", token);
-
-      return loggedIn;
-    }
+    login: async ({ dispatch }) => await dispatch("initUserFromCookie")
   }
 };

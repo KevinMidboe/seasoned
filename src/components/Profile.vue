@@ -43,7 +43,7 @@ import Settings from "@/components/Settings";
 import Activity from "@/components/ActivityPage";
 import SeasonedButton from "@/components/ui/SeasonedButton";
 
-import { getEmoji, getUserRequests, getSettings } from "@/api";
+import { getEmoji, getUserRequests, getSettings, logout } from "@/api";
 
 export default {
   components: { ListHeader, ResultsList, Settings, Activity, SeasonedButton },
@@ -67,7 +67,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("user", ["logout", "updateSettings"]),
+    ...mapActions("user", ["logout", "setSettings"]),
     toggleSettings() {
       this.showSettings = this.showSettings ? false : true;
 
@@ -98,15 +98,17 @@ export default {
       this.updateQueryParams("activity", this.showActivity);
     },
     _logout() {
-      this.logout();
-      this.$router.push("home");
+      logout().then(() => {
+        this.logout();
+        this.$router.push("home");
+      });
     }
   },
   created() {
     if (!this.settings) {
       getSettings().then(resp => {
         const { settings } = resp;
-        if (settings) updateSettings(settings);
+        if (settings) this.setSettings(settings);
       });
     }
 
