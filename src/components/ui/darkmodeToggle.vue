@@ -8,7 +8,7 @@
 export default {
   data() {
     return {
-      darkmode: this.supported()
+      darkmode: this.systemDarkModeEnabled()
     };
   },
   methods: {
@@ -16,7 +16,7 @@ export default {
       this.darkmode = !this.darkmode;
       document.body.className = this.darkmode ? "dark" : "light";
     },
-    supported() {
+    systemDarkModeEnabled() {
       const computedStyle = window.getComputedStyle(document.body);
       if (computedStyle["colorScheme"] != null) {
         return computedStyle.colorScheme.includes("dark");
