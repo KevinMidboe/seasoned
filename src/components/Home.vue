@@ -2,86 +2,46 @@
   <section>
     <LandingBanner />
 
-    <div v-for="list in lists">
-      <list-header :title="list.title" :link="list.route" />
-
-      <results-list :results="list.data" :shortList="true" />
-      <loader v-if="!list.data.length" />
+    <div v-for="list in lists" :key="list.name">
+      <ResultsSection
+        :apiFunction="list.apiFunction"
+        :title="list.title"
+        :shortList="true"
+      />
     </div>
   </section>
 </template>
 
 <script>
 import LandingBanner from "@/components/LandingBanner";
-import ListHeader from "@/components/ListHeader";
-import ResultsList from "@/components/ResultsList";
-import Loader from "@/components/ui/Loader";
-
-import { getTmdbMovieListByName, getRequests } from "@/api";
+import ResultsSection from "@/components/ResultsSection";
+import { getRequests, getTmdbMovieListByName } from "@/api";
 
 export default {
   name: "home",
-  components: { LandingBanner, ResultsList, ListHeader, Loader },
+  components: { LandingBanner, ResultsSection },
   data() {
     return {
       imageFile: "/pulp-fiction.jpg",
-      requests: [],
-      nowplaying: [],
-      upcoming: [],
-      popular: []
-    };
-  },
-  computed: {
-    lists() {
-      return [
+      lists: [
         {
           title: "Requests",
-          route: "/requests",
-          data: this.requests
+          apiFunction: getRequests
         },
         {
           title: "Now playing",
-          route: "/list/now_playing",
-          data: this.nowplaying
+          apiFunction: () => getTmdbMovieListByName("now_playing")
         },
         {
           title: "Upcoming",
-          route: "/list/upcoming",
-          data: this.upcoming
+          apiFunction: () => getTmdbMovieListByName("upcoming")
         },
         {
           title: "Popular",
-          route: "/list/popular",
-          data: this.popular
+          apiFunction: () => getTmdbMovieListByName("popular")
         }
-      ];
-    }
-  },
-  methods: {
-    fetchRequests() {
-      getRequests().then(results => (this.requests = results.results));
-    },
-    fetchNowPlaying() {
-      getTmdbMovieListByName("now_playing").then(
-        results => (this.nowplaying = results.results)
-      );
-    },
-    fetchUpcoming() {
-      getTmdbMovieListByName("upcoming").then(
-        results => (this.upcoming = results.results)
-      );
-    },
-    fetchPopular() {
-      getTmdbMovieListByName("popular").then(
-        results => (this.popular = results.results)
-      );
-    }
-  },
-  created() {
-    this.fetchRequests();
-    this.fetchNowPlaying();
-    this.fetchUpcoming();
-    this.fetchPopular();
+      ]
+    };
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <list-header :title="prettify(title)" :info="info" :sticky="true" />
+    <list-header v-bind="{ title, info, shortList }" :sticky="true" />
 
     <div
       v-if="!loadedPages.includes(1) && loading == false"
@@ -11,11 +11,10 @@
       >
     </div>
 
-    <results-list :results="results" v-if="results" />
+    <results-list v-bind="{ results, shortList }" />
+    <loader v-if="loading" />
 
-    <loader v-if="!results.length" />
-
-    <div v-if="page < totalPages" class="load-button">
+    <div v-if="!shortList && page < totalPages" class="load-button">
       <seasoned-button @click="loadMore" :fullWidth="true"
         >load more</seasoned-button
       >
@@ -27,8 +26,9 @@
 import ListHeader from "@/components/ListHeader";
 import ResultsList from "@/components/ResultsList";
 import SeasonedButton from "@/components/ui/SeasonedButton";
-import Loader from "@/components/ui/Loader";
 import store from "@/store";
+import { getTmdbMovieListByName } from "@/api";
+import Loader from "@/components/ui/Loader";
 
 export default {
   props: {
@@ -39,6 +39,11 @@ export default {
     title: {
       type: String,
       required: true
+    },
+    shortList: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   components: { ListHeader, ResultsList, SeasonedButton, Loader },
@@ -73,7 +78,7 @@ export default {
     loadMore() {
       this.loading = true;
       let maxPage = [...this.loadedPages].slice(-1)[0];
-      console.log("maxPage:", maxPage);
+
       if (maxPage == NaN) return;
       this.page = maxPage + 1;
       this.getListResults();
@@ -104,14 +109,13 @@ export default {
         }`
       );
     },
-    getPageFromQueryParams() {
+    getPageFromUrl() {
       return new URLSearchParams(window.location.search).get("page");
     },
     getListResults(front = false) {
       this.apiFunction(this.page)
         .then(results => {
-          if (front) this.results = results.results.concat(...this.results);
-          else this.results = this.results.concat(...results.results);
+          this.results = this.results.concat(...results.results);
           this.page = results.page;
           this.loadedPages.push(this.page);
           this.loadedPages = this.loadedPages.sort();
@@ -123,7 +127,9 @@ export default {
     }
   },
   created() {
-    this.page = this.getPageFromQueryParams() || this.page;
+    this.page = this.getPageFromUrl() || this.page;
+    // this.listName = this.getListNameFromUrl();
+
     if (this.results.length === 0) this.getListResults();
 
     store.dispatch(
