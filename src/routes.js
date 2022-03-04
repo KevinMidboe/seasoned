@@ -24,13 +24,13 @@ let routes = [
   },
   {
     name: "list",
-    path: "/list/:name",
-    component: resolve => require(["./components/ListPage.vue"], resolve)
+    path: "/list/requests",
+    component: resolve => require(["./components/RequestPage.vue"], resolve)
   },
   {
-    name: "request",
-    path: "/requests",
-    component: resolve => require(["./components/RequestPage.vue"], resolve)
+    name: "list",
+    path: "/list/:name",
+    component: resolve => require(["./components/ListPage.vue"], resolve)
   },
   {
     name: "search",
