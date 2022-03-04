@@ -22,6 +22,7 @@
 import storage from "@/storage";
 import TmdbLogo from "../icons/tmdb-logo";
 import IconProfile from "../icons/IconProfile";
+import IconProfileLock from "../icons/IconProfileLock";
 import IconSettings from "../icons/IconSettings";
 import IconActivity from "../icons/IconActivity";
 import SearchInput from "@/components/SearchInput";
@@ -37,6 +38,7 @@ export default {
     SearchInput,
     TmdbLogo,
     IconProfile,
+    IconProfileLock,
     IconSettings,
     IconActivity,
     Hamburger
@@ -53,7 +55,7 @@ export default {
       return {
         title: !this.loggedIn ? "Signin" : "Profile",
         route: !this.loggedIn ? "/signin" : "/profile",
-        icon: IconProfile
+        icon: !this.loggedIn ? IconProfileLock : IconProfile
       };
     }
   }
@@ -78,6 +80,10 @@ nav {
   > * {
     z-index: 10;
   }
+}
+
+.nav__logo {
+  overflow: hidden;
 }
 
 .logo {
