@@ -2,6 +2,7 @@
   <div class="toggle-container">
     <button
       v-for="option in options"
+      :key="option"
       class="toggle-button"
       @click="toggle(option)"
       :class="toggleValue === option ? 'selected' : null"
@@ -51,8 +52,8 @@ $background-selected: $background-color-secondary;
 
 .toggle-container {
   width: 100%;
-  max-width: 15rem;
   display: flex;
+  overflow-x: scroll;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -72,6 +73,8 @@ $background-selected: $background-color-secondary;
     background-color: $background;
     text-transform: capitalize;
     cursor: pointer;
+    display: block;
+    flex: 1 0 auto;
 
     &.selected {
       color: $text-color;
