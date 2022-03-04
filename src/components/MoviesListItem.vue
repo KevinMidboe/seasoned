@@ -1,5 +1,5 @@
 <template>
-  <li class="movie-item" :class="{ shortList: shortList }">
+  <li class="movie-item">
     <figure class="movie-item__poster">
       <img
         class="movie-item__img"
@@ -35,10 +35,6 @@ export default {
     movie: {
       type: Object,
       required: true
-    },
-    shortList: {
-      type: Boolean,
-      required: false
     }
   },
   directives: {
@@ -119,27 +115,9 @@ export default {
 @import "./src/scss/main";
 
 .movie-item {
-  padding: 10px;
-  width: 50%;
+  padding: 15px;
+  width: 100%;
   background-color: $background-color;
-
-  @include tablet-min {
-    padding: 15px;
-    width: 33%;
-  }
-  @include tablet-landscape-min {
-    padding: 15px;
-    width: 25%;
-  }
-  @include desktop-min {
-    padding: 15px;
-    width: 20%;
-  }
-
-  @include desktop-lg-min {
-    padding: 15px;
-    width: 12.5%;
-  }
 
   &:hover &__info > p {
     color: $text-color;
@@ -155,6 +133,7 @@ export default {
       opacity: 0;
       transform: scale(0.97) translateZ(0);
       transition: opacity 1s ease, transform 0.5s ease;
+
       &.is-loaded {
         opacity: 1;
         transform: scale(1);
