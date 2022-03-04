@@ -66,14 +66,14 @@ export default {
     span,
     .navigation-icon {
       color: var(--text-color);
-      stroke: var(--text-color);
-      stroke-width: 2px;
+      fill: var(--text-color);
     }
   }
 
   span {
     text-transform: uppercase;
     font-size: 11px;
+    margin-top: 0.25rem;
     color: var(--text-color-70);
   }
 }
@@ -84,7 +84,7 @@ a {
 
 .navigation-icon {
   width: 28px;
-  stroke: var(--text-color-70);
+  fill: var(--text-color-70);
   transition: inherit;
 }
 </style>
