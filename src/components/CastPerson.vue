@@ -2,8 +2,8 @@
   <li class="card">
     <a @click="openPerson">
       <img class="persons--image" :src="pictureUrl" />
-      <p class="name">{{ person.name }}</p>
-      <p class="meta">{{ person.character }}</p>
+      <p class="name">{{ person.name || person.title }}</p>
+      <p class="meta">{{ person.character || person.year }}</p>
     </a>
   </li>
 </template>
@@ -22,14 +22,22 @@ export default {
   methods: {
     ...mapActions("popup", ["open"]),
     openPerson() {
-      const { id } = this.person;
-      if (id) this.open({ id, type: "person" });
+      let { id, media_type } = this.person;
+      if (media_type === "tv") media_type = "show";
+
+      if (media_type) {
+        this.open({ id, type: media_type });
+      } else if (id) {
+        this.open({ id, type: "person" });
+      }
     }
   },
   computed: {
     pictureUrl() {
-      const { profile_path } = this.person;
+      const { profile_path, poster_path } = this.person;
       if (profile_path) return "https://image.tmdb.org/t/p/w185" + profile_path;
+      else if (poster_path)
+        return "https://image.tmdb.org/t/p/w185" + poster_path;
 
       return "/assets/no-image_small.svg";
     }
