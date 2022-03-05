@@ -115,7 +115,7 @@ li.card {
   img {
     width: 100%;
     height: auto;
-    min-height: 210px;
+    max-height: 210px;
     background-color: var(--background-color);
     object-fit: cover;
   }
