@@ -38,11 +38,11 @@
         <MovieDescription :description="person.biography" />
       </MovieDetail>
 
-      <MovieDetail title="Starred in movies" v-if="credits">
+      <MovieDetail title="movies" v-if="credits">
         <Cast :cast="movieCredits" />
       </MovieDetail>
 
-      <MovieDetail title="Starred in shows" v-if="credits">
+      <MovieDetail title="shows" v-if="credits">
         <Cast :cast="showCredits" />
       </MovieDetail>
     </div>
@@ -253,7 +253,8 @@ header {
   }
 
   .known-for {
-    color: white;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
   }
 }
 
