@@ -1,19 +1,24 @@
 <template>
   <header :class="{ sticky: sticky }">
-    <h2>{{ title }}</h2>
+    <h2>{{ prettify }}</h2>
+    <h3>{{ subtitle }}</h3>
 
-    <div v-if="info instanceof Array" class="flex flex-direction-column">
-      <span v-for="item in info" class="info">{{ item }}</span>
-    </div>
-    <span v-else class="info">{{ info }}</span>
     <router-link
-      v-if="link"
-      :to="link"
+      v-if="shortList"
+      :to="urlify"
       class="view-more"
       :aria-label="`View all ${title}`"
     >
       View All
     </router-link>
+
+    <div v-else-if="info">
+      <div v-if="info instanceof Array" class="flex flex-direction-column">
+        <span v-for="item in info" :key="item" class="info">{{ item }}</span>
+      </div>
+
+      <span v-else class="info">{{ info }}</span>
+    </div>
   </header>
 </template>
 
@@ -23,6 +28,11 @@ export default {
     title: {
       type: String,
       required: true
+    },
+    subtitle: {
+      type: String,
+      required: false,
+      default: null
     },
     sticky: {
       type: Boolean,
@@ -36,6 +46,21 @@ export default {
     link: {
       type: String,
       required: false
+    },
+    shortList: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+  computed: {
+    urlify: function() {
+      return `/list/${this.title.toLowerCase().replace(" ", "_")}`;
+    },
+    prettify: function() {
+      return this.title.includes("_")
+        ? this.title.split("_").join(" ")
+        : this.title;
     }
   }
 };
