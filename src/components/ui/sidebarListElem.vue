@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./src/scss/media-queries";
+@import "src/scss/media-queries";
 
 li.sidebar-list-element {
   display: flex;

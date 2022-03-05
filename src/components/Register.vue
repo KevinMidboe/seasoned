@@ -105,7 +105,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
+@import "src/scss/variables";
 
 section {
   padding: 1.3rem;

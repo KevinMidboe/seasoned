@@ -110,9 +110,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
-@import "./src/scss/main";
+@import "src/scss/variables";
+@import "src/scss/media-queries";
+@import "src/scss/main";
 
 .movie-item {
   padding: 15px;
@@ -190,7 +190,7 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
+@import "src/scss/variables";
 
 .progress {
   position: absolute;

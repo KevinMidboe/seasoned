@@ -63,8 +63,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
+@import "src/scss/variables";
+@import "src/scss/media-queries";
 
 .spacer {
   @include mobile-only {

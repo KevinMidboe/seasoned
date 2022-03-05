@@ -22,6 +22,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/loading-placeholder";
-
+@import "src/scss/loading-placeholder";
 </style>

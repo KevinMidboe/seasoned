@@ -329,10 +329,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/loading-placeholder";
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
-@import "./src/scss/main";
+@import "src/scss/loading-placeholder";
+@import "src/scss/variables";
+@import "src/scss/media-queries";
+@import "src/scss/main";
 
 header {
   $duration: 0.2s;

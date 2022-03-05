@@ -286,7 +286,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
+@import "src/scss/variables";
 .expanded {
   display: flex;
   padding: 0.25rem 1rem;

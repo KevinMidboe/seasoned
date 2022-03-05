@@ -156,9 +156,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
-@import "./src/scss/main";
+@import "src/scss/variables";
+@import "src/scss/media-queries";
+@import "src/scss/main";
 
 .close-icon {
   position: absolute;

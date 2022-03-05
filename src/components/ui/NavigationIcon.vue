@@ -35,7 +35,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/media-queries";
+@import "src/scss/media-queries";
 
 .navigation-link {
   display: grid;

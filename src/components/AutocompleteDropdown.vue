@@ -5,9 +5,9 @@
         v-for="result in searchResults"
         :key="`${result.index}-${result.title}-${result.type}`"
         @click="openPopup(result)"
-        :class="`result di-${result.index} ${
-          result.index === index ? 'active' : ''
-        }`"
+        :class="
+          `result di-${result.index} ${result.index === index ? 'active' : ''}`
+        "
       >
         <IconMovie v-if="result.type == 'movie'" class="type-icon" />
         <IconShow v-if="result.type == 'show'" class="type-icon" />
@@ -131,9 +131,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
-@import "./src/scss/main";
+@import "src/scss/variables";
+@import "src/scss/media-queries";
+@import "src/scss/main";
 $sizes: 22;
 
 @for $i from 0 through $sizes {
@@ -223,7 +223,6 @@ li.result {
   &:hover,
   &:active {
     color: var(--text-color);
-    // background-color: var(--background-color-secondary);
     border-bottom: 2px solid var(--color-green);
 
     .type-icon {
