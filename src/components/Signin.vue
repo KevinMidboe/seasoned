@@ -4,6 +4,7 @@
 
     <div class="form">
       <seasoned-input
+        ref="username"
         placeholder="username"
         icon="Email"
         type="email"
@@ -90,6 +91,11 @@ export default {
   created() {
     document.title = "Sign in" + storage.pageTitlePostfix;
     storage.backTitle = document.title;
+  },
+  mounted() {
+    try {
+      this.$refs.username.$el.getElementsByTagName("input")[0].focus();
+    } catch {}
   }
 };
 </script>
