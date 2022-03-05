@@ -78,16 +78,14 @@ export default {
   overflow: auto;
 
   &__box {
-    width: 100%;
-    height: 0;
     max-width: 768px;
     position: relative;
     z-index: 5;
-    background: var(--background-40);
     padding-bottom: 50px;
+
     @include tablet-min {
       padding-bottom: 0;
-      margin: 40px auto;
+      margin: 8vh auto;
     }
   }
   &__close {
@@ -101,6 +99,8 @@ export default {
     height: 40px;
     transition: background 0.5s ease;
     cursor: pointer;
+    z-index: 5;
+
     &:before,
     &:after {
       content: "";
