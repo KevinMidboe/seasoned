@@ -1,105 +1,272 @@
 <template>
-  <li class="card">
-    <a :href="tmdbLink">
-      <img class="persons--image" :src="pictureUrl" />
-      <p class="name">{{ person.name }}</p>
-      <p class="meta">{{ person.character }}</p>
-      <!-- <p class="meta">{{ person.type }}</p> -->
-    </a>
-  </li>
+  <section class="person">
+    <header ref="header">
+      <div class="info">
+        <h1 v-if="person">
+          {{ person.title || person.name }}
+        </h1>
+        <loading-placeholder v-else :count="1" />
+
+        <span class="known-for" v-if="person && person['known_for_department']">
+          {{
+            person.known_for_department === "Acting"
+              ? "Actor"
+              : person.known_for_department
+          }}
+        </span>
+      </div>
+
+      <figure class="person__poster">
+        <img
+          class="person-item__img is-loaded"
+          ref="poster-image"
+          src="/assets/placeholder.png"
+        />
+      </figure>
+    </header>
+
+    <div v-if="person">
+      <MovieDetail v-if="age" title="Age" :detail="age" />
+
+      <MovieDetail
+        v-if="person"
+        title="Born"
+        :detail="person.place_of_birth ? person.place_of_birth : '(Not found)'"
+      />
+
+      <MovieDetail v-if="person.biography" title="Biography">
+        <MovieDescription :description="person.biography" />
+      </MovieDetail>
+
+      <MovieDetail title="Starred in movies" v-if="credits">
+        <Cast :cast="movieCredits" />
+      </MovieDetail>
+
+      <MovieDetail title="Starred in shows" v-if="credits">
+        <Cast :cast="showCredits" />
+      </MovieDetail>
+    </div>
+  </section>
 </template>
 
 <script>
+import img from "@/directives/v-image";
+import Cast from "./Cast";
+import MovieDetail from "./ui/MovieDetail";
+import MovieDescription from "./ui/MovieDescription";
+import LoadingPlaceholder from "./ui/LoadingPlaceholder";
+
+import { getPerson, getPersonCredits } from "@/api";
+
 export default {
-  name: "Person",
   props: {
-    person: {
-      type: Object,
-      required: true
+    id: {
+      required: true,
+      type: Number
+    },
+    type: {
+      required: false,
+      type: String,
+      default: "person"
+    }
+  },
+  components: {
+    MovieDetail,
+    MovieDescription,
+    Cast,
+    LoadingPlaceholder
+  },
+  directives: { img: img }, // TODO decide to remove or use
+  data() {
+    return {
+      ASSET_URL: "https://image.tmdb.org/t/p/",
+      ASSET_SIZES: ["w500", "w780", "original"],
+      person: undefined,
+      loading: true,
+      credits: undefined
+    };
+  },
+  watch: {
+    id: function (val) {
+      if (this.type === "person") {
+        this.fetchperson(val);
+      } else {
+        this.fetchShow(val);
+      }
+    },
+    backdrop: function (backdrop) {
+      if (backdrop != null) {
+        const style = {
+          backgroundImage:
+            "url(" + this.ASSET_URL + this.ASSET_SIZES[1] + backdrop + ")"
+        };
+
+        Object.assign(this.$refs.header.style, style);
+      }
     }
   },
   computed: {
-    tmdbLink() {
-      const { id } = this.person;
-      if (id) return `https://www.themoviedb.org/person/${id}`;
-    },
-    pictureUrl() {
-      const { profile_path } = this.person;
-      if (profile_path) return "https://image.tmdb.org/t/p/w185" + profile_path;
+    age: function () {
+      if (!this.person || !this.person.birthday) {
+        return;
+      }
 
-      return "";
+      const today = new Date().getFullYear();
+      const birthYear = new Date(this.person.birthday).getFullYear();
+      return `${today - birthYear} years old`;
+    },
+    movieCredits: function () {
+      const { cast } = this.credits;
+      if (!cast) return;
+
+      return cast
+        .filter(l => l.media_type === "movie")
+        .filter((item, pos, self) => self.indexOf(item) == pos)
+        .sort((a, b) => a.popularity < b.popularity);
+    },
+    showCredits: function () {
+      const { cast } = this.credits;
+      if (!cast) return;
+
+      const alreadyExists = (item, pos, self) => {
+        const names = self.map(item => item.name);
+        return names.indexOf(item.name) == pos;
+      };
+
+      return cast
+        .filter(item => item.media_type === "tv")
+        .filter(alreadyExists)
+        .sort((a, b) => a.popularity < b.popularity);
     }
+  },
+  methods: {
+    parseResponse(person) {
+      this.loading = false;
+      this.person = { ...person };
+      this.title = person.title;
+      this.poster = person.poster;
+
+      this.setPosterSrc();
+    },
+    setPosterSrc() {
+      const poster = this.$refs["poster-image"];
+      if (this.poster == null) {
+        poster.src = "/assets/no-image.svg";
+        return;
+      }
+
+      poster.src = `${this.ASSET_URL}${this.ASSET_SIZES[0]}${this.poster}`;
+    }
+  },
+  created() {
+    getPerson(this.id, true)
+      .then(this.parseResponse)
+      .catch(error => {
+        console.error(error);
+        this.$router.push({ name: "404" });
+      });
+
+    getPersonCredits(this.id, true)
+      .then(credits => (this.credits = credits))
+      .catch(error => {
+        console.error(error);
+        this.$router.push({ name: "404" });
+      });
   }
 };
 </script>
 
-<style lang="scss">
-li a p:first-of-type {
-  padding-top: 10px;
-}
+<style lang="scss" scoped>
+@import "src/scss/loading-placeholder";
+@import "src/scss/variables";
+@import "src/scss/media-queries";
+@import "src/scss/main";
 
-li p {
-  font-size: 1em;
-  padding: 0 10px;
-  margin: 0;
+section.person {
   overflow: hidden;
-  text-overflow: ellipsis;
-}
+  position: relative;
+  padding: 40px;
+  background-color: var(--background-color);
 
-li.card {
-  margin: 10px;
-  margin-right: 4px;
-  padding-bottom: 10px;
-  border-radius: 8px;
-  overflow: hidden;
-
-  min-width: 140px;
-  width: 140px;
-  background-color: var(--background-color-secondary);
-  color: var(--text-color);
-
-  transition: all 0.3s ease;
-  transform: scale(0.97) translateZ(0);
-
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-  &:first-of-type {
-    margin-left: 0;
+  @include mobile {
+    padding: 50px 20px 10px;
   }
 
-  &:hover {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.03);
-  }
-
-  .name {
-    font-weight: 500;
-  }
-
-  .character {
-    font-size: 0.9em;
-  }
-
-  .meta {
-    font-size: 0.9em;
-    color: var(--text-color-70);
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-  }
-
-  a {
+  &:before {
+    content: "";
     display: block;
-    text-decoration: none;
+    position: absolute;
+    top: -130px;
+    left: -100px;
+    z-index: 1;
+    width: 1000px;
+    height: 500px;
+    transform: rotate(21deg);
+    background-color: #062541;
+
+    @include mobile {
+      // top: -52vw;
+      top: -215px;
+    }
+  }
+}
+
+header {
+  $duration: 0.2s;
+  transition: height $duration ease;
+  position: relative;
+  background-color: transparent;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 350px;
+  z-index: 2;
+
+  @include mobile {
+    height: 180px;
   }
 
-  img {
+  .info {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    padding-left: 0;
+    text-align: left;
+
+    @include mobile {
+      padding: 0;
+    }
+  }
+
+  h1 {
+    color: $green;
     width: 100%;
-    height: 100%;
-    min-width: 140px;
-    min-height: 210px;
-    background-color: var(--text-color-90);
+    font-weight: 500;
+    line-height: 1.4;
+    font-size: 30px;
+    margin-top: 0;
+
+    @include mobile {
+      font-size: 24px;
+      margin: 10px 0;
+      // padding: 30px 30px 30px 40px;
+    }
+  }
+
+  .known-for {
+    color: white;
+  }
+}
+
+.person__poster {
+  display: block;
+
+  > img {
+    border-radius: 10px;
+    width: 100%;
+
+    @include mobile {
+      max-width: 225px;
+    }
   }
 }
 </style>
