@@ -50,12 +50,13 @@ li a p:first-of-type {
   padding-top: 10px;
 }
 
-li p {
+li.card p {
   font-size: 1em;
   padding: 0 10px;
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-height: calc(10px + ((16px * var(--line-height)) * 3));
 }
 
 li.card {
@@ -99,19 +100,24 @@ li.card {
     overflow: hidden;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+    // margin-top: auto;
+    max-height: calc((0.9em * var(--line-height)) * 1);
   }
 
   a {
     display: block;
     text-decoration: none;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   img {
     width: 100%;
-    height: 100%;
-    min-width: 140px;
+    height: auto;
     min-height: 210px;
-    background-color: var(--text-color-90);
+    background-color: var(--background-color);
+    object-fit: cover;
   }
 }
 </style>
