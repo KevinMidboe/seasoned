@@ -10,11 +10,11 @@
         <img
           class="movie-item__img is-loaded"
           ref="poster-image"
-          src="~assets/placeholder.png"
+          src="/assets/placeholder.png"
         />
       </figure>
 
-      <h1 class="movie__title" v-if="movie">{{ movie.title }}</h1>
+      <h1 class="movie__title" v-if="movie">{{ movie.title || movie.name }}</h1>
       <loading-placeholder v-else :count="1" />
     </header>
 
@@ -25,25 +25,21 @@
         <div class="movie__actions" v-if="movie">
           <sidebar-list-element :active="matched" :disabled="true">
             <IconThumbsUp v-if="matched" />
-            <IconThumbsDown v-else class="stroke" />
-            {{ !matched ? "Not yet in plex" : "Already in plex 🎉" }}
+            <IconThumbsDown v-else />
+            {{ !matched ? "Not yet available" : "Already available 🎉" }}
           </sidebar-list-element>
 
           <sidebar-list-element @click="sendRequest" :active="requested">
-            <IconMail />
-            {{
-              !requested
-                ? "Request to be downloaded?"
-                : "Requested to be downloaded"
-            }}
+            <transition name="fade" mode="out-in">
+              <div v-if="!requested" key="request"><IconRequest /></div>
+              <div v-else key="requested"><IconRequested /></div>
+            </transition>
+            {{ !requested ? `Request ${this.type}?` : "Already requested" }}
           </sidebar-list-element>
 
-          <sidebar-list-element
-            v-if="plexId && matched"
-            @click="openInPlex"
-            :iconString="'⏯ '"
-          >
-            Watch in plex now!
+          <sidebar-list-element v-if="plexId && matched" @click="openInPlex">
+            <IconPlay />
+            Open and watch in plex now!
           </sidebar-list-element>
 
           <sidebar-list-element
@@ -56,19 +52,20 @@
             :active="showCast"
             @click="() => (showCast = !showCast)"
           >
-            <IconProfile class="icon stroke" />
+            <IconProfile class="icon" />
             {{ showCast ? "Hide cast" : "Show cast" }}
           </sidebar-list-element>
 
           <sidebar-list-element
-            v-if="admin"
+            v-if="admin === true"
             @click="showTorrents = !showTorrents"
             :active="showTorrents"
           >
-            <IconMagnet class="rotate" />
+            <IconBinoculars />
             Search for torrents
             <span class="meta">{{ numberOfTorrentResults || 123 }}</span>
           </sidebar-list-element>
+
           <sidebar-list-element @click="openTmdb">
             <IconInfo />
             See more info
@@ -78,8 +75,9 @@
         <!-- Loading placeholder -->
         <div class="movie__actions text-input__loading" v-else>
           <div
+            v-for="index in admin ? Array(4) : Array(3)"
             class="movie__actions-link"
-            v-for="_ in admin ? Array(4) : Array(3)"
+            :key="index"
           >
             <div
               class="movie__actions-text text-input__loading--line"
@@ -95,7 +93,10 @@
             <loading-placeholder :count="5" />
           </div>
 
-          <MovieDescription v-else :description="movie.overview" />
+          <MovieDescription
+            v-if="!loading && movie && movie.overview"
+            :description="movie.overview"
+          />
 
           <div class="movie__details" v-if="movie">
             <MovieDetail
@@ -151,7 +152,7 @@
 
       <!-- TORRENT LIST -->
       <TorrentList
-        v-if="movie"
+        v-if="movie && admin"
         :show="showTorrents"
         :query="title"
         :tmdb_id="id"
@@ -168,8 +169,10 @@ import IconProfile from "../icons/IconProfile";
 import IconThumbsUp from "../icons/IconThumbsUp";
 import IconThumbsDown from "../icons/IconThumbsDown";
 import IconInfo from "../icons/IconInfo";
-import IconMail from "../icons/IconMail";
-import IconMagnet from "../icons/IconMagnet";
+import IconRequest from "../icons/IconRequest";
+import IconRequested from "../icons/IconRequested";
+import IconBinoculars from "../icons/IconBinoculars";
+import IconPlay from "../icons/IconPlay";
 import TorrentList from "./TorrentList";
 import Cast from "./Cast";
 import MovieDetail from "./ui/MovieDetail";
@@ -205,9 +208,11 @@ export default {
     IconProfile,
     IconThumbsUp,
     IconThumbsDown,
-    IconMail,
+    IconRequest,
+    IconRequested,
     IconInfo,
-    IconMagnet,
+    IconBinoculars,
+    IconPlay,
     TorrentList,
     Cast,
     LoadingPlaceholder,
@@ -275,7 +280,7 @@ export default {
     setPosterSrc() {
       const poster = this.$refs["poster-image"];
       if (this.poster == null) {
-        poster.src = "/no-image.png";
+        poster.src = "/assets/no-image.svg";
         return;
       }
 
@@ -308,18 +313,14 @@ export default {
         .catch(error => {
           this.$router.push({ name: "404" });
         });
-    } else if (this.type == "person") {
-      getPerson(this.id, false)
+    } else if (this.type == "show") {
+      getShow(this.id, false, true)
         .then(this.parseResponse)
         .catch(error => {
           this.$router.push({ name: "404" });
         });
     } else {
-      getShow(this.id, true, true)
-        .then(this.parseResponse)
-        .catch(error => {
-          this.$router.push({ name: "404" });
-        });
+      this.$router.push({ name: "404" });
     }
   },
   beforeDestroy() {
@@ -496,5 +497,14 @@ header {
       }
     }
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
