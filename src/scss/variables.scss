@@ -15,6 +15,8 @@
   --background-color-secondary: #ffffff;
   --background-ui: #edeef0;
   --background-95: rgba(255, 255, 255, 0.95);
+  --background-90: rgba(255, 255, 255, 0.9);
+  --background-80: rgba(255, 255, 255, 0.8);
   --background-70: rgba(255, 255, 255, 0.7);
   --background-40: rgba(255, 255, 255, 0.4);
 
@@ -52,6 +54,8 @@
     --background-color-secondary: rgba(6, 7, 8, 1);
     --background-ui: #202125;
     --background-95: rgba(6, 7, 8, 0.95);
+    --background-90: rgba(6, 7, 8, 0.9);
+    --background-80: rgba(6, 7, 8, 0.8);
     --background-70: rgba(6, 7, 8, 0.7);
     --background-40: rgba(6, 7, 8, 0.4);
   }
@@ -85,6 +89,8 @@ $background-color: var(--background-color) !default;
 $background-color-secondary: var(--background-color-secondary) !default;
 $background-ui: var(--background-ui) !default;
 $background-95: var(--background-95) !default;
+$background-90: var(--background-90) !default;
+$background-80: var(--background-80) !default;
 $background-70: var(--background-70) !default;
 $background-40: var(--background-40) !default;
 $background-dark-85: rgba($dark, 0.85) !default;
@@ -114,6 +120,8 @@ $color-error-highlight: var(--color-error-highlight) !default;
   --background-color-secondary: rgba(6, 7, 8, 1);
   --background-ui: #202125;
   --background-95: rgba(17, 17, 17, 0.95);
+  --background-90: rgba(17, 17, 17, 0.9);
+  --background-80: rgba(17, 17, 17, 0.8);
   --background-70: rgba(17, 17, 17, 0.8);
   --background-40: rgba(17, 17, 17, 0.4);
 }
@@ -129,6 +137,8 @@ $color-error-highlight: var(--color-error-highlight) !default;
   --background-color-secondary: #ffffff;
   --background-ui: #edeef0;
   --background-95: rgba(255, 255, 255, 0.95);
+  --background-90: rgba(255, 255, 255, 0.9);
+  --background-80: rgba(255, 255, 255, 0.8);
   --background-70: rgba(255, 255, 255, 0.7);
   --background-40: rgba(255, 255, 255, 0.4);
 }
