@@ -2,7 +2,6 @@
   <header
     :class="{ expanded, noselect: true }"
     v-bind:style="{ 'background-image': 'url(' + imageFile + ')' }"
-    @click="expanded = !expanded"
   >
     <div class="container">
       <h1 class="title">Request movies or tv shows</h1>
@@ -11,7 +10,7 @@
       >
     </div>
 
-    <div class="expand-icon">
+    <div class="expand-icon" @click="expanded = !expanded">
       <IconExpand v-if="!expanded" />
       <IconShrink v-else />
     </div>
@@ -46,7 +45,7 @@ export default {
     if (this.image && this.image.length > 0) {
       this.imageFile = this.image;
     } else {
-      this.imageFile = `/dist/${
+      this.imageFile = `/assets/${
         this.images[Math.floor(Math.random() * this.images.length)]
       }`;
     }
@@ -60,7 +59,7 @@ export default {
 
 header {
   width: 100%;
-  height: 30vh;
+  height: 25vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,6 +71,20 @@ header {
   &.expanded {
     height: calc(100vh - var(--header-size));
     width: calc(100vw - var(--header-size));
+
+    @include mobile {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    &:before {
+      background-color: transparent;
+    }
+
+    .title,
+    .subtitle {
+      opacity: 0;
+    }
   }
 
   .expand-icon {
@@ -85,6 +98,11 @@ header {
     position: absolute;
     top: 0.5rem;
     right: 1rem;
+
+    &:hover {
+      cursor: pointer;
+      fill: var(--text-color-90);
+    }
   }
 
   &:hover {
@@ -118,6 +136,7 @@ header {
     letter-spacing: 0.5px;
     color: $text-color;
     margin: 0;
+    opacity: 1;
 
     @include tablet-min {
       font-size: 2.5rem;
@@ -130,6 +149,7 @@ header {
     font-weight: 300;
     color: $text-color-70;
     margin: 5px 0;
+    opacity: 1;
 
     @include tablet-min {
       font-size: 1.3rem;
