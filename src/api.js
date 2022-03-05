@@ -1,18 +1,4 @@
-import axios from "axios";
-import storage from "@/storage";
 import config from "@/config.json";
-import path from "path";
-import store from "@/store";
-
-const token = () => store.getters["user/token"];
-const plexId = () => store.getters["user/plexId"];
-
-const AUTHORIZATION_HEADERS = () => {
-  return {
-    Authorization: token(),
-    "Content-Type": "application/json"
-  };
-};
 
 const SEASONED_URL = config.SEASONED_URL;
 const ELASTIC_URL = config.ELASTIC_URL;
@@ -43,7 +29,7 @@ const getMovie = (
   release_dates = false
 ) => {
   const url = new URL("v2/movie", SEASONED_URL);
-  url.pathname = path.join(url.pathname, id.toString());
+  url.pathname = `${url.pathname}/${id.toString()}`;
   if (checkExistance) {
     url.searchParams.append("check_existance", true);
   }
@@ -54,7 +40,7 @@ const getMovie = (
     url.searchParams.append("release_dates", true);
   }
 
-  return fetch(url.href, { headers: AUTHORIZATION_HEADERS() })
+  return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error getting movie: ${id}`);
@@ -70,7 +56,7 @@ const getMovie = (
  */
 const getShow = (id, checkExistance = false, credits = false) => {
   const url = new URL("v2/show", SEASONED_URL);
-  url.pathname = path.join(url.pathname, id.toString());
+  url.pathname = `${url.pathname}/${id.toString()}`;
   if (checkExistance) {
     url.searchParams.append("check_existance", true);
   }
@@ -78,7 +64,7 @@ const getShow = (id, checkExistance = false, credits = false) => {
     url.searchParams.append("credits", true);
   }
 
-  return fetch(url.href, { headers: AUTHORIZATION_HEADERS() })
+  return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error getting show: ${id}`);
@@ -94,7 +80,7 @@ const getShow = (id, checkExistance = false, credits = false) => {
  */
 const getPerson = (id, credits = false) => {
   const url = new URL("v2/person", SEASONED_URL);
-  url.pathname = path.join(url.pathname, id.toString());
+  url.pathname = `${url.pathname}/${id.toString()}`;
   if (credits) {
     url.searchParams.append("credits", true);
   }
@@ -117,9 +103,7 @@ const getTmdbMovieListByName = (name, page = 1) => {
   const url = new URL("v2/movie/" + name, SEASONED_URL);
   url.searchParams.append("page", page);
 
-  return fetch(url.href, { headers: AUTHORIZATION_HEADERS() }).then(resp =>
-    resp.json()
-  );
+  return fetch(url.href).then(resp => resp.json());
   // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error })
 };
 
@@ -132,9 +116,7 @@ const getRequests = (page = 1) => {
   const url = new URL("v2/request", SEASONED_URL);
   url.searchParams.append("page", page);
 
-  return fetch(url.href, {
-    headers: AUTHORIZATION_HEADERS()
-  }).then(resp => resp.json());
+  return fetch(url.href).then(resp => resp.json());
   // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error })
 };
 
@@ -142,9 +124,7 @@ const getUserRequests = (page = 1) => {
   const url = new URL("v1/user/requests", SEASONED_URL);
   url.searchParams.append("page", page);
 
-  return fetch(url.href, {
-    headers: AUTHORIZATION_HEADERS()
-  }).then(resp => resp.json());
+  return fetch(url.href).then(resp => resp.json());
 };
 
 /**
@@ -163,9 +143,7 @@ const searchTmdb = (query, page = 1, adult = false, mediaType = null) => {
   url.searchParams.append("page", page);
   url.searchParams.append("adult", adult);
 
-  return fetch(url.href, {
-    headers: AUTHORIZATION_HEADERS()
-  })
+  return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error searching: ${query}, page: ${page}`);
@@ -181,13 +159,14 @@ const searchTmdb = (query, page = 1, adult = false, mediaType = null) => {
  * @param {boolean} credits Include credits
  * @returns {object} Torrent response
  */
-const searchTorrents = (query, authorization_token) => {
-  const url = new URL("/api/v1/pirate/search", SEASONED_URL);
+const searchTorrents = query => {
+  const url = new URL(
+    "https://api.request.movie/api/v1/pirate/search",
+    SEASONED_URL
+  );
   url.searchParams.append("query", query);
 
-  return fetch(url.href, {
-    headers: AUTHORIZATION_HEADERS()
-  })
+  return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error searching torrents: ${query}`);
@@ -205,17 +184,17 @@ const searchTorrents = (query, authorization_token) => {
 const addMagnet = (magnet, name, tmdb_id) => {
   const url = new URL("v1/pirate/add", SEASONED_URL);
 
-  const body = JSON.stringify({
-    magnet: magnet,
-    name: name,
-    tmdb_id: tmdb_id
-  });
-
-  return fetch(url.href, {
+  const options = {
     method: "POST",
-    headers: AUTHORIZATION_HEADERS(),
-    body
-  })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      magnet: magnet,
+      name: name,
+      tmdb_id: tmdb_id
+    })
+  };
+
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error adding magnet: ${name} ${error}`);
@@ -230,16 +209,18 @@ const addMagnet = (magnet, name, tmdb_id) => {
  * to the requested item.
  * @param {number} id Movie or show id
  * @param {string} type Movie or show type
- * @param {string} [authorization_token] To identify the requesting user
  * @returns {object} Success/Failure response
  */
 const request = (id, type) => {
   const url = new URL("v2/request", SEASONED_URL);
-  return fetch(url.href, {
+
+  const options = {
     method: "POST",
-    headers: AUTHORIZATION_HEADERS(),
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id, type })
-  })
+  };
+
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error requesting: ${id}, type: ${type}`);
@@ -253,12 +234,12 @@ const request = (id, type) => {
  * @param {string} type
  * @returns {object} Success/Failure response
  */
-const getRequestStatus = (id, type, authorization_token = undefined) => {
+const getRequestStatus = (id, type = undefined) => {
   const url = new URL("v2/request", SEASONED_URL);
-  url.pathname = path.join(url.pathname, id.toString());
+  url.pathname = `${url.pathname}/${id.toString()}`;
   url.searchParams.append("type", type);
 
-  return fetch(url.href, { headers: AUTHORIZATION_HEADERS() })
+  return fetch(url.href)
     .then(resp => {
       const status = resp.status;
       if (status === 200) {
@@ -279,7 +260,7 @@ const watchLink = (title, year) => {
   url.searchParams.append("title", title);
   url.searchParams.append("year", year);
 
-  return fetch(url.href, { headers: AUTHORIZATION_HEADERS() })
+  return fetch(url.href)
     .then(resp => resp.json())
     .then(response => response.link);
 };
@@ -287,11 +268,7 @@ const watchLink = (title, year) => {
 const movieImages = id => {
   const url = new URL(`v2/movie/${id}/images`, SEASONED_URL);
 
-  const headers = {
-    "Content-Type": "application/json"
-  };
-
-  return fetch(url.href, { headers }).then(resp => resp.json());
+  return fetch(url.href).then(resp => resp.json());
 };
 
 // - - - Seasoned user endpoints - - -
@@ -300,7 +277,7 @@ const register = (username, password) => {
   const url = new URL("v1/user", SEASONED_URL);
   const options = {
     method: "POST",
-    headers: AUTHORIZATION_HEADERS(),
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
   };
 
@@ -332,24 +309,23 @@ const login = (username, password, throwError = false) => {
   });
 };
 
-const getSettings = () => {
-  const settingsExists = value => {
-    if (value instanceof Object && value.hasOwnProperty("settings"))
-      return value;
-    throw "Settings does not exist in response object.";
-  };
-  const commitSettingsToStore = response => {
-    store.dispatch("user/setSettings", response.settings);
-    return response;
-  };
+const logout = () => {
+  const url = new URL("v1/user/logout", SEASONED_URL);
+  const options = { method: "POST" };
 
+  return fetch(url.href, options).then(resp => {
+    if (resp.status == 200) return resp.json();
+
+    if (throwError) throw resp;
+    else console.error("Error occured when trying to log out.\nError:", resp);
+  });
+};
+
+const getSettings = () => {
   const url = new URL("v1/user/settings", SEASONED_URL);
 
-  return fetch(url.href, { headers: AUTHORIZATION_HEADERS() })
+  return fetch(url.href)
     .then(resp => resp.json())
-    .then(settingsExists)
-    .then(commitSettingsToStore)
-    .then(response => response.settings)
     .catch(error => {
       console.log("api error getting user settings");
       throw error;
@@ -358,11 +334,14 @@ const getSettings = () => {
 
 const updateSettings = settings => {
   const url = new URL("v1/user/settings", SEASONED_URL);
-  return fetch(url.href, {
+
+  const options = {
     method: "PUT",
-    headers: AUTHORIZATION_HEADERS(),
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(settings)
-  })
+  };
+
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.log("api error updating user settings");
@@ -376,11 +355,13 @@ const linkPlexAccount = (username, password) => {
   const url = new URL("v1/user/link_plex", SEASONED_URL);
   const body = { username, password };
 
-  return fetch(url.href, {
+  const options = {
     method: "POST",
-    headers: AUTHORIZATION_HEADERS(),
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
-  })
+  };
+
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error linking plex account: ${username}`);
@@ -391,10 +372,12 @@ const linkPlexAccount = (username, password) => {
 const unlinkPlexAccount = (username, password) => {
   const url = new URL("v1/user/unlink_plex", SEASONED_URL);
 
-  return fetch(url.href, {
+  const options = {
     method: "POST",
-    headers: AUTHORIZATION_HEADERS()
-  })
+    headers: { "Content-Type": "application/json" }
+  };
+
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error unlinking plex account: ${username}`);
@@ -409,12 +392,14 @@ const fetchChart = (urlPath, days, chartType) => {
   url.searchParams.append("days", days);
   url.searchParams.append("y_axis", chartType);
 
-  return fetch(url.href, { headers: AUTHORIZATION_HEADERS() })
-    .then(resp => resp.json())
-    .catch(error => {
-      console.log("api error fetching chart");
-      throw error;
-    });
+  return fetch(url.href).then(resp => {
+    if (!resp.ok) {
+      console.log("DAMN WE FAILED!", resp);
+      throw Error(resp.statusText);
+    }
+
+    return resp.json();
+  });
 };
 
 // - - - Random emoji - - -
@@ -440,8 +425,8 @@ const getEmoji = () => {
  * @param {string} query
  * @returns {object} List of movies and shows matching query
  */
-const elasticSearchMoviesAndShows = query => {
-  const url = new URL(path.join(ELASTIC_INDEX, "/_search"), ELASTIC_URL);
+const elasticSearchMoviesAndShows = (query, count = 22) => {
+  const url = new URL(`${ELASTIC_INDEX}/_search`, ELASTIC_URL);
 
   const body = {
     sort: [{ popularity: { order: "desc" } }, "_score"],
@@ -461,14 +446,16 @@ const elasticSearchMoviesAndShows = query => {
         ]
       }
     },
-    size: 22
+    size: count
   };
 
-  return fetch(url.href, {
+  const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
-  })
+  };
+
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.log(`api error searching elasticsearch: ${query}`);
@@ -494,6 +481,7 @@ export {
   unlinkPlexAccount,
   register,
   login,
+  logout,
   getSettings,
   updateSettings,
   fetchChart,
