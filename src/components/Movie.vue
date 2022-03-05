@@ -16,7 +16,7 @@
 
       <div v-if="movie" class="movie__title">
         <h1>{{ movie.title || movie.name }}</h1>
-        <p class="meta">{{ movie.tagline }}</p>
+        <i>{{ movie.tagline }}</i>
       </div>
       <loading-placeholder v-else :count="2" />
     </header>
@@ -466,8 +466,10 @@ header {
       }
     }
 
-    p {
-      color: var(--text-color-90);
+    i {
+      display: block;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 1rem;
     }
   }
 
