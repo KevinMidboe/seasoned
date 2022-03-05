@@ -1,5 +1,5 @@
 <template>
-  <div ref="resultSection">
+  <div ref="resultSection" class="resultSection">
     <list-header v-bind="{ title, info, shortList }" :sticky="true" />
 
     <div
@@ -121,8 +121,9 @@ export default {
           if (!front) this.results = this.results.concat(...results.results);
           else this.results = results.results.concat(...this.results);
           this.page = results.page;
+          console.log("pushing page:", this.page);
           this.loadedPages.push(this.page);
-          this.loadedPages = this.loadedPages.sort();
+          this.loadedPages = this.loadedPages.sort((a, b) => a - b);
           this.totalPages = results.total_pages;
           this.totalResults = results.total_results;
         })
@@ -166,6 +167,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "src/scss/media-queries";
+
+.resultSection {
+  background-color: var(--background-color);
+}
 
 .load-button {
   display: flex;
