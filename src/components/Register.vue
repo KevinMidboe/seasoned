@@ -77,7 +77,7 @@ export default {
       this.registerUser(username, password);
     },
     registerUser(username, password) {
-      register(username, password, true)
+      register(username, password)
         .then(data => {
           if (data.success && this.login()) {
             eventHub.$emit("setUserStatus");
