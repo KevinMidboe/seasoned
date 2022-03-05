@@ -52,9 +52,8 @@ export default {
       elementWithoutOverflow.innerText = this.description;
 
       document.body.appendChild(elementWithoutOverflow);
-      const elemWithoutOverflowHeight = elementWithoutOverflow.getBoundingClientRect()[
-        "height"
-      ];
+      const elemWithoutOverflowHeight =
+        elementWithoutOverflow.getBoundingClientRect()["height"];
 
       this.overflow = elemWithoutOverflowHeight > height;
       this.removeElements(document.querySelectorAll(".dummy-non-overflow"));
