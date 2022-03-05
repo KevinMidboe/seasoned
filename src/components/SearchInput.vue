@@ -165,21 +165,13 @@ export default {
   top: calc(50% - 12px);
   right: 0;
   cursor: pointer;
+  fill: var(--text-color);
+  height: 24px;
+  width: 24px;
 
   @include tablet-min {
     right: 6px;
   }
-}
-
-.fade-enter-active {
-  transition: opacity 0.2s;
-}
-.fade-leave-active {
-  transition: opacity 0.2s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .filter {
@@ -216,8 +208,6 @@ hr {
 }
 
 .search.active {
-  transition: border-color 0.3s ease, fill 0.3s ease;
-
   input {
     border-color: var(--color-green);
   }
