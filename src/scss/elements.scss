@@ -9,7 +9,7 @@
   border: 1px solid;
   border-radius: 2px;
   display: flex;
-  transition: color .2s ease;
+  transition: color 0.2s ease;
 
   &-item {
     padding: 6px 15px;
@@ -20,12 +20,13 @@
     text-transform: capitalize;
     text-align: center;
     width: 100%;
-    white-space:nowrap;
+    white-space: nowrap;
 
-    &:nth-child(n+2) {
+    &:nth-child(n + 2) {
       border-left: solid 1px;
     }
-    &.active, &:hover {
+    &.active,
+    &:hover {
       border-color: transparent;
       background-color: $teal;
       color: $green;
@@ -38,5 +39,5 @@
   }
 }
 
-// TODO 
+// TODO
 //  - add buttons

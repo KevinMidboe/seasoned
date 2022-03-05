@@ -65,7 +65,7 @@ export default {
     };
   },
   computed: {
-    posterAltText: function () {
+    posterAltText: function() {
       const type = this.movie.type || "";
       const title = this.movie.title || this.movie.name;
       return this.movie.poster

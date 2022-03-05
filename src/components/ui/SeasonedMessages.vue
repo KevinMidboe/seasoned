@@ -13,7 +13,6 @@
 </template>
 
 <script>
-
 export default {
   props: {
     messages: {
@@ -24,26 +23,25 @@ export default {
   data() {
     return {
       defaultTitles: {
-        error: 'Unexpected error',
-        warning: 'Something went wrong',
-        undefined: 'Something went wrong'
+        error: "Unexpected error",
+        warning: "Something went wrong",
+        undefined: "Something went wrong"
       },
       localMessages: [...this.messages]
-    }
+    };
   },
   computed: {
     reversedMessages() {
-      return [...this.messages].reverse()
+      return [...this.messages].reverse();
     }
   },
   methods: {
     clicked(e) {
-      const removedMessage = [...this.messages].filter(mes => mes !== e)
-      this.$emit('update:messages', removedMessage)
+      const removedMessage = [...this.messages].filter(mes => mes !== e);
+      this.$emit("update:messages", removedMessage);
     }
   }
-}
-
+};
 </script>
 
 <style lang="scss" scoped>
@@ -51,10 +49,10 @@ export default {
 @import "src/scss/media-queries";
 
 .fade-enter-active {
-  transition: opacity .4s;
+  transition: opacity 0.4s;
 }
 .fade-leave-active {
-  transition: opacity .1s;
+  transition: opacity 0.1s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
@@ -72,7 +70,6 @@ export default {
   > div {
     margin: 10px 24px;
     width: 100%;
-
   }
 
   .title {
@@ -81,12 +78,12 @@ export default {
     margin: 0;
     font-size: 1.3rem;
     color: $text-color;
-    transition: color .5s ease;
+    transition: color 0.5s ease;
   }
   .message {
     font-weight: 300;
     color: $text-color-70;
-    transition: color .5s ease;
+    transition: color 0.5s ease;
     margin: 0.2rem 0 0.5rem;
   }
 
@@ -101,7 +98,6 @@ export default {
     span {
       font-size: 0.9rem;
     }
-
   }
 
   .pinstripe {
@@ -126,7 +122,7 @@ export default {
     margin-top: 0.5rem;
     margin-right: 0.5rem;
     color: $text-color-70;
-    transition: color .5s ease;
+    transition: color 0.5s ease;
 
     &:hover {
       color: $text-color;
@@ -140,7 +136,7 @@ export default {
       background-color: $color-success-highlight;
     }
   }
-  
+
   &.error {
     background-color: $color-error;
 
@@ -151,11 +147,10 @@ export default {
 
   &.warning {
     background-color: $color-warning;
-    
+
     .pinstripe {
       background-color: $color-warning-highlight;
     }
   }
 }
-
 </style>

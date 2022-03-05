@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="text-input__loading">
-      <div class="text-input__loading--line" :class="lineClass" v-for="_ in Array(count)"></div>
+      <div
+        class="text-input__loading--line"
+        :class="lineClass"
+        v-for="_ in Array(count)"
+      ></div>
     </div>
   </div>
 </template>
@@ -15,10 +19,10 @@ export default {
     },
     lineClass: {
       type: String,
-      default: ''
+      default: ""
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

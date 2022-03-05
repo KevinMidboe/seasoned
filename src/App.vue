@@ -1,41 +1,3 @@
-<style lang="scss" scoped>
-@import "./src/scss/media-queries";
-#app {
-  display: grid;
-  // grid-template-columns: 90px 1fr 90px;
-  grid-template-rows: var(--header-size);
-  grid-template-columns: var(--header-size) 1fr;
-}
-
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  grid-column: 1 / 3;
-  grid-row: 1;
-  z-index: 15;
-}
-
-.content {
-  grid-column: 2 / 3;
-  grid-row: 2;
-  z-index: 5;
-
-  @include mobile {
-    grid-column: 1 / 3;
-  }
-}
-
-.desktop-menu {
-  grid-column: 1 / 2;
-  grid-row: 2;
-  width: var(--header-size);
-  position: fixed;
-  top: var(--header-size);
-  left: 0;
-}
-</style>
-
 <template>
   <div id="app">
     <!-- Header and hamburger navigation -->
@@ -70,6 +32,41 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./src/scss/main";
-@import "./src/scss/media-queries";
+@import "src/scss/main";
+@import "src/scss/media-queries";
+
+#app {
+  display: grid;
+  // grid-template-columns: 90px 1fr 90px;
+  grid-template-rows: var(--header-size);
+  grid-template-columns: var(--header-size) 1fr;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  grid-column: 1 / 3;
+  grid-row: 1;
+  z-index: 15;
+}
+
+.content {
+  grid-column: 2 / 3;
+  grid-row: 2;
+  z-index: 5;
+
+  @include mobile {
+    grid-column: 1 / 3;
+  }
+}
+
+.desktop-menu {
+  grid-column: 1 / 2;
+  grid-row: 2;
+  width: var(--header-size);
+  position: fixed;
+  top: var(--header-size);
+  left: 0;
+}
 </style>
