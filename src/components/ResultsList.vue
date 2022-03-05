@@ -1,7 +1,19 @@
 <template>
-  <ul class="results" :class="{ shortList: shortList }">
-    <movies-list-item v-for="movie in results" :movie="movie" />
-  </ul>
+  <div>
+    <ul
+      v-if="results && results.length"
+      class="results"
+      :class="{ shortList: shortList }"
+    >
+      <movies-list-item
+        v-for="movie in results"
+        :key="`${movie.type}-${movie.id}`"
+        :movie="movie"
+      />
+    </ul>
+
+    <span v-else class="no-results">No results found</span>
+  </div>
 </template>
 
 <script>
@@ -23,43 +35,43 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-@import "./src/scss/media-queries";
+<style lang="scss">
+@import "src/scss/media-queries";
+@import "src/scss/main";
+
+.no-results {
+  width: 100%;
+  display: block;
+  text-align: center;
+  margin: 1.5rem;
+  font-size: 1.2rem;
+}
 
 .results {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+  grid-auto-rows: auto;
   margin: 0;
   padding: 0;
   list-style: none;
 
-  &.shortList > li {
-    display: none;
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    &:nth-child(-n + 4) {
-      display: block;
+  &.shortList {
+    overflow: auto;
+    grid-auto-flow: column;
+
+    @include noscrollbar;
+
+    > li {
+      min-width: 225px;
     }
-  }
-}
 
-@include tablet-min {
-  .results.shortList > li:nth-child(-n + 6) {
-    display: block;
-  }
-}
-@include tablet-landscape-min {
-  .results.shortList > li:nth-child(-n + 8) {
-    display: block;
-  }
-}
-@include desktop-min {
-  .results.shortList > li:nth-child(-n + 10) {
-    display: block;
-  }
-}
-@include desktop-lg-min {
-  .results.shortList > li:nth-child(-n + 16) {
-    display: block;
+    @include tablet-min {
+      max-width: calc(100vw - var(--header-size));
+    }
   }
 }
 </style>
