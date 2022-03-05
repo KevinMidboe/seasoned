@@ -1,11 +1,11 @@
 <template>
   <div>
-    <section class="not-found">
+    <section class="not-found" :style="background">
       <h1 class="not-found__title">Page Not Found</h1>
+      <seasoned-button class="button" @click="goBack">
+        go back to previous page
+      </seasoned-button>
     </section>
-    <seasoned-button class="button" @click="goBack"
-      >go back to previous page</seasoned-button
-    >
   </div>
 </template>
 
@@ -15,6 +15,11 @@ import SeasonedButton from "@/components/ui/SeasonedButton";
 
 export default {
   components: { SeasonedButton },
+  data() {
+    return {
+      background: 'background-image: url("/assets/pulp-fiction.jpg")'
+    };
+  },
   computed: {
     ...mapGetters("popup", ["isOpen"])
   },
@@ -36,14 +41,9 @@ export default {
 
 .button {
   font-size: 1.2rem;
-  position: fixed;
-  top: 50%;
-  left: calc(50% + 46px);
-  transform: translate(-50%, -50%);
+  z-index: 10;
 
   @include mobile {
-    top: 60%;
-    left: 50%;
     font-size: 1rem;
     width: content;
   }
@@ -51,11 +51,13 @@ export default {
 
 .not-found {
   display: flex;
-  height: calc(100vh - var(--header-size));
-  background: url("~assets/pulp-fiction.jpg") no-repeat 50% 50%;
-  background-size: cover;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
+  height: calc(100vh - var(--header-size));
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat no-repeat;
 
   &::before {
     content: "";
@@ -63,14 +65,16 @@ export default {
     height: calc(100vh - var(--header-size));
     width: 100%;
     pointer-events: none;
-    background: $background-40;
+    background: var(--background-40);
   }
+
   &__title {
-    margin-top: 30vh;
     font-size: 2.5rem;
     font-weight: 500;
-    color: $text-color;
+    padding: 0 1rem;
+    color: var(--text-color);
     position: relative;
+    background-color: var(--background-90);
 
     @include tablet-min {
       font-size: 3.5rem;
