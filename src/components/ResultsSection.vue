@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="resultSection">
     <list-header v-bind="{ title, info, shortList }" :sticky="true" />
 
     <div
@@ -14,8 +14,8 @@
     <results-list v-bind="{ results, shortList }" />
     <loader v-if="loading" />
 
-    <div v-if="!shortList && page < totalPages" class="load-button">
-      <seasoned-button @click="loadMore" :fullWidth="true"
+    <div v-if="!shortList && page != totalPages" class="load-button">
+      <seasoned-button ref="loadMoreButton" @click="loadMore" :fullWidth="true"
         >load more</seasoned-button
       >
     </div>
@@ -52,9 +52,11 @@ export default {
       results: [],
       page: 1,
       loadedPages: [],
-      totalPages: 0,
+      totalPages: -1,
       totalResults: 0,
-      loading: true
+      loading: true,
+      autoLoad: false,
+      observer: undefined
     };
   },
   computed: {
@@ -72,10 +74,11 @@ export default {
     }
   },
   methods: {
-    prettify(listName) {
-      return listName.includes("_") ? listName.split("_").join(" ") : listName;
-    },
     loadMore() {
+      if (!this.autoLoad) {
+        this.autoLoad = true;
+      }
+
       this.loading = true;
       let maxPage = [...this.loadedPages].slice(-1)[0];
 
@@ -115,7 +118,8 @@ export default {
     getListResults(front = false) {
       this.apiFunction(this.page)
         .then(results => {
-          this.results = this.results.concat(...results.results);
+          if (!front) this.results = this.results.concat(...results.results);
+          else this.results = results.results.concat(...this.results);
           this.page = results.page;
           this.loadedPages.push(this.page);
           this.loadedPages = this.loadedPages.sort();
@@ -124,18 +128,38 @@ export default {
         })
         .then(this.updateQueryParams)
         .finally(() => (this.loading = false));
+    },
+    setupAutoloadObserver() {
+      this.observer = new IntersectionObserver(this.handleButtonIntersection, {
+        root: this.$refs.resultSection.$el,
+        rootMargin: "0px",
+        threshold: 1.0
+      });
+
+      this.observer.observe(this.$refs.loadMoreButton.$el);
+    },
+    handleButtonIntersection(entries) {
+      entries.map(entry =>
+        entry.isIntersecting && this.autoLoad ? this.loadMore() : null
+      );
     }
   },
   created() {
     this.page = this.getPageFromUrl() || this.page;
-    // this.listName = this.getListNameFromUrl();
-
     if (this.results.length === 0) this.getListResults();
 
     store.dispatch(
       "documentTitle/updateTitle",
       `${this.$router.history.current.name} ${this.$route.params.name}`
     );
+  },
+  mounted() {
+    if (!this.shortList) {
+      this.setupAutoloadObserver();
+    }
+  },
+  beforeDestroy() {
+    this.observer = undefined;
   }
 };
 </script>
