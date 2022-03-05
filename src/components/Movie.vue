@@ -14,8 +14,11 @@
         />
       </figure>
 
-      <h1 class="movie__title" v-if="movie">{{ movie.title || movie.name }}</h1>
-      <loading-placeholder v-else :count="1" />
+      <div v-if="movie" class="movie__title">
+        <h1>{{ movie.title || movie.name }}</h1>
+        <p class="meta">{{ movie.tagline }}</p>
+      </div>
+      <loading-placeholder v-else :count="2" />
     </header>
 
     <!-- Siderbar and movie info -->
@@ -125,9 +128,9 @@
               :detail="movie.production_status"
             />
             <MovieDetail
-              v-if="movie.type == 'show'"
+              v-if="movie.runtime"
               title="Runtime"
-              :detail="movie.runtime[0]"
+              :detail="humanMinutes(movie.runtime)"
             />
           </div>
         </div>
@@ -286,6 +289,20 @@ export default {
 
       poster.src = `${this.ASSET_URL}${this.ASSET_SIZES[0]}${this.poster}`;
     },
+    humanMinutes(minutes) {
+      if (minutes instanceof Array) {
+        minutes = minutes[0];
+      }
+
+      const hours = Math.floor(minutes / 60);
+      const minutesLeft = minutes - hours * 60;
+
+      if (minutesLeft == 0) {
+        return hours > 1 ? `${hours} hours` : `${hours} hour`;
+      }
+
+      return `${hours}h ${minutesLeft}m`;
+    },
     sendRequest() {
       request(this.id, this.type).then(resp => {
         if (resp.success) {
@@ -337,7 +354,6 @@ export default {
 
 header {
   $duration: 0.2s;
-  height: 250px;
   transform: scaleY(1);
   transition: height $duration ease;
   transform-origin: top;
@@ -346,23 +362,32 @@ header {
   background-repeat: no-repeat;
   background-position: 50% 50%;
   background-color: $background-color;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 350px;
 
-  @include tablet-min {
-    height: 350px;
+  @include mobile {
+    grid-template-columns: 1fr;
+    height: 250px;
+    place-items: center;
   }
-  &:before {
+
+  * {
+    z-index: 2;
+  }
+
+  &::before {
     content: "";
     display: block;
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
     background: $background-dark-85;
   }
+
   @include mobile {
     &.compact {
       height: 100px;
@@ -374,13 +399,11 @@ header {
   display: none;
 
   @include desktop {
-    background: $background-color;
-    height: 0;
+    background: var(--background-color);
+    height: auto;
     display: block;
-    position: absolute;
-    width: calc(45% - 40px);
-    top: 40px;
-    left: 40px;
+    width: calc(100% - 80px);
+    margin: 40px;
 
     > img {
       width: 100%;
@@ -390,7 +413,6 @@ header {
 
 .movie {
   &__wrap {
-    display: flex;
     &--header {
       align-items: center;
       height: 100%;
@@ -424,22 +446,28 @@ header {
   &__title {
     position: relative;
     padding: 20px;
-    color: $green;
     text-align: center;
     width: 100%;
+    height: fit-content;
+
     @include tablet-min {
-      width: 55%;
       text-align: left;
-      margin-left: 45%;
-      padding: 30px 30px 30px 40px;
+      padding: 140px 30px 0 40px;
     }
     h1 {
+      color: var(--color-green);
       font-weight: 500;
       line-height: 1.4;
       font-size: 24px;
+      margin-bottom: 0;
+
       @include tablet-min {
         font-size: 30px;
       }
+    }
+
+    p {
+      color: var(--text-color-90);
     }
   }
 
@@ -473,6 +501,14 @@ header {
   &__details {
     display: flex;
     flex-wrap: wrap;
+
+    > * {
+      margin-right: 30px;
+
+      @include mobile {
+        margin-right: 20px;
+      }
+    }
   }
   &__admin {
     width: 100%;
