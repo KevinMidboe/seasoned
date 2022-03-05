@@ -94,6 +94,23 @@ const getPerson = (id, credits = false) => {
 };
 
 /**
+ * Fetches tmdb person credits by id.
+ * @param {number} id
+ * @returns {object} Tmdb response
+ */
+const getPersonCredits = (id, credits = false) => {
+  const url = new URL("v2/person", SEASONED_URL);
+  url.pathname = `${url.pathname}/${id.toString()}/credits`;
+
+  return fetch(url.href)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error(`api error getting person: ${id}`);
+      throw error;
+    });
+};
+
+/**
  * Fetches tmdb list by name.
  * @param {string} name List the fetch
  * @param {number} [page=1]
@@ -467,6 +484,7 @@ export {
   getMovie,
   getShow,
   getPerson,
+  getPersonCredits,
   getTmdbMovieListByName,
   searchTmdb,
   getUserRequests,
