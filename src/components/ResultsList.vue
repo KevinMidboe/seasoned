@@ -6,8 +6,8 @@
       :class="{ shortList: shortList }"
     >
       <movies-list-item
-        v-for="movie in results"
-        :key="`${movie.type}-${movie.id}`"
+        v-for="(movie, index) in results"
+        :key="`${movie.type}-${movie.id}-${index}`"
         :movie="movie"
       />
     </ul>
