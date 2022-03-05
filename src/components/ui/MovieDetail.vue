@@ -27,7 +27,6 @@ export default {
 
 .movie-detail {
   margin-bottom: 20px;
-  margin-right: 20px;
 
   &:last-of-type {
     margin-bottom: 0px;
@@ -35,7 +34,6 @@ export default {
 
   @include tablet-min {
     margin-bottom: 30px;
-    margin-right: 30px;
   }
 
   h2.title {
