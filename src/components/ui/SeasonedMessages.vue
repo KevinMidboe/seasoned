@@ -1,10 +1,19 @@
 <template>
   <transition-group name="fade">
-    <div class="message" v-for="(message, index) in reversedMessages" :class="message.type || 'warning'" :key="index">
+    <div
+      class="message"
+      v-for="(message, index) in reversedMessages"
+      :key="`${index}-${message.title}-${message.type}}`"
+      :class="message.type || 'warning'"
+    >
       <span class="pinstripe"></span>
       <div>
-        <h2 class="title">{{ message.title || defaultTitles[message.type] }}</h2>
-        <span v-if="message.message" class="message">{{ message.message }}</span>
+        <h2 class="title">
+          {{ message.title || defaultTitles[message.type] }}
+        </h2>
+        <span v-if="message.message" class="message">{{
+          message.message
+        }}</span>
       </div>
 
       <button class="dismiss" @click="clicked(message)">X</button>
