@@ -7,7 +7,7 @@
         @click="openMoviePopup"
         :alt="posterAltText"
         :data-src="poster"
-        src="~assets/placeholder.png"
+        src="/assets/placeholder.png"
       />
 
       <div v-if="movie.download" class="progress">
@@ -65,7 +65,7 @@ export default {
     };
   },
   computed: {
-    posterAltText: function() {
+    posterAltText: function () {
       const type = this.movie.type || "";
       const title = this.movie.title || this.movie.name;
       return this.movie.poster
@@ -77,7 +77,7 @@ export default {
     if (this.movie.poster != null) {
       this.poster = "https://image.tmdb.org/t/p/w500" + this.movie.poster;
     } else {
-      this.poster = "/assets/no-image.png";
+      this.poster = "/assets/no-image.svg";
     }
   },
   mounted() {
