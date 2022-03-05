@@ -31,7 +31,7 @@ export default {
       const { profile_path } = this.person;
       if (profile_path) return "https://image.tmdb.org/t/p/w185" + profile_path;
 
-      return "";
+      return "/assets/no-image_small.svg";
     }
   }
 };
