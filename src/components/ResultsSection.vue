@@ -149,10 +149,12 @@ export default {
     this.page = this.getPageFromUrl() || this.page;
     if (this.results.length === 0) this.getListResults();
 
-    store.dispatch(
-      "documentTitle/updateTitle",
-      `${this.$router.history.current.name} ${this.$route.params.name}`
-    );
+    if (!this.shortList) {
+      store.dispatch(
+        "documentTitle/updateTitle",
+        `${this.$router.history.current.name} ${this.title}`
+      );
+    }
   },
   mounted() {
     if (!this.shortList) {
