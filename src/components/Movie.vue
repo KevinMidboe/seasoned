@@ -113,7 +113,7 @@
               :detail="movie.seasons"
             />
             <MovieDetail
-              v-if="movie.genres"
+              v-if="movie.genres && movie.genres.length"
               title="Genres"
               :detail="movie.genres.join(', ')"
             />
