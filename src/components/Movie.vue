@@ -118,7 +118,10 @@
               :detail="movie.genres.join(', ')"
             />
             <MovieDetail
-              v-if="movie.type == 'show'"
+              v-if="
+                movie.production_status &&
+                movie.production_status !== 'Released'
+              "
               title="Production status"
               :detail="movie.production_status"
             />
