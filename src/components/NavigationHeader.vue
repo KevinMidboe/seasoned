@@ -1,6 +1,9 @@
 <template>
   <nav>
-    <router-link class="nav__logo" to="/home" exact>
+    <a v-if="isHome" class="nav__logo" href="/">
+      <TmdbLogo class="logo" />
+    </a>
+    <router-link v-else class="nav__logo" to="/" exact>
       <TmdbLogo class="logo" />
     </router-link>
 
@@ -51,6 +54,9 @@ export default {
   computed: {
     ...mapGetters("user", ["loggedIn"]),
     ...mapGetters("hamburger", ["isOpen"]),
+    isHome() {
+      return this.$route.path === "/";
+    },
     profileRoute() {
       return {
         title: !this.loggedIn ? "Signin" : "Profile",
