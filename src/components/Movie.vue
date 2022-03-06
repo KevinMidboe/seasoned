@@ -309,6 +309,8 @@ export default {
 
       if (minutesLeft == 0) {
         return hours > 1 ? `${hours} hours` : `${hours} hour`;
+      } else if (hours == 0) {
+        return `${minutesLeft} min`;
       }
 
       return `${hours}h ${minutesLeft}m`;
