@@ -4,9 +4,9 @@
 
     <div
       v-if="!loadedPages.includes(1) && loading == false"
-      class="load-button"
+      class="button-container"
     >
-      <seasoned-button @click="loadLess" :fullWidth="true"
+      <seasoned-button @click="loadLess" class="load-button" :fullWidth="true"
         >load previous</seasoned-button
       >
     </div>
