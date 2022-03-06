@@ -22,22 +22,20 @@ export default {
   methods: {
     ...mapActions("popup", ["open"]),
     openPerson() {
-      let { id, media_type } = this.person;
-      if (media_type === "tv") media_type = "show";
+      let { id, type } = this.person;
 
-      if (media_type) {
-        this.open({ id, type: media_type });
-      } else if (id) {
-        this.open({ id, type: "person" });
+      if (type) {
+        this.open({ id, type });
       }
     }
   },
   computed: {
     pictureUrl() {
-      const { profile_path, poster_path } = this.person;
+      const { profile_path, poster_path, poster } = this.person;
       if (profile_path) return "https://image.tmdb.org/t/p/w185" + profile_path;
       else if (poster_path)
         return "https://image.tmdb.org/t/p/w185" + poster_path;
+      else if (poster) return "https://image.tmdb.org/t/p/w185" + poster;
 
       return "/assets/no-image_small.svg";
     }
