@@ -1,6 +1,6 @@
 import config from "@/config.json";
 
-const SEASONED_URL = config.SEASONED_URL;
+const SEASONED_URL = config.SEASONED_URL || window.location.origin;
 const ELASTIC_URL = config.ELASTIC_URL;
 const ELASTIC_INDEX = config.ELASTIC_INDEX;
 
@@ -28,7 +28,7 @@ const getMovie = (
   credits = false,
   release_dates = false
 ) => {
-  const url = new URL("v2/movie", SEASONED_URL);
+  const url = new URL("/api/v2/movie", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (checkExistance) {
     url.searchParams.append("check_existance", true);
@@ -55,7 +55,7 @@ const getMovie = (
  * @returns {object} Tmdb response
  */
 const getShow = (id, checkExistance = false, credits = false) => {
-  const url = new URL("v2/show", SEASONED_URL);
+  const url = new URL("/api/v2/show", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (checkExistance) {
     url.searchParams.append("check_existance", true);
@@ -79,7 +79,7 @@ const getShow = (id, checkExistance = false, credits = false) => {
  * @returns {object} Tmdb response
  */
 const getPerson = (id, credits = false) => {
-  const url = new URL("v2/person", SEASONED_URL);
+  const url = new URL("/api/v2/person", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (credits) {
     url.searchParams.append("credits", true);
@@ -111,7 +111,7 @@ const getCredits = (type, id) => {
  * @returns {object} Tmdb response
  */
 const getMovieCredits = id => {
-  const url = new URL("v2/movie", SEASONED_URL);
+  const url = new URL("/api/v2/movie", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
   return fetch(url.href)
@@ -128,7 +128,7 @@ const getMovieCredits = id => {
  * @returns {object} Tmdb response
  */
 const getShowCredits = id => {
-  const url = new URL("v2/show", SEASONED_URL);
+  const url = new URL("/api/v2/show", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
   return fetch(url.href)
@@ -145,7 +145,7 @@ const getShowCredits = id => {
  * @returns {object} Tmdb response
  */
 const getPersonCredits = id => {
-  const url = new URL("v2/person", SEASONED_URL);
+  const url = new URL("/api/v2/person", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
   return fetch(url.href)
@@ -163,7 +163,7 @@ const getPersonCredits = id => {
  * @returns {object} Tmdb list response
  */
 const getTmdbMovieListByName = (name, page = 1) => {
-  const url = new URL("v2/movie/" + name, SEASONED_URL);
+  const url = new URL("/api/v2/movie/" + name, SEASONED_URL);
   url.searchParams.append("page", page);
 
   return fetch(url.href).then(resp => resp.json());
@@ -176,7 +176,7 @@ const getTmdbMovieListByName = (name, page = 1) => {
  * @returns {object} Request response
  */
 const getRequests = (page = 1) => {
-  const url = new URL("v2/request", SEASONED_URL);
+  const url = new URL("/api/v2/request", SEASONED_URL);
   url.searchParams.append("page", page);
 
   return fetch(url.href).then(resp => resp.json());
@@ -184,7 +184,7 @@ const getRequests = (page = 1) => {
 };
 
 const getUserRequests = (page = 1) => {
-  const url = new URL("v1/user/requests", SEASONED_URL);
+  const url = new URL("/api/v1/user/requests", SEASONED_URL);
   url.searchParams.append("page", page);
 
   return fetch(url.href).then(resp => resp.json());
@@ -197,7 +197,7 @@ const getUserRequests = (page = 1) => {
  * @returns {object} Tmdb response
  */
 const searchTmdb = (query, page = 1, adult = false, mediaType = null) => {
-  const url = new URL("v2/search", SEASONED_URL);
+  const url = new URL("/api/v2/search", SEASONED_URL);
   if (mediaType != null && ["movie", "show", "person"].includes(mediaType)) {
     url.pathname += `/${mediaType}`;
   }
@@ -245,7 +245,7 @@ const searchTorrents = query => {
  * @returns {object} Success/Failure response
  */
 const addMagnet = (magnet, name, tmdb_id) => {
-  const url = new URL("v1/pirate/add", SEASONED_URL);
+  const url = new URL("/api/v1/pirate/add", SEASONED_URL);
 
   const options = {
     method: "POST",
@@ -275,7 +275,7 @@ const addMagnet = (magnet, name, tmdb_id) => {
  * @returns {object} Success/Failure response
  */
 const request = (id, type) => {
-  const url = new URL("v2/request", SEASONED_URL);
+  const url = new URL("/api/v2/request", SEASONED_URL);
 
   const options = {
     method: "POST",
@@ -298,7 +298,7 @@ const request = (id, type) => {
  * @returns {object} Success/Failure response
  */
 const getRequestStatus = (id, type = undefined) => {
-  const url = new URL("v2/request", SEASONED_URL);
+  const url = new URL("/api/v2/request", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
   url.searchParams.append("type", type);
 
@@ -319,7 +319,7 @@ const getRequestStatus = (id, type = undefined) => {
 };
 
 const watchLink = (title, year) => {
-  const url = new URL("v1/plex/watch-link", SEASONED_URL);
+  const url = new URL("/api/v1/plex/watch-link", SEASONED_URL);
   url.searchParams.append("title", title);
   url.searchParams.append("year", year);
 
@@ -337,7 +337,7 @@ const movieImages = id => {
 // - - - Seasoned user endpoints - - -
 
 const register = (username, password) => {
-  const url = new URL("v1/user", SEASONED_URL);
+  const url = new URL("/api/v1/user", SEASONED_URL);
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -357,7 +357,7 @@ const register = (username, password) => {
 };
 
 const login = (username, password, throwError = false) => {
-  const url = new URL("v1/user/login", SEASONED_URL);
+  const url = new URL("/api/v1/user/login", SEASONED_URL);
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -373,7 +373,7 @@ const login = (username, password, throwError = false) => {
 };
 
 const logout = () => {
-  const url = new URL("v1/user/logout", SEASONED_URL);
+  const url = new URL("/api/v1/user/logout", SEASONED_URL);
   const options = { method: "POST" };
 
   return fetch(url.href, options).then(resp => {
@@ -385,7 +385,7 @@ const logout = () => {
 };
 
 const getSettings = () => {
-  const url = new URL("v1/user/settings", SEASONED_URL);
+  const url = new URL("/api/v1/user/settings", SEASONED_URL);
 
   return fetch(url.href)
     .then(resp => resp.json())
@@ -396,7 +396,7 @@ const getSettings = () => {
 };
 
 const updateSettings = settings => {
-  const url = new URL("v1/user/settings", SEASONED_URL);
+  const url = new URL("/api/v1/user/settings", SEASONED_URL);
 
   const options = {
     method: "PUT",
@@ -415,7 +415,7 @@ const updateSettings = settings => {
 // - - - Authenticate with plex - - -
 
 const linkPlexAccount = (username, password) => {
-  const url = new URL("v1/user/link_plex", SEASONED_URL);
+  const url = new URL("/api/v1/user/link_plex", SEASONED_URL);
   const body = { username, password };
 
   const options = {
@@ -433,7 +433,7 @@ const linkPlexAccount = (username, password) => {
 };
 
 const unlinkPlexAccount = (username, password) => {
-  const url = new URL("v1/user/unlink_plex", SEASONED_URL);
+  const url = new URL("/api/v1/user/unlink_plex", SEASONED_URL);
 
   const options = {
     method: "POST",
@@ -451,7 +451,7 @@ const unlinkPlexAccount = (username, password) => {
 // - - - User graphs - - -
 
 const fetchChart = (urlPath, days, chartType) => {
-  const url = new URL("v1/user" + urlPath, SEASONED_URL);
+  const url = new URL("/api/v1/user" + urlPath, SEASONED_URL);
   url.searchParams.append("days", days);
   url.searchParams.append("y_axis", chartType);
 
@@ -468,7 +468,7 @@ const fetchChart = (urlPath, days, chartType) => {
 // - - - Random emoji - - -
 
 const getEmoji = () => {
-  const url = new URL("v1/emoji", SEASONED_URL);
+  const url = new URL("/api/v1/emoji", SEASONED_URL);
 
   return fetch(url.href)
     .then(resp => resp.json())
