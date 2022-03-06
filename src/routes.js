@@ -87,9 +87,13 @@ const loggedIn = () => store.getters["user/loggedIn"];
 const popupIsOpen = () => store.getters["popup/isOpen"];
 const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
+window.preventPushState = false;
+window.onpopstate = () => (window.preventPushState = true);
+
 router.beforeEach((to, from, next) => {
   store.dispatch("documentTitle/updateTitle", to.name);
   const { movie, show, person } = to.query;
+
   if (movie) store.dispatch("popup/open", { id: movie, type: "movie" });
   else if (show) store.dispatch("popup/open", { id: show, type: "show" });
   else if (person) store.dispatch("popup/open", { id: person, type: "person" });
