@@ -22,7 +22,7 @@
                 v-for="column in columns"
                 :key="column"
                 @click="sortTable(column)"
-                :class="column === this.selectedColumn ? 'active' : null"
+                :class="column === selectedColumn ? 'active' : null"
               >
                 {{ column }}
                 <span v-if="prevCol === column && direction">↑</span>

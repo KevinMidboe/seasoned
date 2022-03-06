@@ -61,7 +61,7 @@
           >
             <IconBinoculars />
             Search for torrents
-            <span class="meta">{{ numberOfTorrentResults || 123 }}</span>
+            <span class="meta">{{ numberOfTorrentResults }}</span>
           </sidebar-list-element>
 
           <sidebar-list-element @click="openTmdb">
