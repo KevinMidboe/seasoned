@@ -334,6 +334,7 @@ export default {
     }
   },
   created() {
+    store.dispatch("torrentModule/setResultCount", 0);
     this.prevDocumentTitle = store.getters["documentTitle/title"];
     this.fetchByType();
   },
