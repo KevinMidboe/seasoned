@@ -93,12 +93,58 @@ const getPerson = (id, credits = false) => {
     });
 };
 
+const getCredits = (type, id) => {
+  if (type === "movie") {
+    return getMovieCredits(id);
+  } else if (type === "show") {
+    return getShowCredits(id);
+  } else if (type === "person") {
+    return getPersonCredits(id);
+  }
+
+  return [];
+};
+
+/**
+ * Fetches tmdb movie credits by id.
+ * @param {number} id
+ * @returns {object} Tmdb response
+ */
+const getMovieCredits = id => {
+  const url = new URL("v2/movie", SEASONED_URL);
+  url.pathname = `${url.pathname}/${id.toString()}/credits`;
+
+  return fetch(url.href)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error(`api error getting movie: ${id}`);
+      throw error;
+    });
+};
+
+/**
+ * Fetches tmdb show credits by id.
+ * @param {number} id
+ * @returns {object} Tmdb response
+ */
+const getShowCredits = id => {
+  const url = new URL("v2/show", SEASONED_URL);
+  url.pathname = `${url.pathname}/${id.toString()}/credits`;
+
+  return fetch(url.href)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error(`api error getting show: ${id}`);
+      throw error;
+    });
+};
+
 /**
  * Fetches tmdb person credits by id.
  * @param {number} id
  * @returns {object} Tmdb response
  */
-const getPersonCredits = (id, credits = false) => {
+const getPersonCredits = id => {
   const url = new URL("v2/person", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
@@ -484,7 +530,10 @@ export {
   getMovie,
   getShow,
   getPerson,
+  getMovieCredits,
+  getShowCredits,
   getPersonCredits,
+  getCredits,
   getTmdbMovieListByName,
   searchTmdb,
   getUserRequests,
