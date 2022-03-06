@@ -46,12 +46,7 @@
           </sidebar-list-element>
 
           <sidebar-list-element
-            v-if="
-              movie &&
-              movie.credits &&
-              movie.credits.cast &&
-              movie.credits.cast.length
-            "
+            v-if="credits && credits.cast && credits.cast.length"
             :active="showCast"
             @click="() => (showCast = !showCast)"
           >
@@ -139,16 +134,10 @@
 
         <div
           class="movie__admin"
-          v-if="
-            showCast &&
-            movie &&
-            movie.credits &&
-            movie.credits.cast &&
-            movie.credits.cast.length
-          "
+          v-if="showCast && credits && credits.cast && credits.cast.length"
         >
           <MovieDetail title="cast">
-            <Cast :cast="movie.credits.cast" />
+            <Cast :cast="credits.cast" />
           </MovieDetail>
         </div>
       </div>
@@ -186,8 +175,9 @@ import LoadingPlaceholder from "./ui/LoadingPlaceholder";
 
 import {
   getMovie,
-  getPerson,
   getShow,
+  getPerson,
+  getCredits,
   request,
   getRequestStatus,
   watchLink
@@ -234,17 +224,14 @@ export default {
       requested: false,
       showTorrents: false,
       showCast: false,
+      credits: [],
       compact: false,
       loading: true
     };
   },
   watch: {
     id: function (val) {
-      if (this.type === "movie") {
-        this.fetchMovie(val);
-      } else {
-        this.fetchShow(val);
-      }
+      this.fetchByType();
     },
     backdrop: function (backdrop) {
       if (backdrop != null) {
@@ -265,6 +252,26 @@ export default {
     }
   },
   methods: {
+    fetchByType() {
+      if (this.type === "movie") {
+        getMovie(this.id, true, false)
+          .then(this.parseResponse)
+          .catch(error => {
+            this.$router.push({ name: "404" });
+          });
+      } else if (this.type == "show") {
+        getShow(this.id, false, false)
+          .then(this.parseResponse)
+          .catch(error => {
+            this.$router.push({ name: "404" });
+          });
+      } else {
+        this.$router.push({ name: "404" });
+      }
+
+      // async get credits
+      getCredits(this.type, this.id).then(credits => (this.credits = credits));
+    },
     parseResponse(movie) {
       this.loading = false;
       this.movie = { ...movie };
@@ -323,22 +330,7 @@ export default {
   },
   created() {
     this.prevDocumentTitle = store.getters["documentTitle/title"];
-
-    if (this.type === "movie") {
-      getMovie(this.id, true, true)
-        .then(this.parseResponse)
-        .catch(error => {
-          this.$router.push({ name: "404" });
-        });
-    } else if (this.type == "show") {
-      getShow(this.id, false, true)
-        .then(this.parseResponse)
-        .catch(error => {
-          this.$router.push({ name: "404" });
-        });
-    } else {
-      this.$router.push({ name: "404" });
-    }
+    this.fetchByType();
   },
   beforeDestroy() {
     store.dispatch("documentTitle/updateTitle", this.prevDocumentTitle);
