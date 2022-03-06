@@ -14,8 +14,9 @@
     <results-list v-bind="{ results, shortList }" />
     <loader v-if="loading" />
 
-    <div class="load-button" ref="loadMoreButton">
+    <div ref="loadMoreButton" class="button-container">
       <seasoned-button
+        class="load-button"
         v-if="!shortList && page != totalPages && results.length"
         @click="loadMore"
         :fullWidth="true"
@@ -176,10 +177,14 @@ export default {
   background-color: var(--background-color);
 }
 
-.load-button {
+.button-container {
+  display: flex;
+  justify-content: center;
   display: flex;
   width: 100%;
-  justify-content: center;
+}
+
+.load-button {
   margin: 2rem 0;
 
   @include mobile {
