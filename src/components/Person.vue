@@ -38,11 +38,19 @@
         <MovieDescription :description="person.biography" />
       </MovieDetail>
 
-      <MovieDetail title="movies" v-if="credits">
+      <MovieDetail
+        title="movies"
+        :detail="`Credited in ${movieCredits.length} movies`"
+        v-if="credits"
+      >
         <Cast :cast="movieCredits" />
       </MovieDetail>
 
-      <MovieDetail title="shows" v-if="credits">
+      <MovieDetail
+        title="shows"
+        :detail="`Credited in ${showCredits.length} shows`"
+        v-if="credits"
+      >
         <Cast :cast="showCredits" />
       </MovieDetail>
     </div>
@@ -87,13 +95,6 @@ export default {
     };
   },
   watch: {
-    id: function (val) {
-      if (this.type === "person") {
-        this.fetchperson(val);
-      } else {
-        this.fetchShow(val);
-      }
-    },
     backdrop: function (backdrop) {
       if (backdrop != null) {
         const style = {
@@ -120,7 +121,7 @@ export default {
       if (!cast) return;
 
       return cast
-        .filter(l => l.media_type === "movie")
+        .filter(l => l.type === "movie")
         .filter((item, pos, self) => self.indexOf(item) == pos)
         .sort((a, b) => a.popularity < b.popularity);
     },
@@ -129,12 +130,12 @@ export default {
       if (!cast) return;
 
       const alreadyExists = (item, pos, self) => {
-        const names = self.map(item => item.name);
-        return names.indexOf(item.name) == pos;
+        const names = self.map(item => item.title);
+        return names.indexOf(item.title) == pos;
       };
 
       return cast
-        .filter(item => item.media_type === "tv")
+        .filter(item => item.type === "show")
         .filter(alreadyExists)
         .sort((a, b) => a.popularity < b.popularity);
     }
@@ -159,18 +160,17 @@ export default {
     }
   },
   created() {
-    getPerson(this.id, true)
+    getPerson(this.id, false)
       .then(this.parseResponse)
       .catch(error => {
         console.error(error);
         this.$router.push({ name: "404" });
       });
 
-    getPersonCredits(this.id, true)
+    getPersonCredits(this.id)
       .then(credits => (this.credits = credits))
       .catch(error => {
         console.error(error);
-        this.$router.push({ name: "404" });
       });
   }
 };
