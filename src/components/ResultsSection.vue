@@ -14,8 +14,11 @@
     <results-list v-bind="{ results, shortList }" />
     <loader v-if="loading" />
 
-    <div v-if="!shortList && page != totalPages" class="load-button">
-      <seasoned-button ref="loadMoreButton" @click="loadMore" :fullWidth="true"
+    <div class="load-button" ref="loadMoreButton">
+      <seasoned-button
+        v-if="!shortList && page != totalPages && results.length"
+        @click="loadMore"
+        :fullWidth="true"
         >load more</seasoned-button
       >
     </div>
@@ -121,7 +124,6 @@ export default {
           if (!front) this.results = this.results.concat(...results.results);
           else this.results = results.results.concat(...this.results);
           this.page = results.page;
-          console.log("pushing page:", this.page);
           this.loadedPages.push(this.page);
           this.loadedPages = this.loadedPages.sort((a, b) => a - b);
           this.totalPages = results.total_pages;
@@ -137,7 +139,7 @@ export default {
         threshold: 1.0
       });
 
-      this.observer.observe(this.$refs.loadMoreButton.$el);
+      this.observer.observe(this.$refs.loadMoreButton);
     },
     handleButtonIntersection(entries) {
       entries.map(entry =>
