@@ -1,10 +1,8 @@
 <template>
-  <li class="movie-item">
-    <figure class="movie-item__poster">
+  <li class="movie-item" ref="list-item">
+    <figure class="movie-item__poster" ref="poster" @click="openMoviePopup">
       <img
         class="movie-item__img"
-        ref="poster-image"
-        @click="openMoviePopup"
         :alt="posterAltText"
         :data-src="poster"
         src="/assets/placeholder.png"
@@ -81,21 +79,22 @@ export default {
     }
   },
   mounted() {
-    const poster = this.$refs["poster-image"];
-    if (poster == null) return;
+    const poster = this.$refs["poster"];
+    const image = poster.getElementsByTagName("img")[0];
+    if (image == null) return;
 
     const imageObserver = new IntersectionObserver((entries, imgObserver) => {
       entries.forEach(entry => {
         if (entry.isIntersecting && this.observed == false) {
           const lazyImage = entry.target;
           lazyImage.src = lazyImage.dataset.src;
-          lazyImage.className = lazyImage.className + " is-loaded";
+          poster.className = poster.className + " is-loaded";
           this.observed = true;
         }
       });
     });
 
-    imageObserver.observe(poster);
+    imageObserver.observe(image);
   },
   methods: {
     ...mapActions("popup", ["open"]),
@@ -117,7 +116,7 @@ export default {
 .movie-item {
   padding: 15px;
   width: 100%;
-  background-color: $background-color;
+  background-color: var(--background-color);
 
   &:hover &__info > p {
     color: $text-color;
@@ -127,22 +126,30 @@ export default {
     text-decoration: none;
     color: $text-color-70;
     font-weight: 300;
+    position: relative;
+    transform: scale(0.97) translateZ(0);
 
-    > img {
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
       width: 100%;
-      opacity: 0;
-      transform: scale(0.97) translateZ(0);
-      transition: opacity 1s ease, transform 0.5s ease;
+      height: 100%;
+      background-color: var(--background-color);
+      transition: 1s background-color ease;
+    }
 
-      &.is-loaded {
-        opacity: 1;
-        transform: scale(1);
-      }
+    &:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba($dark, 0.1);
+    }
 
-      &:hover {
-        transform: scale(1.03);
-        box-shadow: 0 0 10px rgba($dark, 0.1);
-      }
+    &.is-loaded::before {
+      background-color: transparent;
+    }
+
+    img {
+      width: 100%;
     }
   }
 
