@@ -5,7 +5,10 @@
         <h1 v-if="person">
           {{ person.title || person.name }}
         </h1>
-        <loading-placeholder v-else :count="1" />
+        <div v-else>
+          <loading-placeholder :count="1" />
+          <loading-placeholder :count="1" lineClass="short" :top="3.5" />
+        </div>
 
         <span class="known-for" v-if="person && person['known_for_department']">
           {{
@@ -24,6 +27,14 @@
         />
       </figure>
     </header>
+
+    <div v-if="loading">
+      <loading-placeholder :count="6" />
+      <loading-placeholder lineClass="short" :top="3" />
+      <loading-placeholder :count="6" lineClass="fullwidth" />
+      <loading-placeholder lineClass="short" :top="4.5" />
+      <loading-placeholder />
+    </div>
 
     <div v-if="person">
       <MovieDetail v-if="age" title="Age" :detail="age" />
@@ -261,6 +272,21 @@ header {
 
 .person__poster {
   display: block;
+  border-radius: 10px;
+  background-color: grey;
+  animation: pulse 1s infinite ease-in-out;
+
+  @keyframes pulse {
+    0% {
+      background-color: rgba(165, 165, 165, 0.1);
+    }
+    50% {
+      background-color: rgba(165, 165, 165, 0.3);
+    }
+    100% {
+      background-color: rgba(165, 165, 165, 0.1);
+    }
+  }
 
   > img {
     border-radius: 10px;
