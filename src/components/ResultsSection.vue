@@ -11,7 +11,7 @@
       >
     </div>
 
-    <results-list v-bind="{ results, shortList }" />
+    <results-list v-bind="{ results, shortList, loading }" />
     <loader v-if="loading" />
 
     <div ref="loadMoreButton" class="button-container">

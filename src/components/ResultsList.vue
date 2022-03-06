@@ -12,7 +12,7 @@
       />
     </ul>
 
-    <span v-else class="no-results">No results found</span>
+    <span v-else-if="!loading" class="no-results">No results found</span>
   </div>
 </template>
 
@@ -27,6 +27,11 @@ export default {
       required: true
     },
     shortList: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    loading: {
       type: Boolean,
       required: false,
       default: false
