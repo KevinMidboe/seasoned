@@ -146,6 +146,7 @@ export default {
       this.person = { ...person };
       this.title = person.title;
       this.poster = person.poster;
+      if (person.credits) this.credits = person.credits;
 
       this.setPosterSrc();
     },
