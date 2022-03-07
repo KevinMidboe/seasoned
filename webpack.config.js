@@ -15,7 +15,7 @@ module.exports = {
   output: {
     path: `${publicPath}/dist/`,
     publicPath: "/dist/",
-    filename: "build.js",
+    filename: "[name].[contenthash].js",
     clean: true
   },
   module: {
@@ -73,6 +73,26 @@ module.exports = {
     hints: false
   },
   optimization: {
+    splitChunks: {
+      chunks: "all",
+      maxInitialRequests: Infinity,
+      minSize: 0,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name(module) {
+            // get the name. E.g. node_modules/packageName/not/this/part.js
+            // or node_modules/packageName
+            const packageName = module.context.match(
+              /[\\/]node_modules[\\/](.*?)([\\/]|$)/
+            )[1];
+
+            // npm package names are URL-safe, but some servers don't like @ symbols
+            return `npm.${packageName.replace("@", "")}`;
+          }
+        }
+      }
+    },
     minimizer: [
       new TerserPlugin({
         parallel: true,
