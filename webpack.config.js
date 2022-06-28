@@ -1,17 +1,20 @@
 const path = require("path");
 const webpack = require("webpack");
 const sass = require("sass");
-
+const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { VueLoaderPlugin } = require("vue-loader");
-// const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
+const sourcePath = path.resolve(__dirname, "src");
+const indexFile = path.join(sourcePath, "index.html");
+const javascriptEntry = path.join(sourcePath, "main.js");
 const publicPath = path.resolve(__dirname, "public");
 const isProd = process.env.NODE_ENV === "production";
 
 module.exports = {
-  context: path.resolve(__dirname, "src"),
-  entry: "/main.js",
+  mode: process.env.NODE_ENV,
+  context: publicPath,
+  entry: javascriptEntry,
   output: {
     path: `${publicPath}/dist/`,
     publicPath: "/dist/",
@@ -50,7 +53,14 @@ module.exports = {
       }
     ]
   },
-  plugins: [new VueLoaderPlugin()],
+  plugins: [
+    new VueLoaderPlugin(),
+    new HTMLWebpackPlugin({
+      template: indexFile,
+      filename: "index.html",
+      minify: isProd
+    })
+  ],
   resolve: {
     extensions: [".js", ".vue", ".json", ".scss"],
     alias: {
@@ -61,14 +71,7 @@ module.exports = {
       components: path.resolve(__dirname, "src/components")
     }
   },
-  devServer: {
-    static: publicPath,
-    historyApiFallback: {
-      index: "index.html"
-    },
-    compress: true,
-    port: 8080
-  },
+  devtool: "source-map",
   performance: {
     hints: false
   },
@@ -97,21 +100,37 @@ module.exports = {
       new TerserPlugin({
         parallel: true,
         terserOptions: {
+          sourceMap: true
           // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
         }
       })
     ]
   },
-  devtool: "inline-source-map"
+  devServer: {
+    static: publicPath,
+    historyApiFallback: {
+      index: "/dist/index.html"
+    },
+    compress: true,
+    hot: true,
+    port: 8080
+  }
 };
 
 if (isProd) {
   module.exports.mode = "production";
   module.exports.devtool = false;
-  // module.exports.plugins.push(
-  //   new MiniCssExtractPlugin({
-  //     filename: "[name].css",
-  //     chunkFilename: "[id].css"
-  //   })
-  // );
+  module.exports.performance.hints = "warning";
+}
+
+// enable proxy by running command e.g.:
+// proxyhost=https://request.movie yarn dev
+const { proxyhost } = process.env;
+if (proxyhost) {
+  module.exports.devServer.proxy = {
+    "/api": {
+      target: proxyhost,
+      changeOrigin: true
+    }
+  };
 }
