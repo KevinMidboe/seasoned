@@ -6,12 +6,16 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack server",
-    "build": "cross-env NODE_ENV=production webpack-cli build --progress -c webpack.config.js",
+    "build": "cross-env NODE_ENV=production webpack-cli build --progress",
+    "postbuild": "cp public/dist/index.html public/index.html",
+    "clean": "rm -r public/dist 2> /dev/null; rm public/index.html 2> /dev/null",
     "start": "node server.js",
     "docs": "documentation build src/api.js -f html -o docs/api && documentation build src/api.js -f md -o docs/api.md"
   },
   "dependencies": {
+    "chart.js": "^2.9.2",
     "connect-history-api-fallback": "1.6.0",
+    "cross-env": "6.0.0",
     "express": "4.17.3",
     "vue": "2.6.14",
     "vue-axios": "2.1.5",
@@ -24,8 +28,6 @@
     "@babel/preset-env": "7.16.11",
     "@babel/runtime": "7.17.2",
     "babel-loader": "8.2.3",
-    "chart.js": "^2.9.2",
-    "cross-env": "6.0.0",
     "css-loader": "6.7.0",
     "documentation": "^11.0.0",
     "file-loader": "6.2.0",
