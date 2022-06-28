@@ -223,10 +223,7 @@ const searchTmdb = (query, page = 1, adult = false, mediaType = null) => {
  * @returns {object} Torrent response
  */
 const searchTorrents = query => {
-  const url = new URL(
-    "https://api.request.movie/api/v1/pirate/search",
-    SEASONED_URL
-  );
+  const url = new URL("/api/v1/pirate/search", SEASONED_URL);
   url.searchParams.append("query", query);
 
   return fetch(url.href)
