@@ -1,6 +1,6 @@
 <template>
   <li class="movie-item" ref="list-item">
-    <figure class="movie-item__poster" ref="poster" @click="openMoviePopup">
+    <figure ref="poster" class="movie-item__poster" @click="openMoviePopup">
       <img
         class="movie-item__img"
         :alt="posterAltText"
@@ -15,7 +15,9 @@
     </figure>
 
     <div class="movie-item__info">
-      <p v-if="movie.title || movie.name">{{ movie.title || movie.name }}</p>
+      <p v-if="movie.title || movie.name" class="movie-item__title">
+        {{ movie.title || movie.name }}
+      </p>
       <p v-if="movie.year">{{ movie.year }}</p>
       <p v-if="movie.type == 'person'">
         Known for: {{ movie.known_for_department }}
@@ -40,7 +42,7 @@ export default {
   },
   data() {
     return {
-      poster: undefined,
+      poster: null,
       observed: false,
       posterSizes: [
         {
@@ -150,17 +152,18 @@ export default {
 
     img {
       width: 100%;
+      border-radius: 10px;
     }
   }
 
   &__info {
-    padding-top: 15px;
+    padding-top: 10px;
     font-weight: 300;
 
     > p {
       color: $text-color-70;
       margin: 0;
-      font-size: 11px;
+      font-size: 14px;
       letter-spacing: 0.5px;
       transition: color 0.5s ease;
       cursor: pointer;
@@ -171,6 +174,10 @@ export default {
         font-size: 14px;
       }
     }
+  }
+
+  &__title {
+    font-weight: 400;
   }
 }
 
