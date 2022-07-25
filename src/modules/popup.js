@@ -23,11 +23,11 @@ const updateQueryParams = (id = null, type = null) => {
     window.location.port ? `:${window.location.port}` : ""
   }${window.location.pathname}${params.toString().length ? `?${params}` : ""}`;
 
-  if (!window.preventPushState) {
-    window.history.pushState({}, "search", url);
+  if (window.preventPushState) {
+    window.history.replaceState({}, "search", url);
     window.preventPushState = false;
   } else {
-    window.history.replaceState({}, "search", url);
+    window.history.pushState({}, "search", url);
   }
 };
 
