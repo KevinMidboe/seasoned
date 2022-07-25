@@ -54,10 +54,10 @@ export default {
     }
   },
   computed: {
-    urlify: function() {
+    urlify: function () {
       return `/list/${this.title.toLowerCase().replace(" ", "_")}`;
     },
-    prettify: function() {
+    prettify: function () {
       return this.title.includes("_")
         ? this.title.split("_").join(" ")
         : this.title;
@@ -73,12 +73,10 @@ export default {
 
 header {
   width: 100%;
-  min-height: 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
+  padding: 0.5rem 0.75rem;
 
   &.sticky {
     background-color: $background-color;
