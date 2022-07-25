@@ -61,7 +61,9 @@
           >
             <IconBinoculars />
             Search for torrents
-            <span class="meta">{{ numberOfTorrentResults }}</span>
+            <span v-if="numberOfTorrentResults" class="meta">{{
+              numberOfTorrentResults
+            }}</span>
           </sidebar-list-element>
 
           <sidebar-list-element @click="openTmdb">
@@ -255,20 +257,19 @@ export default {
     }
   },
   methods: {
-    fetchByType() {
-      if (this.type === "movie") {
-        getMovie(this.id, true, false)
-          .then(this.parseResponse)
-          .catch(error => {
-            this.$router.push({ name: "404" });
-          });
-      } else if (this.type == "show") {
-        getShow(this.id, false, false)
-          .then(this.parseResponse)
-          .catch(error => {
-            this.$router.push({ name: "404" });
-          });
-      } else {
+    async fetchByType() {
+      try {
+        let response;
+        if (this.type === "movie") {
+          response = await getMovie(this.id, true, false);
+        } else if (this.type === "show") {
+          response = await getShow(this.id, false, false);
+        } else {
+          this.$router.push({ name: "404" });
+        }
+
+        this.parseResponse(response);
+      } catch (error) {
         this.$router.push({ name: "404" });
       }
 
@@ -334,7 +335,7 @@ export default {
     }
   },
   created() {
-    store.dispatch("torrentModule/setResultCount", 0);
+    store.dispatch("torrentModule/setResultCount", null);
     this.prevDocumentTitle = store.getters["documentTitle/title"];
     this.fetchByType();
   },
@@ -405,6 +406,7 @@ header {
 
     > img {
       width: 100%;
+      border-radius: 10px;
     }
   }
 }
