@@ -48,7 +48,7 @@ import AutocompleteDropdown from "@/components/header/AutocompleteDropdown";
 
 import IconSearch from "src/icons/IconSearch";
 import IconClose from "src/icons/IconClose";
-import config from "@/config.json";
+import config from "@/config";
 
 export default {
   name: "SearchInput",

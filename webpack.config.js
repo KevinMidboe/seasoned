@@ -36,6 +36,11 @@ module.exports = {
         use: ["vue-loader"]
       },
       {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        exclude: /node_modules/
+      },
+      {
         test: /\.scss$/,
         use: [
           "vue-style-loader",
@@ -62,7 +67,7 @@ module.exports = {
     })
   ],
   resolve: {
-    extensions: [".js", ".vue", ".json", ".scss"],
+    extensions: [".js", ".ts", ".vue", ".json", ".scss"],
     alias: {
       vue$: "vue/dist/vue.common.js",
       "@": path.resolve(__dirname, "src"),

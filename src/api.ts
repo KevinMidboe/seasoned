@@ -1,15 +1,17 @@
-import config from "@/config.json";
+import config from "./config";
+import { IList } from "./interfaces/IList";
 
-const SEASONED_URL = config.SEASONED_URL || window.location.origin;
-const ELASTIC_URL = config.ELASTIC_URL;
-const ELASTIC_INDEX = config.ELASTIC_INDEX;
+let { SEASONED_URL, ELASTIC_URL, ELASTIC_INDEX } = config;
+if (!SEASONED_URL) {
+  SEASONED_URL = window.location.origin;
+}
 
 // TODO
 //  - Move autorization token and errors here?
 
 const checkStatusAndReturnJson = response => {
   if (!response.ok) {
-    throw resp;
+    throw response;
   }
   return response.json();
 };
@@ -31,13 +33,13 @@ const getMovie = (
   const url = new URL("/api/v2/movie", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (checkExistance) {
-    url.searchParams.append("check_existance", true);
+    url.searchParams.append("check_existance", "true");
   }
   if (credits) {
-    url.searchParams.append("credits", true);
+    url.searchParams.append("credits", "true");
   }
   if (release_dates) {
-    url.searchParams.append("release_dates", true);
+    url.searchParams.append("release_dates", "true");
   }
 
   return fetch(url.href)
@@ -58,10 +60,10 @@ const getShow = (id, checkExistance = false, credits = false) => {
   const url = new URL("/api/v2/show", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (checkExistance) {
-    url.searchParams.append("check_existance", true);
+    url.searchParams.append("check_existance", "true");
   }
   if (credits) {
-    url.searchParams.append("credits", true);
+    url.searchParams.append("credits", "true");
   }
 
   return fetch(url.href)
@@ -71,6 +73,10 @@ const getShow = (id, checkExistance = false, credits = false) => {
       throw error;
     });
 };
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 /**
  * Fetches tmdb person by id. Can optionally include cast credits in result object.
@@ -82,7 +88,7 @@ const getPerson = (id, credits = false) => {
   const url = new URL("/api/v2/person", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (credits) {
-    url.searchParams.append("credits", true);
+    url.searchParams.append("credits", "true");
   }
 
   return fetch(url.href)
@@ -162,9 +168,12 @@ const getPersonCredits = id => {
  * @param {number} [page=1]
  * @returns {object} Tmdb list response
  */
-const getTmdbMovieListByName = (name, page = 1) => {
+const getTmdbMovieListByName = (
+  name: string,
+  page: number = 1
+): Promise<IList> => {
   const url = new URL("/api/v2/movie/" + name, SEASONED_URL);
-  url.searchParams.append("page", page);
+  url.searchParams.append("page", page.toString());
 
   return fetch(url.href).then(resp => resp.json());
   // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error })
@@ -175,9 +184,9 @@ const getTmdbMovieListByName = (name, page = 1) => {
  * @param {number} [page=1]
  * @returns {object} Request response
  */
-const getRequests = (page = 1) => {
+const getRequests = (page: number = 1) => {
   const url = new URL("/api/v2/request", SEASONED_URL);
-  url.searchParams.append("page", page);
+  url.searchParams.append("page", page.toString());
 
   return fetch(url.href).then(resp => resp.json());
   // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error })
@@ -185,7 +194,7 @@ const getRequests = (page = 1) => {
 
 const getUserRequests = (page = 1) => {
   const url = new URL("/api/v1/user/requests", SEASONED_URL);
-  url.searchParams.append("page", page);
+  url.searchParams.append("page", page.toString());
 
   return fetch(url.href).then(resp => resp.json());
 };
@@ -203,8 +212,8 @@ const searchTmdb = (query, page = 1, adult = false, mediaType = null) => {
   }
 
   url.searchParams.append("query", query);
-  url.searchParams.append("page", page);
-  url.searchParams.append("adult", adult);
+  url.searchParams.append("page", page.toString());
+  url.searchParams.append("adult", adult.toString());
 
   return fetch(url.href)
     .then(resp => resp.json())
@@ -369,7 +378,7 @@ const login = (username, password, throwError = false) => {
   });
 };
 
-const logout = () => {
+const logout = (throwError = false) => {
   const url = new URL("/api/v1/user/logout", SEASONED_URL);
   const options = { method: "POST" };
 

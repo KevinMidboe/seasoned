@@ -1,14 +1,14 @@
-export const sortableSize = string => {
+export const sortableSize = (string: string) => {
   const UNITS = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const [numStr, unit] = string.split(" ");
 
   if (UNITS.indexOf(unit) === -1) return string;
 
   const exponent = UNITS.indexOf(unit) * 3;
-  return numStr * Math.pow(10, exponent);
+  return Number(numStr) * Math.pow(10, exponent);
 };
 
-export const parseJwt = token => {
+export const parseJwt = (token: string) => {
   var base64Url = token.split(".")[1];
   var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   var jsonPayload = decodeURIComponent(
@@ -23,7 +23,11 @@ export const parseJwt = token => {
   return JSON.parse(jsonPayload);
 };
 
-export const buildImageProxyUrl = (width, height, asset) => {
+export const buildImageProxyUrl = (
+  width: number,
+  height: number,
+  asset: string
+) => {
   const proxyHost = `http://imgproxy.schleppe:8080/insecure/`;
   const proxySizeOptions = `resize:fill:${Math.floor(width / 1)}:${Math.floor(
     height / 1
