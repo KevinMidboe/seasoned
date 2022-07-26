@@ -125,7 +125,6 @@
 </template>
 
 <script>
-import storage from "@/storage";
 import store from "@/store";
 import { sortableSize } from "@/utils";
 import { searchTorrents, addMagnet } from "@/api";

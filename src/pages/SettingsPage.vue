@@ -81,7 +81,6 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import storage from "@/storage";
 import SeasonedInput from "@/components/ui/SeasonedInput";
 import SeasonedButton from "@/components/ui/SeasonedButton";
 import SeasonedMessages from "@/components/ui/SeasonedMessages";
