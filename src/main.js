@@ -6,8 +6,6 @@ import store from "./store";
 import Toast from "./plugins/Toast";
 import App from "./App.vue";
 
-window.eventHub = new Vue();
-
 Vue.use(VueRouter);
 Vue.use(Toast);
 

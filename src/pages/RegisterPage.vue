@@ -81,7 +81,6 @@ export default {
       register(username, password)
         .then(data => {
           if (data.success && this.login()) {
-            eventHub.$emit("setUserStatus");
             this.$router.push({ name: "profile" });
           }
         })
