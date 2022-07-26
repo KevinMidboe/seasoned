@@ -8,51 +8,51 @@ let routes = [
   {
     name: "home",
     path: "/",
-    component: resolve => require(["./components/Home.vue"], resolve)
+    component: resolve => require(["./pages/Home.vue"], resolve)
   },
   {
     name: "activity",
     path: "/activity",
     meta: { requiresAuth: true },
-    component: resolve => require(["./components/ActivityPage.vue"], resolve)
+    component: resolve => require(["./pages/ActivityPage.vue"], resolve)
   },
   {
     name: "profile",
     path: "/profile",
     meta: { requiresAuth: true },
-    component: resolve => require(["./components/Profile.vue"], resolve)
+    component: resolve => require(["./pages/Profile.vue"], resolve)
   },
   {
     name: "list",
     path: "/list/requests",
-    component: resolve => require(["./components/RequestPage.vue"], resolve)
+    component: resolve => require(["./pages/RequestPage.vue"], resolve)
   },
   {
     name: "list",
     path: "/list/:name",
-    component: resolve => require(["./components/ListPage.vue"], resolve)
+    component: resolve => require(["./pages/ListPage.vue"], resolve)
   },
   {
     name: "search",
     path: "/search",
-    component: resolve => require(["./components/SearchPage.vue"], resolve)
+    component: resolve => require(["./pages/SearchPage.vue"], resolve)
   },
   {
     name: "register",
     path: "/register",
-    component: resolve => require(["./components/Register.vue"], resolve)
+    component: resolve => require(["./pages/Register.vue"], resolve)
   },
   {
     name: "settings",
     path: "/settings",
     meta: { requiresAuth: true },
-    component: resolve => require(["./components/Settings.vue"], resolve)
+    component: resolve => require(["./pages/Settings.vue"], resolve)
   },
   {
     name: "signin",
     path: "/signin",
     alias: "/login",
-    component: resolve => require(["./components/Signin.vue"], resolve)
+    component: resolve => require(["./pages/Signin.vue"], resolve)
   },
   // {
   //   name: 'user-requests',
@@ -64,7 +64,7 @@ let routes = [
   {
     name: "404",
     path: "/404",
-    component: resolve => require(["./components/404.vue"], resolve)
+    component: resolve => require(["./pages/404.vue"], resolve)
   },
   {
     path: "*",

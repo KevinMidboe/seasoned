@@ -2,9 +2,7 @@
   <router-link
     :to="{ path: route.route }"
     :key="route.title"
-    v-if="
-      route.requiresAuth == undefined || (route.requiresAuth && userLoggedIn)
-    "
+    v-if="route.requiresAuth == undefined || (route.requiresAuth && loggedIn)"
   >
     <li class="navigation-link" :class="{ active: route.route == active }">
       <component class="navigation-icon" :is="route.icon"></component>
@@ -14,6 +12,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: "NavigationIcons",
   props: {
@@ -27,9 +27,7 @@ export default {
     }
   },
   computed: {
-    userLoggedIn() {
-      return localStorage.getItem("token") ? true : false;
-    }
+    ...mapGetters("user", ["loggedIn"])
   }
 };
 </script>
@@ -40,20 +38,13 @@ export default {
 .navigation-link {
   display: grid;
   place-items: center;
-  height: var(--header-size);
+  min-height: var(--header-size);
   list-style: none;
   padding: 1rem 0.15rem;
-  margin: 0;
   text-align: center;
   background-color: var(--background-color-secondary);
   transition: transform 0.3s ease, color 0.3s ease, stoke 0.3s ease,
     fill 0.3s ease, background-color 0.5s ease;
-
-  @include mobile {
-    height: 90px;
-    padding: 1rem;
-    width: 50vw;
-  }
 
   &:hover {
     transform: scale(1.05);

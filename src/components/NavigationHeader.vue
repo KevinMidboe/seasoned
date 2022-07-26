@@ -9,11 +9,11 @@
 
     <SearchInput />
 
-    <Hamburger />
+    <Hamburger class="mobile-only" />
 
     <NavigationIcon class="desktop-only" :route="profileRoute" />
 
-    <div class="nav__list mobile-only" :class="{ open: isOpen }">
+    <div class="navigation-icons-grid mobile-only" :class="{ open: isOpen }">
       <NavigationIcons>
         <NavigationIcon :route="profileRoute" />
       </NavigationIcons>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import storage from "@/storage";
+import { mapGetters, mapActions } from "vuex";
 import TmdbLogo from "../icons/tmdb-logo";
 import IconProfile from "../icons/IconProfile";
 import IconProfileLock from "../icons/IconProfileLock";
@@ -32,7 +32,6 @@ import SearchInput from "@/components/SearchInput";
 import NavigationIcons from "src/components/NavigationIcons";
 import NavigationIcon from "src/components/ui/NavigationIcon";
 import Hamburger from "@/components/ui/Hamburger";
-import { mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -45,11 +44,6 @@ export default {
     IconSettings,
     IconActivity,
     Hamburger
-  },
-  data() {
-    return {
-      listTypes: storage.homepageLists
-    };
   },
   computed: {
     ...mapGetters("user", ["loggedIn"]),
@@ -112,7 +106,7 @@ nav {
   }
 }
 
-.nav__list {
+.navigation-icons-grid {
   display: flex;
   flex-wrap: wrap;
   position: fixed;

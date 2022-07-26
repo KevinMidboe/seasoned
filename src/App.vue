@@ -2,7 +2,10 @@
   <div id="app">
     <!-- Header and hamburger navigation -->
     <NavigationHeader class="header"></NavigationHeader>
-    <NavigationIcons class="desktop-menu desktop-only" />
+
+    <div class="navigation-icons-gutter desktop-only">
+      <NavigationIcons />
+    </div>
 
     <!-- Display the component assigned to the given route (default: home) -->
     <router-view class="content" :key="$route.fullPath"></router-view>
@@ -37,36 +40,38 @@ export default {
 
 #app {
   display: grid;
-  // grid-template-columns: 90px 1fr 90px;
   grid-template-rows: var(--header-size);
   grid-template-columns: var(--header-size) 1fr;
-}
-
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  grid-column: 1 / 3;
-  grid-row: 1;
-  z-index: 15;
-}
-
-.content {
-  grid-column: 2 / 3;
-  grid-row: 2;
-  z-index: 5;
 
   @include mobile {
-    grid-column: 1 / 3;
+    grid-template-columns: 1fr;
   }
-}
 
-.desktop-menu {
-  grid-column: 1 / 2;
-  grid-row: 2;
-  width: var(--header-size);
-  position: fixed;
-  top: var(--header-size);
-  left: 0;
+  .header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 15;
+  }
+
+  .navigation-icons-gutter {
+    position: fixed;
+    height: 100vh;
+    margin: 0;
+    top: var(--header-size);
+    width: var(--header-size);
+    background-color: var(--background-color-secondary);
+  }
+
+  .content {
+    display: grid;
+    grid-column: 2 / 3;
+    grid-row: 2;
+    z-index: 5;
+
+    @include mobile {
+      grid-column: 1 / 3;
+    }
+  }
 }
 </style>

@@ -67,6 +67,7 @@ export default {
   &.shortList {
     overflow: auto;
     grid-auto-flow: column;
+    max-width: 100vw;
 
     @include noscrollbar;
 

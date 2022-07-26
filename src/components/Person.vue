@@ -54,7 +54,7 @@
         :detail="`Credited in ${movieCredits.length} movies`"
         v-if="credits"
       >
-        <Cast :cast="movieCredits" />
+        <CastList :cast="movieCredits" />
       </MovieDetail>
 
       <MovieDetail
@@ -62,7 +62,7 @@
         :detail="`Credited in ${showCredits.length} shows`"
         v-if="credits"
       >
-        <Cast :cast="showCredits" />
+        <CastList :cast="showCredits" />
       </MovieDetail>
     </div>
   </section>
@@ -70,10 +70,10 @@
 
 <script>
 import img from "@/directives/v-image";
-import Cast from "./Cast";
-import MovieDetail from "./ui/MovieDetail";
-import MovieDescription from "./ui/MovieDescription";
-import LoadingPlaceholder from "./ui/LoadingPlaceholder";
+import CastList from "@/components/CastList";
+import MovieDetail from "@/components/movie/Detail";
+import MovieDescription from "@/components/movie/Description";
+import LoadingPlaceholder from "@/components/ui/LoadingPlaceholder";
 
 import { getPerson, getPersonCredits } from "@/api";
 
@@ -92,7 +92,7 @@ export default {
   components: {
     MovieDetail,
     MovieDescription,
-    Cast,
+    CastList,
     LoadingPlaceholder
   },
   directives: { img: img }, // TODO decide to remove or use

@@ -11,7 +11,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import Movie from "./Movie";
+import Movie from "./movie/Movie";
 import Person from "./Person";
 
 export default {
