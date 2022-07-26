@@ -81,11 +81,10 @@ export default {
     max-width: 768px;
     position: relative;
     z-index: 5;
-    padding-bottom: 50px;
+    margin: 8vh auto;
 
-    @include tablet-min {
-      padding-bottom: 0;
-      margin: 8vh auto;
+    @include mobile {
+      margin: 0 0 50px 0;
     }
   }
   &__close {
