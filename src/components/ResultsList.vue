@@ -5,7 +5,7 @@
       class="results"
       :class="{ shortList: shortList }"
     >
-      <movies-list-item
+      <results-list-item
         v-for="(movie, index) in results"
         :key="`${movie.type}-${movie.id}-${index}`"
         :movie="movie"
@@ -17,10 +17,10 @@
 </template>
 
 <script>
-import MoviesListItem from "@/components/MoviesListItem";
+import ResultsListItem from "@/components/ResultsListItem";
 
 export default {
-  components: { MoviesListItem },
+  components: { ResultsListItem },
   props: {
     results: {
       type: Array,

@@ -39,7 +39,7 @@
 import { mapGetters, mapActions } from "vuex";
 import ListHeader from "@/components/ListHeader";
 import ResultsList from "@/components/ResultsList";
-import Settings from "@/pages/Settings";
+import Settings from "@/pages/SettingsPage";
 import Activity from "@/pages/ActivityPage";
 import SeasonedButton from "@/components/ui/SeasonedButton";
 

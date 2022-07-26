@@ -23,14 +23,14 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import TmdbLogo from "../icons/tmdb-logo";
-import IconProfile from "../icons/IconProfile";
-import IconProfileLock from "../icons/IconProfileLock";
-import IconSettings from "../icons/IconSettings";
-import IconActivity from "../icons/IconActivity";
-import SearchInput from "@/components/SearchInput";
-import NavigationIcons from "src/components/NavigationIcons";
-import NavigationIcon from "src/components/ui/NavigationIcon";
+import TmdbLogo from "@/icons/tmdb-logo";
+import IconProfile from "@/icons/IconProfile";
+import IconProfileLock from "@/icons/IconProfileLock";
+import IconSettings from "@/icons/IconSettings";
+import IconActivity from "@/icons/IconActivity";
+import SearchInput from "@/components/header/SearchInput";
+import NavigationIcons from "src/components/header/NavigationIcons";
+import NavigationIcon from "src/components/header/NavigationIcon";
 import Hamburger from "@/components/ui/Hamburger";
 
 export default {

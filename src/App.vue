@@ -10,25 +10,25 @@
     <!-- Display the component assigned to the given route (default: home) -->
     <router-view class="content" :key="$route.fullPath"></router-view>
 
-    <!-- Movie popup that will show above existing rendered content -->
-    <movie-popup></movie-popup>
+    <!-- Popup that will show above existing rendered content -->
+    <popup />
 
     <darkmode-toggle />
   </div>
 </template>
 
 <script>
-import NavigationHeader from "@/components/NavigationHeader";
-import NavigationIcons from "@/components/NavigationIcons";
-import MoviePopup from "@/components/MoviePopup";
-import DarkmodeToggle from "@/components/ui/darkmodeToggle";
+import NavigationHeader from "@/components/header/NavigationHeader";
+import NavigationIcons from "@/components/header/NavigationIcons";
+import Popup from "@/components/Popup";
+import DarkmodeToggle from "@/components/ui/DarkmodeToggle";
 
 export default {
   name: "app",
   components: {
     NavigationHeader,
     NavigationIcons,
-    MoviePopup,
+    Popup,
     DarkmodeToggle
   }
 };

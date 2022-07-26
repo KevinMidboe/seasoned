@@ -37,33 +37,33 @@
     </div>
 
     <div v-if="person">
-      <MovieDetail v-if="age" title="Age" :detail="age" />
+      <Detail v-if="age" title="Age" :detail="age" />
 
-      <MovieDetail
+      <Detail
         v-if="person"
         title="Born"
         :detail="person.place_of_birth ? person.place_of_birth : '(Not found)'"
       />
 
-      <MovieDetail v-if="person.biography" title="Biography">
-        <MovieDescription :description="person.biography" />
-      </MovieDetail>
+      <Detail v-if="person.biography" title="Biography">
+        <Description :description="person.biography" />
+      </Detail>
 
-      <MovieDetail
+      <Detail
         title="movies"
         :detail="`Credited in ${movieCredits.length} movies`"
         v-if="credits"
       >
         <CastList :cast="movieCredits" />
-      </MovieDetail>
+      </Detail>
 
-      <MovieDetail
+      <Detail
         title="shows"
         :detail="`Credited in ${showCredits.length} shows`"
         v-if="credits"
       >
         <CastList :cast="showCredits" />
-      </MovieDetail>
+      </Detail>
     </div>
   </section>
 </template>
@@ -71,8 +71,8 @@
 <script>
 import img from "@/directives/v-image";
 import CastList from "@/components/CastList";
-import MovieDetail from "@/components/movie/Detail";
-import MovieDescription from "@/components/movie/Description";
+import Detail from "@/components/popup/Detail";
+import Description from "@/components/popup/Description";
 import LoadingPlaceholder from "@/components/ui/LoadingPlaceholder";
 
 import { getPerson, getPersonCredits } from "@/api";
@@ -90,8 +90,8 @@ export default {
     }
   },
   components: {
-    MovieDetail,
-    MovieDescription,
+    Detail,
+    Description,
     CastList,
     LoadingPlaceholder
   },

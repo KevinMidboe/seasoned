@@ -20,7 +20,7 @@ let routes = [
     name: "profile",
     path: "/profile",
     meta: { requiresAuth: true },
-    component: resolve => require(["./pages/Profile.vue"], resolve)
+    component: resolve => require(["./pages/ProfilePage.vue"], resolve)
   },
   {
     name: "list",
@@ -40,19 +40,19 @@ let routes = [
   {
     name: "register",
     path: "/register",
-    component: resolve => require(["./pages/Register.vue"], resolve)
+    component: resolve => require(["./pages/RegisterPage.vue"], resolve)
   },
   {
     name: "settings",
     path: "/settings",
     meta: { requiresAuth: true },
-    component: resolve => require(["./pages/Settings.vue"], resolve)
+    component: resolve => require(["./pages/SettingsPage.vue"], resolve)
   },
   {
     name: "signin",
     path: "/signin",
     alias: "/login",
-    component: resolve => require(["./pages/Signin.vue"], resolve)
+    component: resolve => require(["./pages/SigninPage.vue"], resolve)
   },
   // {
   //   name: 'user-requests',

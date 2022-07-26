@@ -15,7 +15,7 @@
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: "NavigationIcons",
+  name: "NavigationIcon",
   props: {
     active: {
       type: String,

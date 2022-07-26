@@ -44,7 +44,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import SeasonedButton from "@/components/ui/SeasonedButton";
-import AutocompleteDropdown from "@/components/AutocompleteDropdown";
+import AutocompleteDropdown from "@/components/header/AutocompleteDropdown";
 
 import IconSearch from "src/icons/IconSearch";
 import IconClose from "src/icons/IconClose";

@@ -26,35 +26,35 @@
       <div class="movie__wrap movie__wrap--main">
         <!-- SIDEBAR ACTIONS -->
         <div class="movie__actions" v-if="movie">
-          <sidebar-list-element :active="matched" :disabled="true">
+          <action-button :active="matched" :disabled="true">
             <IconThumbsUp v-if="matched" />
             <IconThumbsDown v-else />
             {{ !matched ? "Not yet available" : "Already available 🎉" }}
-          </sidebar-list-element>
+          </action-button>
 
-          <sidebar-list-element @click="sendRequest" :active="requested">
+          <action-button @click="sendRequest" :active="requested">
             <transition name="fade" mode="out-in">
               <div v-if="!requested" key="request"><IconRequest /></div>
               <div v-else key="requested"><IconRequested /></div>
             </transition>
             {{ !requested ? `Request ${this.type}?` : "Already requested" }}
-          </sidebar-list-element>
+          </action-button>
 
-          <sidebar-list-element v-if="plexId && matched" @click="openInPlex">
+          <action-button v-if="plexId && matched" @click="openInPlex">
             <IconPlay />
             Open and watch in plex now!
-          </sidebar-list-element>
+          </action-button>
 
-          <sidebar-list-element
+          <action-button
             v-if="credits && credits.cast && credits.cast.length"
             :active="showCast"
             @click="() => (showCast = !showCast)"
           >
             <IconProfile class="icon" />
             {{ showCast ? "Hide cast" : "Show cast" }}
-          </sidebar-list-element>
+          </action-button>
 
-          <sidebar-list-element
+          <action-button
             v-if="admin === true"
             @click="showTorrents = !showTorrents"
             :active="showTorrents"
@@ -64,12 +64,12 @@
             <span v-if="numberOfTorrentResults" class="meta">{{
               numberOfTorrentResults
             }}</span>
-          </sidebar-list-element>
+          </action-button>
 
-          <sidebar-list-element @click="openTmdb">
+          <action-button @click="openTmdb">
             <IconInfo />
             See more info
-          </sidebar-list-element>
+          </action-button>
         </div>
 
         <!-- Loading placeholder -->
@@ -93,33 +93,29 @@
             <loading-placeholder :count="5" />
           </div>
 
-          <MovieDescription
+          <Description
             v-if="!loading && movie && movie.overview"
             :description="movie.overview"
           />
 
           <div class="movie__details" v-if="movie">
-            <MovieDetail
+            <Detail
               v-if="movie.year"
               title="Release date"
               :detail="movie.year"
             />
-            <MovieDetail
-              v-if="movie.rating"
-              title="Rating"
-              :detail="movie.rating"
-            />
-            <MovieDetail
+            <Detail v-if="movie.rating" title="Rating" :detail="movie.rating" />
+            <Detail
               v-if="movie.type == 'show'"
               title="Seasons"
               :detail="movie.seasons"
             />
-            <MovieDetail
+            <Detail
               v-if="movie.genres && movie.genres.length"
               title="Genres"
               :detail="movie.genres.join(', ')"
             />
-            <MovieDetail
+            <Detail
               v-if="
                 movie.production_status &&
                 movie.production_status !== 'Released'
@@ -127,7 +123,7 @@
               title="Production status"
               :detail="movie.production_status"
             />
-            <MovieDetail
+            <Detail
               v-if="movie.runtime"
               title="Runtime"
               :detail="humanMinutes(movie.runtime)"
@@ -141,9 +137,9 @@
           class="movie__admin"
           v-if="showCast && credits && credits.cast && credits.cast.length"
         >
-          <MovieDetail title="cast">
+          <Detail title="cast">
             <CastList :cast="credits.cast" />
-          </MovieDetail>
+          </Detail>
         </div>
       </div>
 
@@ -172,9 +168,9 @@ import IconBinoculars from "@/icons/IconBinoculars";
 import IconPlay from "@/icons/IconPlay";
 import TorrentList from "@/components/TorrentList";
 import CastList from "@/components/CastList";
-import MovieDetail from "@/components/movie/Detail";
-import MovieDescription from "@/components/movie/Description";
-import SidebarListElement from "@/components/ui/sidebarListElem";
+import Detail from "@/components/popup/Detail";
+import ActionButton from "@/components/popup/ActionButton";
+import Description from "@/components/popup/Description";
 import store from "@/store";
 import LoadingPlaceholder from "@/components/ui/LoadingPlaceholder";
 
@@ -201,8 +197,9 @@ export default {
     }
   },
   components: {
-    MovieDescription,
-    MovieDetail,
+    Description,
+    Detail,
+    ActionButton,
     IconProfile,
     IconThumbsUp,
     IconThumbsDown,
@@ -213,8 +210,7 @@ export default {
     IconPlay,
     TorrentList,
     CastList,
-    LoadingPlaceholder,
-    SidebarListElement
+    LoadingPlaceholder
   },
   directives: { img: img }, // TODO decide to remove or use
   data() {

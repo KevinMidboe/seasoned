@@ -11,13 +11,13 @@
 </template>
 
 <script>
-import NavigationIcon from "./ui/NavigationIcon";
-import IconInbox from "../icons/IconInbox";
-import IconNowPlaying from "../icons/IconNowPlaying";
-import IconPopular from "../icons/IconPopular";
-import IconUpcoming from "../icons/IconUpcoming";
-import IconSettings from "../icons/IconSettings";
-import IconActivity from "../icons/IconActivity";
+import NavigationIcon from "@/components/header/NavigationIcon";
+import IconInbox from "@/icons/IconInbox";
+import IconNowPlaying from "@/icons/IconNowPlaying";
+import IconPopular from "@/icons/IconPopular";
+import IconUpcoming from "@/icons/IconUpcoming";
+import IconSettings from "@/icons/IconSettings";
+import IconActivity from "@/icons/IconActivity";
 
 export default {
   name: "NavigationIcons",

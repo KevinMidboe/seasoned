@@ -1,5 +1,5 @@
 <template>
-  <header :class="{ sticky: sticky }">
+  <header>
     <h2>{{ prettify }}</h2>
     <h3>{{ subtitle }}</h3>
 
@@ -33,11 +33,6 @@ export default {
       type: String,
       required: false,
       default: null
-    },
-    sticky: {
-      type: Boolean,
-      required: false,
-      default: true
     },
     info: {
       type: [String, Array],
@@ -77,15 +72,12 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0.75rem;
+  background-color: $background-color;
 
-  &.sticky {
-    background-color: $background-color;
-
-    position: sticky;
-    position: -webkit-sticky;
-    top: $header-size;
-    z-index: 1;
-  }
+  position: sticky;
+  position: -webkit-sticky;
+  top: $header-size;
+  z-index: 1;
 
   h2 {
     font-size: 1.4rem;
@@ -125,6 +117,7 @@ header {
   @include tablet-min {
     padding-left: 1.25rem;
   }
+
   @include desktop-lg-min {
     padding-left: 1.75rem;
   }

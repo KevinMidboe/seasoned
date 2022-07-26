@@ -1,6 +1,6 @@
 <template>
   <div ref="resultSection" class="resultSection">
-    <list-header v-bind="{ title, info, shortList }" :sticky="true" />
+    <list-header v-bind="{ title, info, shortList }" />
 
     <div
       v-if="!loadedPages.includes(1) && loading == false"
