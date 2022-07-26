@@ -39,8 +39,8 @@
 import { mapGetters, mapActions } from "vuex";
 import ListHeader from "@/components/ListHeader";
 import ResultsList from "@/components/ResultsList";
-import Settings from "@/components/Settings";
-import Activity from "@/components/ActivityPage";
+import Settings from "@/pages/Settings";
+import Activity from "@/pages/ActivityPage";
 import SeasonedButton from "@/components/ui/SeasonedButton";
 
 import { getEmoji, getUserRequests, getSettings, logout } from "@/api";

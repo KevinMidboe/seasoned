@@ -1,17 +1,17 @@
 <template>
   <div class="cast">
     <ol class="persons">
-      <CastPerson v-for="person in cast" :person="person" :key="person.id" />
+      <CastListItem v-for="person in cast" :person="person" :key="person.id" />
     </ol>
   </div>
 </template>
 
 <script>
-import CastPerson from "src/components/CastPerson";
+import CastListItem from "src/components/CastListItem";
 
 export default {
-  name: "Cast",
-  components: { CastPerson },
+  name: "CastList",
+  components: { CastListItem },
   props: {
     cast: {
       type: Array,

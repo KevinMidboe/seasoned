@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import ResultsSection from "./ResultsSection";
+import ResultsSection from "@/components/ResultsSection";
 import { getRequests } from "@/api";
 
 export default {

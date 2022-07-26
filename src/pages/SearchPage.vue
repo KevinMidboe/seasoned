@@ -19,7 +19,7 @@
 <script>
 import { searchTmdb } from "@/api";
 
-import ResultsSection from "./ResultsSection";
+import ResultsSection from "@/components/ResultsSection";
 import ListHeader from "@/components/ListHeader";
 import ToggleButton from "@/components/ui/ToggleButton";
 

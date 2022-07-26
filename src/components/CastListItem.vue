@@ -1,6 +1,6 @@
 <template>
   <li class="card">
-    <a @click="openPerson">
+    <a @click="openCastItem">
       <img class="persons--image" :src="pictureUrl" />
       <p class="name">{{ person.name || person.title }}</p>
       <p class="meta">{{ person.character || person.year }}</p>
@@ -12,7 +12,7 @@
 import { mapActions } from "vuex";
 
 export default {
-  name: "Person",
+  name: "CastListItem",
   props: {
     person: {
       type: Object,
@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     ...mapActions("popup", ["open"]),
-    openPerson() {
+    openCastItem() {
       let { id, type } = this.person;
 
       if (type) {

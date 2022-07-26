@@ -142,7 +142,7 @@
           v-if="showCast && credits && credits.cast && credits.cast.length"
         >
           <MovieDetail title="cast">
-            <Cast :cast="credits.cast" />
+            <CastList :cast="credits.cast" />
           </MovieDetail>
         </div>
       </div>
@@ -162,21 +162,21 @@
 <script>
 import { mapGetters } from "vuex";
 import img from "@/directives/v-image";
-import IconProfile from "../icons/IconProfile";
-import IconThumbsUp from "../icons/IconThumbsUp";
-import IconThumbsDown from "../icons/IconThumbsDown";
-import IconInfo from "../icons/IconInfo";
-import IconRequest from "../icons/IconRequest";
-import IconRequested from "../icons/IconRequested";
-import IconBinoculars from "../icons/IconBinoculars";
-import IconPlay from "../icons/IconPlay";
-import TorrentList from "./TorrentList";
-import Cast from "./Cast";
-import MovieDetail from "./ui/MovieDetail";
-import SidebarListElement from "./ui/sidebarListElem";
-import MovieDescription from "./ui/MovieDescription";
+import IconProfile from "@/icons/IconProfile";
+import IconThumbsUp from "@/icons/IconThumbsUp";
+import IconThumbsDown from "@/icons/IconThumbsDown";
+import IconInfo from "@/icons/IconInfo";
+import IconRequest from "@/icons/IconRequest";
+import IconRequested from "@/icons/IconRequested";
+import IconBinoculars from "@/icons/IconBinoculars";
+import IconPlay from "@/icons/IconPlay";
+import TorrentList from "@/components/TorrentList";
+import CastList from "@/components/CastList";
+import MovieDetail from "@/components/movie/Detail";
+import MovieDescription from "@/components/movie/Description";
+import SidebarListElement from "@/components/ui/sidebarListElem";
 import store from "@/store";
-import LoadingPlaceholder from "./ui/LoadingPlaceholder";
+import LoadingPlaceholder from "@/components/ui/LoadingPlaceholder";
 
 import {
   getMovie,
@@ -212,7 +212,7 @@ export default {
     IconBinoculars,
     IconPlay,
     TorrentList,
-    Cast,
+    CastList,
     LoadingPlaceholder,
     SidebarListElement
   },

@@ -32,7 +32,7 @@
 <script>
 import { mapActions } from "vuex";
 import { login } from "@/api";
-import storage from "../storage";
+import storage from "@/storage";
 import SeasonedInput from "@/components/ui/SeasonedInput";
 import SeasonedButton from "@/components/ui/SeasonedButton";
 import SeasonedMessages from "@/components/ui/SeasonedMessages";
