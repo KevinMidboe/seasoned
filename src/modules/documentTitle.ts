@@ -1,4 +1,6 @@
-const capitalize = string => {
+import type IStateDocumentTitle from "../interfaces/IStateDocumentTitle";
+
+const capitalize = (string: string) => {
   if (!string) return;
 
   return string.includes(" ")
@@ -11,37 +13,39 @@ const capitalize = string => {
     : string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-const setDocumentTitle = state => {
+const setDocumentTitle = (state: IStateDocumentTitle) => {
   document.title = `${state.emoji} ${state.titlePrefix} | ${capitalize(
     state.title
   )}`;
 };
 
+const state: IStateDocumentTitle = {
+  emoji: "",
+  titlePrefix: "seasoned",
+  title: undefined
+};
+
 export default {
   namespaced: true,
-  state: {
-    emoji: "",
-    titlePrefix: "seasoned",
-    title: undefined
-  },
+  state,
   getters: {
-    title: state => state.title
+    title: (state: IStateDocumentTitle) => state.title
   },
   mutations: {
-    SET_EMOJI: (state, emoji) => {
+    SET_EMOJI: (state: IStateDocumentTitle, emoji: string) => {
       state.emoji = emoji;
       setDocumentTitle(state);
     },
-    SET_TITLE: (state, title) => {
+    SET_TITLE: (state: IStateDocumentTitle, title: string) => {
       state.title = title;
       setDocumentTitle(state);
     }
   },
   actions: {
-    updateEmoji({ commit }, emoji) {
+    updateEmoji({ commit }, emoji: String) {
       commit("SET_EMOJI", emoji);
     },
-    updateTitle({ commit }, title) {
+    updateTitle({ commit }, title: String) {
       commit("SET_TITLE", title);
     }
   }

@@ -1,8 +1,12 @@
+import type IStateHamburger from "../interfaces/IStateHamburger";
+
+const state: IStateHamburger = {
+  open: false
+};
+
 export default {
   namespaced: true,
-  state: {
-    open: false
-  },
+  state,
   getters: {
     isOpen: state => state.open
   },

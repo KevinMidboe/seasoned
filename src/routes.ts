@@ -1,6 +1,12 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
-import store from "@/store";
+import VueRouter, { NavigationGuardNext, Route, RouteConfig } from "vue-router";
+import store from "./store";
+
+declare global {
+  interface Window {
+    preventPushState: boolean;
+  }
+}
 
 Vue.use(VueRouter);
 
@@ -8,51 +14,51 @@ let routes = [
   {
     name: "home",
     path: "/",
-    component: resolve => require(["./pages/Home.vue"], resolve)
+    component: resolve => resolve("./pages/Home.vue")
   },
   {
     name: "activity",
     path: "/activity",
     meta: { requiresAuth: true },
-    component: resolve => require(["./pages/ActivityPage.vue"], resolve)
+    component: resolve => resolve("./pages/ActivityPage.vue")
   },
   {
     name: "profile",
     path: "/profile",
     meta: { requiresAuth: true },
-    component: resolve => require(["./pages/ProfilePage.vue"], resolve)
+    component: resolve => resolve("./pages/ProfilePage.vue")
   },
   {
     name: "list",
     path: "/list/requests",
-    component: resolve => require(["./pages/RequestPage.vue"], resolve)
+    component: resolve => resolve("./pages/RequestPage.vue")
   },
   {
     name: "list",
     path: "/list/:name",
-    component: resolve => require(["./pages/ListPage.vue"], resolve)
+    component: resolve => resolve("./pages/ListPage.vue")
   },
   {
     name: "search",
     path: "/search",
-    component: resolve => require(["./pages/SearchPage.vue"], resolve)
+    component: resolve => resolve("./pages/SearchPage.vue")
   },
   {
     name: "register",
     path: "/register",
-    component: resolve => require(["./pages/RegisterPage.vue"], resolve)
+    component: resolve => resolve("./pages/RegisterPage.vue")
   },
   {
     name: "settings",
     path: "/settings",
     meta: { requiresAuth: true },
-    component: resolve => require(["./pages/SettingsPage.vue"], resolve)
+    component: resolve => resolve("./pages/SettingsPage.vue")
   },
   {
     name: "signin",
     path: "/signin",
     alias: "/login",
-    component: resolve => require(["./pages/SigninPage.vue"], resolve)
+    component: resolve => resolve("./pages/SigninPage.vue")
   },
   // {
   //   name: 'user-requests',
@@ -64,7 +70,7 @@ let routes = [
   {
     name: "404",
     path: "/404",
-    component: resolve => require(["./pages/404.vue"], resolve)
+    component: resolve => resolve("./pages/404.vue")
   },
   {
     path: "*",
@@ -90,7 +96,7 @@ const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 window.preventPushState = false;
 window.onpopstate = () => (window.preventPushState = true);
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: Route, from: Route, next: NavigationGuardNext<Vue>) => {
   store.dispatch("documentTitle/updateTitle", to.name);
   const { movie, show, person } = to.query;
 

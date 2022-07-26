@@ -1,22 +1,19 @@
+import { PopupTypes } from "../interfaces/IStatePopup";
+import type { IStatePopup } from "../interfaces/IStatePopup";
+
 const removeIncludedQueryParams = (params, key) => {
   if (params.has(key)) params.delete(key);
   return params;
 };
 
-const updateQueryParams = (id = null, type = null) => {
+const updateQueryParams = (id: number | null = null, type: string = "") => {
   let params = new URLSearchParams(window.location.search);
   params = removeIncludedQueryParams(params, "movie");
   params = removeIncludedQueryParams(params, "show");
   params = removeIncludedQueryParams(params, "person");
 
-  if (id && type === "movie") {
-    params.append("movie", id);
-  }
-  if (id && type === "show") {
-    params.append("show", id);
-  }
-  if (id && type === "person") {
-    params.append("person", id);
+  if (id && type in PopupTypes) {
+    params.append(type, id.toString());
   }
 
   let url = `${window.location.protocol}//${window.location.hostname}${
@@ -31,13 +28,15 @@ const updateQueryParams = (id = null, type = null) => {
   }
 };
 
+const state: IStatePopup = {
+  id: null,
+  type: null,
+  open: false
+};
+
 export default {
   namespaced: true,
-  state: {
-    id: null,
-    type: null,
-    open: false
-  },
+  state,
   getters: {
     isOpen: state => state.open,
     id: state => state.id,
