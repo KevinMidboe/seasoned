@@ -17,7 +17,7 @@
     <div ref="loadMoreButton" class="button-container">
       <seasoned-button
         class="load-button"
-        v-if="!shortList && page != totalPages && results.length"
+        v-if="!loading && !shortList && page != totalPages && results.length"
         @click="loadMore"
         :fullWidth="true"
         >load more</seasoned-button
@@ -137,7 +137,7 @@ export default {
       this.observer = new IntersectionObserver(this.handleButtonIntersection, {
         root: this.$refs.resultSection.$el,
         rootMargin: "0px",
-        threshold: 1.0
+        threshold: 0
       });
 
       this.observer.observe(this.$refs.loadMoreButton);
