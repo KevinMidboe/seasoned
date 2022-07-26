@@ -29,6 +29,7 @@
 <script>
 import { mapActions } from "vuex";
 import img from "../directives/v-image";
+import { buildImageProxyUrl } from "../utils";
 
 export default {
   props: {
@@ -43,25 +44,7 @@ export default {
   data() {
     return {
       poster: null,
-      observed: false,
-      posterSizes: [
-        {
-          id: "w500",
-          minWidth: 500
-        },
-        {
-          id: "w342",
-          minWidth: 342
-        },
-        {
-          id: "w185",
-          minWidth: 185
-        },
-        {
-          id: "w154",
-          minWidth: 0
-        }
-      ]
+      observed: false
     };
   },
   computed: {
@@ -71,19 +54,33 @@ export default {
       return this.movie.poster
         ? `Poster for ${type} ${title}`
         : `Missing image for ${type} ${title}`;
+    },
+    imageWidth() {
+      if (this.image)
+        return Math.ceil(this.image.getBoundingClientRect().width);
+    },
+    imageHeight() {
+      if (this.image)
+        return Math.ceil(this.image.getBoundingClientRect().height);
     }
   },
   beforeMount() {
-    if (this.movie.poster != null) {
-      this.poster = "https://image.tmdb.org/t/p/w500" + this.movie.poster;
-    } else {
+    if (this.movie.poster == null) {
       this.poster = "/assets/no-image.svg";
+      return;
     }
+
+    this.poster = `https://image.tmdb.org/t/p/w500${this.movie.poster}`;
+    // this.poster = this.buildProxyURL(
+    //   this.imageWidth,
+    //   this.imageHeight,
+    //   assetUrl
+    // );
   },
   mounted() {
     const poster = this.$refs["poster"];
-    const image = poster.getElementsByTagName("img")[0];
-    if (image == null) return;
+    this.image = poster.getElementsByTagName("img")[0];
+    if (this.image == null) return;
 
     const imageObserver = new IntersectionObserver((entries, imgObserver) => {
       entries.forEach(entry => {
@@ -96,7 +93,7 @@ export default {
       });
     });
 
-    imageObserver.observe(image);
+    imageObserver.observe(this.image);
   },
   methods: {
     ...mapActions("popup", ["open"]),

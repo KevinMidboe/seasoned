@@ -1,4 +1,4 @@
-const sortableSize = string => {
+export const sortableSize = string => {
   const UNITS = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const [numStr, unit] = string.split(" ");
 
@@ -8,7 +8,7 @@ const sortableSize = string => {
   return numStr * Math.pow(10, exponent);
 };
 
-const parseJwt = token => {
+export const parseJwt = token => {
   var base64Url = token.split(".")[1];
   var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   var jsonPayload = decodeURIComponent(
@@ -23,4 +23,12 @@ const parseJwt = token => {
   return JSON.parse(jsonPayload);
 };
 
-export { sortableSize, parseJwt };
+export const buildImageProxyUrl = (width, height, asset) => {
+  const proxyHost = `http://imgproxy.schleppe:8080/insecure/`;
+  const proxySizeOptions = `resize:fill:${Math.floor(width / 1)}:${Math.floor(
+    height / 1
+  )}:ce/q:85/plain/`;
+  const assetUrl = `https://image.tmdb.org/t/p/w500/${asset}`;
+
+  return `${proxyHost}${proxySizeOptions}${assetUrl}`;
+};
