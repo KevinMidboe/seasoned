@@ -1,5 +1,5 @@
 import config from "./config";
-import { IList } from "./interfaces/IList";
+import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
 
 let { SEASONED_URL, ELASTIC_URL, ELASTIC_INDEX } = config;
 if (!SEASONED_URL) {
@@ -99,24 +99,12 @@ const getPerson = (id, credits = false) => {
     });
 };
 
-const getCredits = (type, id) => {
-  if (type === "movie") {
-    return getMovieCredits(id);
-  } else if (type === "show") {
-    return getShowCredits(id);
-  } else if (type === "person") {
-    return getPersonCredits(id);
-  }
-
-  return [];
-};
-
 /**
  * Fetches tmdb movie credits by id.
  * @param {number} id
  * @returns {object} Tmdb response
  */
-const getMovieCredits = id => {
+const getMovieCredits = (id: number): Promise<IMediaCredits> => {
   const url = new URL("/api/v2/movie", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
@@ -133,7 +121,7 @@ const getMovieCredits = id => {
  * @param {number} id
  * @returns {object} Tmdb response
  */
-const getShowCredits = id => {
+const getShowCredits = (id: number): Promise<IMediaCredits> => {
   const url = new URL("/api/v2/show", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
@@ -150,7 +138,7 @@ const getShowCredits = id => {
  * @param {number} id
  * @returns {object} Tmdb response
  */
-const getPersonCredits = id => {
+const getPersonCredits = (id: number): Promise<IPersonCredits> => {
   const url = new URL("/api/v2/person", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
@@ -250,7 +238,7 @@ const searchTorrents = query => {
  * @param {boolean} tmdb_id
  * @returns {object} Success/Failure response
  */
-const addMagnet = (magnet, name, tmdb_id) => {
+const addMagnet = (magnet: string, name: string, tmdb_id: number | null) => {
   const url = new URL("/api/v1/pirate/add", SEASONED_URL);
 
   const options = {
@@ -438,7 +426,7 @@ const linkPlexAccount = (username, password) => {
     });
 };
 
-const unlinkPlexAccount = (username, password) => {
+const unlinkPlexAccount = () => {
   const url = new URL("/api/v1/user/unlink_plex", SEASONED_URL);
 
   const options = {
@@ -449,7 +437,7 @@ const unlinkPlexAccount = (username, password) => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error unlinking plex account: ${username}`);
+      console.error(`api error unlinking your plex account`);
       throw error;
     });
 };
@@ -539,7 +527,6 @@ export {
   getMovieCredits,
   getShowCredits,
   getPersonCredits,
-  getCredits,
   getTmdbMovieListByName,
   searchTmdb,
   getUserRequests,

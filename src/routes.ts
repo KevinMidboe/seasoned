@@ -1,5 +1,11 @@
-import Vue from "vue";
-import VueRouter, { NavigationGuardNext, Route, RouteConfig } from "vue-router";
+import { defineAsyncComponent } from "vue";
+import {
+  createRouter,
+  createWebHistory,
+  RouteRecordRaw,
+  NavigationGuardNext,
+  RouteLocationNormalized
+} from "vue-router";
 import store from "./store";
 
 declare global {
@@ -8,57 +14,61 @@ declare global {
   }
 }
 
-Vue.use(VueRouter);
-
-let routes = [
+let routes: Array<RouteRecordRaw> = [
   {
     name: "home",
     path: "/",
-    component: resolve => resolve("./pages/Home.vue")
+    component: () => import("./pages/Home.vue")
   },
   {
     name: "activity",
     path: "/activity",
     meta: { requiresAuth: true },
-    component: resolve => resolve("./pages/ActivityPage.vue")
+    component: () => import("./pages/ActivityPage.vue")
   },
   {
     name: "profile",
     path: "/profile",
     meta: { requiresAuth: true },
-    component: resolve => resolve("./pages/ProfilePage.vue")
+    component: () => import("./pages/ProfilePage.vue")
   },
   {
-    name: "list",
+    name: "requests-list",
     path: "/list/requests",
-    component: resolve => resolve("./pages/RequestPage.vue")
+    component: () => import("./pages/RequestPage.vue")
   },
   {
     name: "list",
     path: "/list/:name",
-    component: resolve => resolve("./pages/ListPage.vue")
+    component: () => import("./pages/ListPage.vue")
   },
   {
     name: "search",
     path: "/search",
-    component: resolve => resolve("./pages/SearchPage.vue")
+    component: () => import("./pages/SearchPage.vue")
   },
   {
     name: "register",
     path: "/register",
-    component: resolve => resolve("./pages/RegisterPage.vue")
+    component: () => import("./pages/RegisterPage.vue")
   },
   {
     name: "settings",
     path: "/settings",
     meta: { requiresAuth: true },
-    component: resolve => resolve("./pages/SettingsPage.vue")
+    component: () => import("./pages/SettingsPage.vue")
   },
   {
     name: "signin",
     path: "/signin",
     alias: "/login",
-    component: resolve => resolve("./pages/SigninPage.vue")
+    component: () => import("./pages/SigninPage.vue")
+  },
+  {
+    name: "torrents",
+    path: "/torrents",
+    meta: { requiresAuth: true },
+    component: () => import("./pages/TorrentsPage.vue")
   },
   // {
   //   name: 'user-requests',
@@ -70,21 +80,21 @@ let routes = [
   {
     name: "404",
     path: "/404",
-    component: resolve => resolve("./pages/404.vue")
-  },
-  {
-    path: "*",
-    redirect: "/"
-  },
-  {
-    path: "/request",
-    redirect: "/"
+    component: () => import("./pages/404.vue")
   }
+  // {
+  //   path: "*",
+  //   redirect: "/"
+  // },
+  // {
+  //   path: "/request",
+  //   redirect: "/"
+  // }
 ];
 
-const router = new VueRouter({
-  mode: "history",
-  base: "/",
+const router = createRouter({
+  history: createWebHistory("/"),
+  // base: "/",
   routes,
   linkActiveClass: "is-active"
 });
@@ -93,35 +103,24 @@ const loggedIn = () => store.getters["user/loggedIn"];
 const popupIsOpen = () => store.getters["popup/isOpen"];
 const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
-window.preventPushState = false;
-window.onpopstate = () => (window.preventPushState = true);
+router.beforeEach(
+  (to: RouteLocationNormalized, from: RouteLocationNormalized, next: any) => {
+    store.dispatch("documentTitle/updateTitle", to.name);
+    store.dispatch("popup/resetStateFromUrlQuery", to.query);
 
-router.beforeEach((to: Route, from: Route, next: NavigationGuardNext<Vue>) => {
-  store.dispatch("documentTitle/updateTitle", to.name);
-  const { movie, show, person } = to.query;
+    // Every route change we close hamburger if open
+    if (hamburgerIsOpen()) store.dispatch("hamburger/close");
 
-  if (movie) store.dispatch("popup/open", { id: movie, type: "movie" });
-  else if (show) store.dispatch("popup/open", { id: show, type: "show" });
-  else if (person) store.dispatch("popup/open", { id: person, type: "person" });
-  else store.dispatch("popup/close");
-
-  if (hamburgerIsOpen()) store.dispatch("hamburger/close");
-
-  // Toggle mobile nav
-  if (document.querySelector(".nav__hamburger--active")) {
-    document
-      .querySelector(".nav__hamburger")
-      .classList.remove("nav__hamburger--active");
-    document.querySelector(".nav__list").classList.remove("nav__list--active");
-  }
-
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!loggedIn) {
-      next({ path: "/signin" });
+    // If pages has meta 'requiresAuth' and user not logged in
+    // send user to signin page.
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      if (!loggedIn) {
+        next({ path: "/signin" });
+      }
     }
-  }
 
-  next();
-});
+    next();
+  }
+);
 
 export default router;

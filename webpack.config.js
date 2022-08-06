@@ -7,7 +7,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 const sourcePath = path.resolve(__dirname, "src");
 const indexFile = path.join(sourcePath, "index.html");
-const javascriptEntry = path.join(sourcePath, "main.js");
+const javascriptEntry = path.join(sourcePath, "main.ts");
 const publicPath = path.resolve(__dirname, "public");
 const isProd = process.env.NODE_ENV === "production";
 
@@ -36,9 +36,12 @@ module.exports = {
         use: ["vue-loader"]
       },
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         loader: "ts-loader",
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        options: {
+          appendTsSuffixTo: [/\.vue$/]
+        }
       },
       {
         test: /\.scss$/,
@@ -69,7 +72,7 @@ module.exports = {
   resolve: {
     extensions: [".js", ".ts", ".vue", ".json", ".scss"],
     alias: {
-      vue$: "vue/dist/vue.common.js",
+      vue: "@vue/runtime-dom",
       "@": path.resolve(__dirname, "src"),
       src: path.resolve(__dirname, "src"),
       assets: `${publicPath}/assets`,
