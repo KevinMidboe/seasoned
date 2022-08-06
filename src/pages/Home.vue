@@ -12,36 +12,28 @@
   </section>
 </template>
 
-<script>
-import LandingBanner from "@/components/LandingBanner";
-import ResultsSection from "@/components/ResultsSection";
-import { getRequests, getTmdbMovieListByName } from "@/api";
+<script setup lang="ts">
+  import LandingBanner from "@/components/LandingBanner.vue";
+  import ResultsSection from "@/components/ResultsSection.vue";
+  import { getRequests, getTmdbMovieListByName } from "../api";
+  import type ISection from "../interfaces/ISection";
 
-export default {
-  name: "home",
-  components: { LandingBanner, ResultsSection },
-  data() {
-    return {
-      imageFile: "/pulp-fiction.jpg",
-      lists: [
-        {
-          title: "Requests",
-          apiFunction: getRequests
-        },
-        {
-          title: "Now playing",
-          apiFunction: () => getTmdbMovieListByName("now_playing")
-        },
-        {
-          title: "Upcoming",
-          apiFunction: () => getTmdbMovieListByName("upcoming")
-        },
-        {
-          title: "Popular",
-          apiFunction: () => getTmdbMovieListByName("popular")
-        }
-      ]
-    };
-  }
-};
+  const lists: ISection[] = [
+    {
+      title: "Requests",
+      apiFunction: getRequests
+    },
+    {
+      title: "Now playing",
+      apiFunction: () => getTmdbMovieListByName("now_playing")
+    },
+    {
+      title: "Upcoming",
+      apiFunction: () => getTmdbMovieListByName("upcoming")
+    },
+    {
+      title: "Popular",
+      apiFunction: () => getTmdbMovieListByName("popular")
+    }
+  ];
 </script>
