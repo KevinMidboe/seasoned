@@ -9,26 +9,18 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    count: {
-      type: Number,
-      default: 1,
-      require: false
-    },
-    lineClass: {
-      type: String,
-      default: ""
-    },
-    top: {
-      type: Number,
-      default: 0
-    }
+<script setup lang="ts">
+  import { defineProps } from "vue";
+
+  interface Props {
+    count?: Number;
+    lineClass?: String;
+    top?: Number;
   }
-};
+
+  const { count = 1, lineClass = "", top = 0 } = defineProps<Props>();
 </script>
 
 <style lang="scss" scoped>
-@import "src/scss/loading-placeholder";
+  @import "src/scss/loading-placeholder";
 </style>

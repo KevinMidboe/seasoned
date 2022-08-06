@@ -10,10 +10,10 @@
     <SearchInput />
 
     <Hamburger class="mobile-only" />
-
     <NavigationIcon class="desktop-only" :route="profileRoute" />
 
-    <div class="navigation-icons-grid mobile-only" :class="{ open: isOpen }">
+    <!-- <div class="navigation-icons-grid mobile-only" :class="{ open: isOpen }"> -->
+    <div class="navigation-icons-grid mobile-only" v-if="isOpen">
       <NavigationIcons>
         <NavigationIcon :route="profileRoute" />
       </NavigationIcons>
@@ -21,106 +21,104 @@
   </nav>
 </template>
 
-<script>
-import { mapGetters, mapActions } from "vuex";
-import TmdbLogo from "@/icons/tmdb-logo";
-import IconProfile from "@/icons/IconProfile";
-import IconProfileLock from "@/icons/IconProfileLock";
-import IconSettings from "@/icons/IconSettings";
-import IconActivity from "@/icons/IconActivity";
-import SearchInput from "@/components/header/SearchInput";
-import NavigationIcons from "src/components/header/NavigationIcons";
-import NavigationIcon from "src/components/header/NavigationIcon";
-import Hamburger from "@/components/ui/Hamburger";
+<script setup lang="ts">
+  import { computed, defineProps, PropType } from "vue";
+  import type { App } from "vue";
+  import { useStore } from "vuex";
+  import { useRoute } from "vue-router";
+  import SearchInput from "@/components/header/SearchInput.vue";
+  import Hamburger from "@/components/ui/Hamburger.vue";
+  import NavigationIcons from "@/components/header/NavigationIcons.vue";
+  import NavigationIcon from "@/components/header/NavigationIcon.vue";
+  import TmdbLogo from "@/icons/tmdb-logo.vue";
+  import IconProfile from "@/icons/IconProfile.vue";
+  import IconProfileLock from "@/icons/IconProfileLock.vue";
+  import type INavigationIcon from "../../interfaces/INavigationIcon";
 
-export default {
-  components: {
-    NavigationIcons,
-    NavigationIcon,
-    SearchInput,
-    TmdbLogo,
-    IconProfile,
-    IconProfileLock,
-    IconSettings,
-    IconActivity,
-    Hamburger
-  },
-  computed: {
-    ...mapGetters("user", ["loggedIn"]),
-    ...mapGetters("hamburger", ["isOpen"]),
-    isHome() {
-      return this.$route.path === "/";
-    },
-    profileRoute() {
-      return {
-        title: !this.loggedIn ? "Signin" : "Profile",
-        route: !this.loggedIn ? "/signin" : "/profile",
-        icon: !this.loggedIn ? IconProfileLock : IconProfile
-      };
-    }
-  }
-};
+  const route = useRoute();
+  const store = useStore();
+
+  const signinNavigationIcon: INavigationIcon = {
+    title: "Signin",
+    route: "/signin",
+    icon: IconProfileLock
+  };
+
+  const profileNavigationIcon: INavigationIcon = {
+    title: "Profile",
+    route: "/profile",
+    icon: IconProfile
+  };
+
+  const isHome = computed(() => route.path === "/");
+  const isOpen = computed(() => store.getters["hamburger/isOpen"]);
+  const loggedIn = computed(() => store.getters["user/loggedIn"]);
+
+  const profileRoute = computed(() =>
+    !loggedIn.value ? signinNavigationIcon : profileNavigationIcon
+  );
 </script>
 
 <style lang="scss" scoped>
-@import "src/scss/variables";
-@import "src/scss/media-queries";
+  @import "src/scss/variables";
+  @import "src/scss/media-queries";
 
-.spacer {
-  @include mobile-only {
+  .spacer {
+    @include mobile-only {
+      width: 100%;
+      height: $header-size;
+    }
+  }
+
+  nav {
+    display: grid;
+    grid-template-columns: var(--header-size) 1fr var(--header-size);
+
+    > * {
+      z-index: 10;
+    }
+  }
+
+  .nav__logo {
+    overflow: hidden;
+  }
+
+  .logo {
+    padding: 1rem;
+    fill: var(--color-green);
+    width: var(--header-size);
+    height: var(--header-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $background-nav-logo;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.08);
+    }
+
+    @include mobile {
+      padding: 0.5rem;
+    }
+  }
+
+  .navigation-icons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    position: fixed;
+    top: var(--header-size);
+    left: 0;
     width: 100%;
-    height: $header-size;
-  }
-}
+    background-color: $background-95;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease;
 
-nav {
-  display: grid;
-  grid-template-columns: var(--header-size) 1fr var(--header-size);
-
-  > * {
-    z-index: 10;
-  }
-}
-
-.nav__logo {
-  overflow: hidden;
-}
-
-.logo {
-  padding: 1rem;
-  fill: var(--color-green);
-  width: var(--header-size);
-  height: var(--header-size);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: $background-nav-logo;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.08);
-  }
-
-  @include mobile {
-    padding: 0.5rem;
-  }
-}
-
-.navigation-icons-grid {
-  display: flex;
-  flex-wrap: wrap;
-  position: fixed;
-  top: var(--header-size);
-  left: 0;
-  width: 100%;
-  background-color: $background-95;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-
-  &.open {
     opacity: 1;
     visibility: visible;
+
+    &.open {
+    }
   }
-}
 </style>

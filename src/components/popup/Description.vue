@@ -1,10 +1,10 @@
 <template>
   <div
-    id="description"
+    ref="descriptionElement"
     class="movie-description noselect"
     @click="overflow ? (truncated = !truncated) : null"
   >
-    <span ref="description" :class="{ truncated }">{{ description }}</span>
+    <span :class="{ truncated }">{{ description }}</span>
 
     <button v-if="description && overflow" class="truncate-toggle">
       <IconArrowDown :class="{ rotate: !truncated }" />
@@ -12,113 +12,114 @@
   </div>
 </template>
 
-<script>
-import IconArrowDown from "../../icons/IconArrowDown";
-export default {
-  components: { IconArrowDown },
-  props: {
-    description: {
-      type: String,
-      required: true
-    }
-  },
-  data() {
-    return {
-      truncated: true,
-      overflow: false
-    };
-  },
-  mounted() {
-    this.checkDescriptionOverflowing();
-  },
-  methods: {
-    checkDescriptionOverflowing() {
-      const descriptionEl = document.getElementById("description");
-      if (!descriptionEl) return;
+<script setup lang="ts">
+  import { ref, defineProps, onMounted } from "vue";
+  import IconArrowDown from "../../icons/IconArrowDown.vue";
+  import type { Ref } from "vue";
 
-      const { height, width } = descriptionEl.getBoundingClientRect();
-      const { fontSize, lineHeight } = getComputedStyle(descriptionEl);
-
-      const elementWithoutOverflow = document.createElement("div");
-      elementWithoutOverflow.setAttribute(
-        "style",
-        `max-width: ${Math.ceil(
-          width + 10
-        )}px; display: block; font-size: ${fontSize}; line-height: ${lineHeight};`
-      );
-      // Don't know why need to add 10px to width, but works out perfectly
-
-      elementWithoutOverflow.classList.add("dummy-non-overflow");
-      elementWithoutOverflow.innerText = this.description;
-
-      document.body.appendChild(elementWithoutOverflow);
-      const elemWithoutOverflowHeight =
-        elementWithoutOverflow.getBoundingClientRect()["height"];
-
-      this.overflow = elemWithoutOverflowHeight > height;
-      this.removeElements(document.querySelectorAll(".dummy-non-overflow"));
-    },
-    removeElements: elems => elems.forEach(el => el.remove())
+  interface Props {
+    description: string;
   }
-};
+
+  const props = defineProps<Props>();
+  const truncated: Ref<boolean> = ref(true);
+  const overflow: Ref<boolean> = ref(false);
+  const descriptionElement: Ref<HTMLElement> = ref(null);
+
+  onMounted(checkDescriptionOverflowing);
+
+  // The description element overflows text after 4 rows with css
+  // line-clamp this takes the same text and adds to a temporary
+  // element without css overflow. If the temp element is
+  // higher then description element, we display expand button
+  function checkDescriptionOverflowing() {
+    const element = descriptionElement?.value;
+    if (!element) return;
+
+    const { height, width } = element.getBoundingClientRect();
+    const { fontSize, lineHeight } = getComputedStyle(element);
+
+    const descriptionComparisonElement = document.createElement("div");
+    descriptionComparisonElement.setAttribute(
+      "style",
+      `max-width: ${Math.ceil(
+        width + 10
+      )}px; display: block; font-size: ${fontSize}; line-height: ${lineHeight};`
+    );
+    // Don't know why need to add 10px to width, but works out perfectly
+
+    descriptionComparisonElement.classList.add("dummy-non-overflow");
+    descriptionComparisonElement.innerText = props.description;
+
+    document.body.appendChild(descriptionComparisonElement);
+    const elemWithoutOverflowHeight =
+      descriptionComparisonElement.getBoundingClientRect()["height"];
+
+    overflow.value = elemWithoutOverflowHeight > height;
+    removeElements(document.querySelectorAll(".dummy-non-overflow"));
+  }
+
+  function removeElements(elems: NodeListOf<Element>) {
+    elems.forEach(el => el.remove());
+  }
 </script>
 
 <style lang="scss" scoped>
-@import "src/scss/media-queries";
+  @import "src/scss/media-queries";
 
-.movie-description {
-  font-weight: 300;
-  font-size: 13px;
-  line-height: 1.8;
-  margin-bottom: 20px;
-  transition: all 1s ease;
+  .movie-description {
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    transition: all 1s ease;
 
-  @include tablet-min {
-    margin-bottom: 30px;
-    font-size: 14px;
-  }
-}
-
-span.truncated {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-}
-
-.truncate-toggle {
-  border: none;
-  background: none;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: var(--text-color);
-  margin-top: 1rem;
-  cursor: pointer;
-
-  svg {
-    transition: 0.4s ease all;
-    height: 22px;
-    width: 22px;
-    fill: var(--text-color);
-
-    &.rotate {
-      transform: rotateX(180deg);
+    @include tablet-min {
+      margin-bottom: 30px;
+      font-size: 14px;
     }
   }
 
-  &::before,
-  &::after {
-    content: "";
-    flex: 1;
-    border-bottom: 1px solid var(--text-color-50);
+  span.truncated {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
   }
-  &::before {
-    margin-right: 1rem;
+
+  .truncate-toggle {
+    border: none;
+    background: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-color);
+    margin-top: 1rem;
+    cursor: pointer;
+
+    svg {
+      transition: 0.4s ease all;
+      height: 22px;
+      width: 22px;
+      fill: var(--text-color);
+
+      &.rotate {
+        transform: rotateX(180deg);
+      }
+    }
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid var(--text-color-50);
+    }
+    &::before {
+      margin-right: 1rem;
+    }
+    &::after {
+      margin-left: 1rem;
+    }
   }
-  &::after {
-    margin-left: 1rem;
-  }
-}
 </style>

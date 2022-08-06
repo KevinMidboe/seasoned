@@ -1,6 +1,6 @@
 <template>
   <div ref="resultSection" class="resultSection">
-    <list-header v-bind="{ title, info, shortList }" />
+    <page-header v-bind="{ title, info, shortList }" />
 
     <div
       v-if="!loadedPages.includes(1) && loading == false"
@@ -26,177 +26,186 @@
   </div>
 </template>
 
-<script>
-import ListHeader from "@/components/ListHeader";
-import ResultsList from "@/components/ResultsList";
-import SeasonedButton from "@/components/ui/SeasonedButton";
-import store from "@/store";
-import { getTmdbMovieListByName } from "@/api";
-import Loader from "@/components/ui/Loader";
+<script setup lang="ts">
+  import { defineProps, ref, computed, onMounted } from "vue";
+  import { useStore } from "vuex";
+  import PageHeader from "@/components/PageHeader.vue";
+  import ResultsList from "@/components/ResultsList.vue";
+  import SeasonedButton from "@/components/ui/SeasonedButton.vue";
+  import Loader from "@/components/ui/Loader.vue";
+  import { getTmdbMovieListByName } from "../api";
+  import type { Ref } from "vue";
+  import type { IList, ListResults } from "../interfaces/IList";
+  import type ISection from "../interfaces/ISection";
 
-export default {
-  props: {
-    apiFunction: {
-      type: Function,
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    },
-    shortList: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
-  },
-  components: { ListHeader, ResultsList, SeasonedButton, Loader },
-  data() {
-    return {
-      results: [],
-      page: 1,
-      loadedPages: [],
-      totalPages: -1,
-      totalResults: 0,
-      loading: true,
-      autoLoad: false,
-      observer: undefined
-    };
-  },
-  computed: {
-    info() {
-      if (this.results.length === 0) return [null, null];
-      return [this.pageCount, this.resultCount];
-    },
-    resultCount() {
-      const loadedResults = this.results.length;
-      const totalResults = this.totalResults < 10000 ? this.totalResults : "∞";
-      return `${loadedResults} of ${totalResults} results`;
-    },
-    pageCount() {
-      return `Page ${this.page} of ${this.totalPages}`;
-    }
-  },
-  methods: {
-    loadMore() {
-      if (!this.autoLoad) {
-        this.autoLoad = true;
-      }
-
-      this.loading = true;
-      let maxPage = [...this.loadedPages].slice(-1)[0];
-
-      if (maxPage == NaN) return;
-      this.page = maxPage + 1;
-      this.getListResults();
-    },
-    loadLess() {
-      this.loading = true;
-      const minPage = this.loadedPages[0];
-      if (minPage === 1) return;
-
-      this.page = minPage - 1;
-      this.getListResults(true);
-    },
-    updateQueryParams() {
-      let params = new URLSearchParams(window.location.search);
-      if (params.has("page")) {
-        params.set("page", this.page);
-      } else if (this.page > 1) {
-        params.append("page", this.page);
-      }
-
-      window.history.replaceState(
-        {},
-        "search",
-        `${window.location.protocol}//${window.location.hostname}${
-          window.location.port ? `:${window.location.port}` : ""
-        }${window.location.pathname}${
-          params.toString().length ? `?${params}` : ""
-        }`
-      );
-    },
-    getPageFromUrl() {
-      return new URLSearchParams(window.location.search).get("page");
-    },
-    getListResults(front = false) {
-      this.apiFunction(this.page)
-        .then(results => {
-          if (!front) this.results = this.results.concat(...results.results);
-          else this.results = results.results.concat(...this.results);
-          this.page = results.page;
-          this.loadedPages.push(this.page);
-          this.loadedPages = this.loadedPages.sort((a, b) => a - b);
-          this.totalPages = results.total_pages;
-          this.totalResults = results.total_results;
-        })
-        .then(this.updateQueryParams)
-        .finally(() => (this.loading = false));
-    },
-    setupAutoloadObserver() {
-      this.observer = new IntersectionObserver(this.handleButtonIntersection, {
-        root: this.$refs.resultSection.$el,
-        rootMargin: "0px",
-        threshold: 0
-      });
-
-      this.observer.observe(this.$refs.loadMoreButton);
-    },
-    handleButtonIntersection(entries) {
-      entries.map(entry =>
-        entry.isIntersecting && this.autoLoad ? this.loadMore() : null
-      );
-    }
-  },
-  created() {
-    this.page = this.getPageFromUrl() || this.page;
-    if (this.results.length === 0) this.getListResults();
-
-    if (!this.shortList) {
-      store.dispatch(
-        "documentTitle/updateTitle",
-        `${this.$router.history.current.name} ${this.title}`
-      );
-    }
-  },
-  mounted() {
-    if (!this.shortList) {
-      this.setupAutoloadObserver();
-    }
-  },
-  beforeDestroy() {
-    this.observer = undefined;
+  interface Props extends ISection {
+    title: string;
+    apiFunction: (page: number) => Promise<IList>;
+    shortList?: boolean;
   }
-};
+
+  const store = useStore();
+  const props = defineProps<Props>();
+
+  const results: Ref<ListResults> = ref([]);
+  const page: Ref<number> = ref(1);
+  const loadedPages: Ref<number[]> = ref([]);
+  const totalResults: Ref<number> = ref(0);
+  const totalPages: Ref<number> = ref(0);
+  const loading: Ref<boolean> = ref(true);
+  const autoLoad: Ref<boolean> = ref(false);
+  const observer: Ref<any> = ref(null);
+  const resultSection = ref(null);
+  const loadMoreButton = ref(null);
+
+  page.value = getPageFromUrl() || page.value;
+  if (results.value?.length === 0) getListResults();
+
+  const info = computed(() => {
+    if (results.value.length === 0) return [null, null];
+
+    const pageCount = pageCountString(page.value, totalPages.value);
+    const resultCount = resultCountString(results.value, totalResults.value);
+    return [pageCount, resultCount];
+  });
+
+  onMounted(() => {
+    if (!props?.shortList) setupAutoloadObserver();
+  });
+
+  function pageCountString(page: Number, totalPages: Number) {
+    return `Page ${page} of ${totalPages}`;
+  }
+
+  function resultCountString(results: ListResults, totalResults: number) {
+    const loadedResults = results.length;
+    const _totalResults = totalResults < 10000 ? totalResults : "∞";
+    return `${loadedResults} of ${_totalResults} results`;
+  }
+
+  function getPageFromUrl() {
+    const page = new URLSearchParams(window.location.search).get("page");
+    if (!page) return null;
+
+    return Number(page);
+  }
+
+  function getListResults(front = false) {
+    props
+      .apiFunction(page.value)
+      .then(listResponse => {
+        if (!front)
+          results.value = results.value.concat(...listResponse.results);
+        else results.value = listResponse.results.concat(...results.value);
+
+        page.value = listResponse.page;
+        loadedPages.value.push(page.value);
+        loadedPages.value = loadedPages.value.sort((a, b) => a - b);
+        totalPages.value = listResponse.total_pages;
+        totalResults.value = listResponse.total_results;
+      })
+      .then(updateQueryParams)
+      .finally(() => (loading.value = false));
+  }
+
+  function loadMore() {
+    if (!autoLoad.value) {
+      autoLoad.value = true;
+    }
+
+    loading.value = true;
+    let maxPage = [...loadedPages.value].slice(-1)[0];
+
+    if (maxPage == NaN) return;
+    page.value = maxPage + 1;
+    getListResults();
+  }
+
+  function loadLess() {
+    loading.value = true;
+    const minPage = loadedPages.value[0];
+    if (minPage === 1) return;
+
+    page.value = minPage - 1;
+    getListResults(true);
+  }
+
+  function updateQueryParams() {
+    let params = new URLSearchParams(window.location.search);
+    if (params.has("page")) {
+      params.set("page", page.value?.toString());
+    } else if (page.value > 1) {
+      params.append("page", page.value?.toString());
+    }
+
+    window.history.replaceState(
+      {},
+      "search",
+      `${window.location.protocol}//${window.location.hostname}${
+        window.location.port ? `:${window.location.port}` : ""
+      }${window.location.pathname}${
+        params.toString().length ? `?${params}` : ""
+      }`
+    );
+  }
+
+  function handleButtonIntersection(entries) {
+    entries.map(entry =>
+      entry.isIntersecting && autoLoad.value ? loadMore() : null
+    );
+  }
+
+  function setupAutoloadObserver() {
+    observer.value = new IntersectionObserver(handleButtonIntersection, {
+      root: resultSection.value.$el,
+      rootMargin: "0px",
+      threshold: 0
+    });
+
+    observer.value.observe(loadMoreButton.value);
+  }
+
+  //   created() {
+  //     if (!this.shortList) {
+  //       store.dispatch(
+  //         "documentTitle/updateTitle",
+  //         `${this.$router.history.current.name} ${this.title}`
+  //       );
+  //     }
+  //   },
+  //   beforeDestroy() {
+  //     this.observer = undefined;
+  //   }
+  // };
 </script>
 
 <style lang="scss" scoped>
-@import "src/scss/media-queries";
+  @import "src/scss/media-queries";
 
-.resultSection {
-  background-color: var(--background-color);
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  display: flex;
-  width: 100%;
-}
-
-.load-button {
-  margin: 2rem 0;
-
-  @include mobile {
-    margin: 1rem 0;
+  .resultSection {
+    background-color: var(--background-color);
   }
 
-  &:last-of-type {
-    margin-bottom: 4rem;
+  .button-container {
+    display: flex;
+    justify-content: center;
+    display: flex;
+    width: 100%;
+  }
+
+  .load-button {
+    margin: 2rem 0;
 
     @include mobile {
-      margin-bottom: 2rem;
+      margin: 1rem 0;
+    }
+
+    &:last-of-type {
+      margin-bottom: 4rem;
+
+      @include mobile {
+        margin-bottom: 2rem;
+      }
     }
   }
-}
 </style>
