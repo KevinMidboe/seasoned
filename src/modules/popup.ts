@@ -1,4 +1,5 @@
-import { PopupTypes } from "../interfaces/IStatePopup";
+import router from "../routes";
+import { ListTypes } from "../interfaces/IList";
 import type { IStatePopup } from "../interfaces/IStatePopup";
 
 const removeIncludedQueryParams = (params, key) => {
@@ -6,26 +7,29 @@ const removeIncludedQueryParams = (params, key) => {
   return params;
 };
 
+function paramsToObject(entries) {
+  const result = {};
+  for (const [key, value] of entries) {
+    // each 'entry' is a [key, value] tupple
+    result[key] = value;
+  }
+  return result;
+}
+
 const updateQueryParams = (id: number | null = null, type: string = "") => {
   let params = new URLSearchParams(window.location.search);
   params = removeIncludedQueryParams(params, "movie");
   params = removeIncludedQueryParams(params, "show");
   params = removeIncludedQueryParams(params, "person");
 
-  if (id && type in PopupTypes) {
+  if (id && type) {
     params.append(type, id.toString());
   }
 
-  let url = `${window.location.protocol}//${window.location.hostname}${
-    window.location.port ? `:${window.location.port}` : ""
-  }${window.location.pathname}${params.toString().length ? `?${params}` : ""}`;
-
-  if (window.preventPushState) {
-    window.history.replaceState({}, "search", url);
-    window.preventPushState = false;
-  } else {
-    window.history.pushState({}, "search", url);
-  }
+  router.push({
+    path: window.location.pathname,
+    query: paramsToObject(params.entries())
+  });
 };
 
 const state: IStatePopup = {
@@ -63,6 +67,17 @@ export default {
     close: ({ commit }) => {
       commit("SET_CLOSE");
       updateQueryParams(); // reset
+    },
+    resetStateFromUrlQuery: ({ commit }, query: any) => {
+      let { movie, show, person } = query;
+      movie = !isNaN(movie) ? Number(movie) : movie;
+      show = !isNaN(show) ? Number(show) : show;
+      person = !isNaN(person) ? Number(person) : person;
+
+      if (movie) commit("SET_OPEN", { id: movie, type: "movie" });
+      else if (show) commit("SET_OPEN", { id: show, type: "show" });
+      else if (person) commit("SET_OPEN", { id: person, type: "person" });
+      else commit("SET_CLOSE");
     }
   }
 };
