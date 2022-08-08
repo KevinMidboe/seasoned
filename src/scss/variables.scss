@@ -19,6 +19,7 @@
   --background-80: rgba(255, 255, 255, 0.8);
   --background-70: rgba(255, 255, 255, 0.7);
   --background-40: rgba(255, 255, 255, 0.4);
+  --background-0: rgba(255, 255, 255, 0);
 
   --background-nav-logo: #081c24;
   --color-green: #01d277;
@@ -36,6 +37,9 @@
   --color-success-highlight: rgb(0, 100, 66);
   --color-error: rgba(220, 48, 35, 0.8);
   --color-error-highlight: #dc3023;
+
+  --table-background-color: #081c24;
+  --table-header-text-color: white;
 
   --header-size: 90px;
   --line-height: 1.5;
@@ -59,6 +63,9 @@
     --background-80: rgba(6, 7, 8, 0.8);
     --background-70: rgba(6, 7, 8, 0.7);
     --background-40: rgba(6, 7, 8, 0.4);
+    --background-0: rgba(6, 7, 8, 0);
+    --table-background-color: black;
+    --table-header-text-color: white;
   }
 }
 
@@ -94,6 +101,7 @@ $background-90: var(--background-90) !default;
 $background-80: var(--background-80) !default;
 $background-70: var(--background-70) !default;
 $background-40: var(--background-40) !default;
+$background-0: var(--background-0) !default;
 $background-dark-85: rgba($dark, 0.85) !default;
 $background-nav-logo: var(--background-nav-logo) !default;
 $color-warning: var(--color-warning) !default;
@@ -125,6 +133,9 @@ $color-error-highlight: var(--color-error-highlight) !default;
   --background-80: rgba(17, 17, 17, 0.8);
   --background-70: rgba(17, 17, 17, 0.8);
   --background-40: rgba(17, 17, 17, 0.4);
+  --background-0: rgba(17, 17, 17, 0);
+  --table-background-color: black;
+  --table-header-text-color: white;
 }
 
 .light {
@@ -142,4 +153,6 @@ $color-error-highlight: var(--color-error-highlight) !default;
   --background-80: rgba(255, 255, 255, 0.8);
   --background-70: rgba(255, 255, 255, 0.7);
   --background-40: rgba(255, 255, 255, 0.4);
+  --table-background-color: #081c24;
+  --table-header-text-color: white;
 }
