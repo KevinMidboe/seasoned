@@ -101,11 +101,7 @@
     position: relative;
     transition: height 0.5s ease;
     overflow: hidden;
-    --header-height: 261px;
-
-    @include mobile {
-      --header-height: 25vh;
-    }
+    --header-height: 25vh;
 
     height: var(--header-height);
 
