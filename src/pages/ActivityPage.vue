@@ -63,15 +63,12 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted } from "vue";
-  import Chart from "chart.js";
   import { useStore } from "vuex";
-
   import Graph from "@/components/Graph.vue";
   import ToggleButton from "@/components/ui/ToggleButton.vue";
   import IconStop from "@/icons/IconStop.vue";
   import { fetchGraphData } from "../api";
   import type { Ref } from "vue";
-  import type { ChartType } from "chart.js";
 
   enum GraphTypes {
     Plays = "plays",

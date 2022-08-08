@@ -4,7 +4,34 @@
 
 <script setup lang="ts">
   import { ref, computed, defineProps, onMounted, watch } from "vue";
-  import Chart from "chart.js";
+  import {
+    Chart,
+    LineElement,
+    BarElement,
+    PointElement,
+    LineController,
+    BarController,
+    LinearScale,
+    CategoryScale,
+    Legend,
+    Title,
+    Tooltip,
+    ChartType
+  } from "chart.js";
+
+  Chart.register(
+    LineElement,
+    BarElement,
+    PointElement,
+    LineController,
+    BarController,
+    LinearScale,
+    CategoryScale,
+    Legend,
+    Title,
+    Tooltip
+  );
+  import {} from "chart.js";
   import type { Ref } from "vue";
 
   enum GraphValueTypes {
@@ -25,7 +52,7 @@
   interface Props {
     name?: string;
     data: IGraphData;
-    type: string; // TODO import types from chart.js
+    type: ChartType;
     stacked: boolean;
 
     datasetDescriptionSuffix: string;
@@ -33,14 +60,14 @@
     graphValueType?: GraphValueTypes;
   }
 
-  Chart.defaults.global.elements.point.radius = 0;
-  Chart.defaults.global.elements.point.hitRadius = 10;
-  Chart.defaults.global.elements.point.pointHoverRadius = 10;
-  Chart.defaults.global.elements.point.hoverBorderWidth = 4;
+  Chart.defaults.elements.point.radius = 0;
+  Chart.defaults.elements.point.hitRadius = 10;
+  // Chart.defaults.elements.point.pointHoverRadius = 10;
+  Chart.defaults.elements.point.hoverBorderWidth = 4;
 
   const props = defineProps<Props>();
-  const graphInstance: Ref<any> = ref(null);
   const graphCanvas: Ref<HTMLCanvasElement> = ref(null);
+  let graphInstance = null;
 
   onMounted(() => generateGraph());
   watch(() => props.data, generateGraph);
@@ -49,17 +76,20 @@
     {
       backgroundColor: "rgba(54, 162, 235, 0.2)",
       borderColor: "rgba(54, 162, 235, 1)",
-      borderWidth: 1
+      borderWidth: 1,
+      tension: 0.4
     },
     {
       backgroundColor: "rgba(255, 159, 64, 0.2)",
       borderColor: "rgba(255, 159, 64, 1)",
-      borderWidth: 1
+      borderWidth: 1,
+      tension: 0.4
     },
     {
       backgroundColor: "rgba(255, 99, 132, 0.2)",
       borderColor: "rgba(255, 99, 132, 1)",
-      borderWidth: 1
+      borderWidth: 1,
+      tension: 0.4
     }
   ];
   const gridColor = getComputedStyle(document.documentElement).getPropertyValue(
@@ -85,68 +115,60 @@
 
     const graphOptions = {
       maintainAspectRatio: false,
-      tooltips: {
-        callbacks: {
-          title: (tooltipItem, data) => `Watch date: ${tooltipItem[0].label}`,
-          label: (tooltipItem, data) => {
-            let label = data.datasets[tooltipItem.datasetIndex].label;
-            let value = tooltipItem.value;
+      plugins: {
+        tooltip: {
+          callbacks: {
+            // title: (tooltipItem, data) => `Watch date: ${tooltipItem[0].label}`,
+            label: tooltipItem => {
+              const context = tooltipItem.dataset.label.split(" ")[0];
+              const text = `${context} ${props.tooltipDescriptionSuffix}`;
 
-            const context = label.split(" ")[0];
-            const text = `${context} ${props.tooltipDescriptionSuffix}`;
+              let value = tooltipItem.raw;
+              if (props.graphValueType === GraphValueTypes.Time) {
+                value = convertSecondsToHumanReadable(value);
+              }
 
-            if (props.graphValueType === GraphValueTypes.Time) {
-              value = convertSecondsToHumanReadable(value);
+              return ` ${text}: ${value}`;
             }
-
-            return ` ${text}: ${value}`;
           }
         }
       },
       scales: {
-        yAxes: [
-          {
-            gridLines: {
-              color: gridColor
-            },
-            stacked: props.stacked,
-            ticks: {
-              // suggestedMax: 10000,
-              callback: (value, index, values) => {
-                if (props.graphValueType === GraphValueTypes.Time) {
-                  return convertSecondsToHumanReadable(value, values);
-                }
+        xAxes: {
+          stacked: props.stacked,
+          gridLines: {
+            display: false
+          }
+        },
+        yAxes: {
+          stacked: props.stacked,
+          ticks: {
+            callback: (value, index, values) => {
+              if (props.graphValueType === GraphValueTypes.Time) {
+                return convertSecondsToHumanReadable(value);
+              }
 
-                return value;
-              },
-              beginAtZero: true
-            }
+              return value;
+            },
+            beginAtZero: true
           }
-        ],
-        xAxes: [
-          {
-            stacked: props.stacked,
-            gridLines: {
-              display: false
-            }
-          }
-        ]
+        }
       }
     };
 
     const chartData = {
-      labels: props.data.labels,
+      labels: props.data.labels.toString().split(","),
       datasets
     };
 
-    if (graphInstance.value) {
-      graphInstance.value.clear();
-      graphInstance.value.data = chartData;
-      graphInstance.value.update();
+    if (graphInstance) {
+      graphInstance.clear();
+      graphInstance.data = chartData;
+      graphInstance.update("none");
       return;
     }
 
-    graphInstance.value = new Chart(graphCanvas.value, {
+    graphInstance = new Chart(graphCanvas.value, {
       type: props.type,
       data: chartData,
       options: graphOptions
