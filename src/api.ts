@@ -444,8 +444,8 @@ const unlinkPlexAccount = () => {
 
 // - - - User graphs - - -
 
-const fetchChart = (urlPath, days, chartType) => {
-  const url = new URL("/api/v1/user" + urlPath, SEASONED_URL);
+const fetchGraphData = (urlPath, days, chartType) => {
+  const url = new URL("/api/v1/user/" + urlPath, SEASONED_URL);
   url.searchParams.append("days", days);
   url.searchParams.append("y_axis", chartType);
 
@@ -544,7 +544,7 @@ export {
   logout,
   getSettings,
   updateSettings,
-  fetchChart,
+  fetchGraphData,
   getEmoji,
   elasticSearchMoviesAndShows
 };
