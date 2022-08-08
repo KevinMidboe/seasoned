@@ -8,31 +8,41 @@ platform:
   arch: amd64
 
 steps:
-- name: frontend_install
-  image: node:13.6.0
-  commands:
-    - node -v
-    - yarn --version
-- name: deploy
-  image: appleboy/drone-ssh
-  pull: true
-  secrets:
-    - ssh_key
-  when:
-    event:
-      - push
-    branch:
-      - master
-      - drone-test
-    status: success
-  settings:
-    host: 10.0.0.114
-    username: root
-    key:
-      from_secret: ssh_key
-    command_timeout: 600s
-    script:
-      - /home/kevin/deploy/seasoned.sh
+  - name: frontend install
+    image: node:18.2.0
+    commands:
+      - node -v
+      - yarn --version
+      - yarn
+
+  - name: frontend build
+    image: node:18.2.0
+    commands:
+      - node -v
+      - yarn --version
+      - yarn
+      - yarn build
+
+  - name: deploy
+    image: appleboy/drone-ssh
+    pull: true
+    secrets:
+      - ssh_key
+    when:
+      event:
+        - push
+      branch:
+        - master
+        - drone-test
+      status: success
+    settings:
+      host: 10.0.0.114
+      username: root
+      key:
+        from_secret: ssh_key
+      command_timeout: 600s
+      script:
+        - /home/kevin/deploy/seasoned.sh
 
 trigger:
   branch:
@@ -41,4 +51,3 @@ trigger:
     include:
       - pull_request
       - push
-
