@@ -114,7 +114,7 @@ router.beforeEach(
     // If pages has meta 'requiresAuth' and user not logged in
     // send user to signin page.
     if (to.matched.some(record => record.meta.requiresAuth)) {
-      if (!loggedIn) {
+      if (!loggedIn()) {
         next({ path: "/signin" });
       }
     }
