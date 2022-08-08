@@ -35,7 +35,6 @@
     id.value = state.popup.id;
     type.value = state.popup.type;
 
-    console.log("popup state:", isOpen.value);
     isOpen.value
       ? document.getElementsByTagName("body")[0].classList.add("no-scroll")
       : document.getElementsByTagName("body")[0].classList.remove("no-scroll");

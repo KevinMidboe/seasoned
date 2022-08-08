@@ -23,7 +23,6 @@ function toast(options) {
 
   toastComponent.use(router);
 
-  console.log("toastComponent:", toastComponent);
   toastComponent.mount(
     document.body.appendChild(document.createElement("div"))
   );
@@ -32,7 +31,6 @@ function toast(options) {
 export default {
   install(app, options) {
     console.log("installing toast plugin!");
-    console.log("plugin options", options);
 
     function info(options) {
       toast({ type: "info", ...options });

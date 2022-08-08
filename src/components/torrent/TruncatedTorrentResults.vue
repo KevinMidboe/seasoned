@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, defineProps } from "vue";
+  import { ref, defineProps } from "vue";
   import { useRouter } from "vue-router";
   import TorrentSearchResults from "@/components/torrent/TorrentSearchResults.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";

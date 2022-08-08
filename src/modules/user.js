@@ -2,18 +2,14 @@ import { refreshToken } from "@/api";
 import { parseJwt } from "@/utils";
 
 function getCookie(name) {
-  console.debug("getting cookie with name:", name);
-
   var arrayb = document.cookie.split(";");
   for (const item of arrayb) {
     const query = `${name}=`;
 
     if (!item.startsWith(query)) continue;
-    console.debug("found from cookies:", item);
     return item.substr(query.length);
   }
 
-  console.debug("no token found");
   return null;
 }
 
@@ -87,7 +83,6 @@ export default {
       if (!jwtToken) return null;
 
       const token = parseJwt(jwtToken);
-      console.debug("has token: ", token);
       return await dispatch("setupStateFromToken", token);
     },
     setupStateFromToken: ({ commit }, token) => {
@@ -97,13 +92,6 @@ export default {
         if (!username) {
           return false;
         }
-
-        console.debug("setting:", {
-          username,
-          admin: admin != undefined,
-          settings,
-          token
-        });
 
         commit("SET_TOKEN", token);
         commit("SET_USERNAME", username);
