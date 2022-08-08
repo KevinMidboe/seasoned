@@ -1,4 +1,4 @@
-@import "./src/scss/variables";
+@import "src/scss/variables";
 
 // Loading placeholder styling
 @mixin nth-children($points...) {
@@ -12,13 +12,17 @@
 .text-input__loading {
   width: 100%;
 
-   &--line {
+  &--line {
     height: 10px;
-    margin: 10px;
+    margin: 10px 0;
     animation: pulse 1s infinite ease-in-out;
 
     &.short {
       width: 60px !important;
+    }
+
+    &.fullwidth {
+      width: 100% !important;
     }
 
     &.nomargin {

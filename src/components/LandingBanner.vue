@@ -1,14 +1,28 @@
 <template>
-  <header v-bind:style="{ 'background-image': 'url(' + imageFile + ')' }">
+  <header
+    :class="{ expanded, noselect: true }"
+    v-bind:style="{ 'background-image': 'url(' + imageFile + ')' }"
+  >
     <div class="container">
-      <h1 class="title">Request new movies or tv shows for plex</h1>
-      <strong class="subtitle">Made with Vue.js</strong>
+      <h1 class="title">Request movies or tv shows</h1>
+      <strong class="subtitle"
+        >Create a profile to track and view requests</strong
+      >
+    </div>
+
+    <div class="expand-icon" @click="expanded = !expanded">
+      <IconExpand v-if="!expanded" />
+      <IconShrink v-else />
     </div>
   </header>
 </template>
 
 <script>
+import IconExpand from "../icons/IconExpand.vue";
+import IconShrink from "../icons/IconShrink.vue";
+
 export default {
+  components: { IconExpand, IconShrink },
   props: {
     image: {
       type: String,
@@ -17,24 +31,35 @@ export default {
   },
   data() {
     return {
-      imageFile: "/pulp-fiction.jpg"
+      images: [
+        "pulp-fiction.jpg",
+        "arrival.jpg",
+        "dune.jpg",
+        "mandalorian.jpg"
+      ],
+      imageFile: undefined,
+      expanded: false
     };
   },
   beforeMount() {
     if (this.image && this.image.length > 0) {
       this.imageFile = this.image;
+    } else {
+      this.imageFile = `/assets/${
+        this.images[Math.floor(Math.random() * this.images.length)]
+      }`;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
+@import "src/scss/variables";
+@import "src/scss/media-queries";
 
 header {
   width: 100%;
-  height: 200px;
+  height: 25vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,8 +68,48 @@ header {
   background-position: 50% 50%;
   position: relative;
 
-  @include tablet-min {
-    height: 284px;
+  &.expanded {
+    height: calc(100vh - var(--header-size));
+    width: calc(100vw - var(--header-size));
+
+    @include mobile {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    &:before {
+      background-color: transparent;
+    }
+
+    .title,
+    .subtitle {
+      opacity: 0;
+    }
+  }
+
+  .expand-icon {
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+    height: 1.8rem;
+    width: 1.8rem;
+    fill: var(--text-color-50);
+
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+
+    &:hover {
+      cursor: pointer;
+      fill: var(--text-color-90);
+    }
+  }
+
+  &:hover {
+    .expand-icon {
+      visibility: visible;
+      opacity: 1;
+    }
   }
 
   &:before {
@@ -54,8 +119,8 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: $background-70;
-    transition: background-color 0.5s ease;
+    background-color: var(--background-70);
+    transition: inherit;
   }
 
   .container {
@@ -71,9 +136,10 @@ header {
     letter-spacing: 0.5px;
     color: $text-color;
     margin: 0;
+    opacity: 1;
 
     @include tablet-min {
-      font-size: 28px;
+      font-size: 2.5rem;
     }
   }
 
@@ -83,9 +149,10 @@ header {
     font-weight: 300;
     color: $text-color-70;
     margin: 5px 0;
+    opacity: 1;
 
     @include tablet-min {
-      font-size: 16px;
+      font-size: 1.3rem;
     }
   }
 }

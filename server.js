@@ -1,23 +1,18 @@
-var express = require('express');
-var path = require('path');
-const compression = require('compression')
-var history = require('connect-history-api-fallback');
+const express = require("express");
+const path = require("path");
+const history = require("connect-history-api-fallback");
+
+const publicPath = path.join(__dirname, "public");
 
 app = express();
+app.use("/", express.static(publicPath));
+app.use(history({ index: "/" }));
 
-app.use(compression())
-app.use('/dist', express.static(path.join(__dirname + "/dist")));
-app.use('/dist', express.static(path.join(__dirname + "/dist/")));
-app.use('/favicons', express.static(path.join(__dirname + "/favicons")));
-app.use(history({
-    index: '/'
-}));
-
-var port = process.env.PORT || 5000;
-
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));
+app.get("/", function (req, res) {
+  res.sendFile(`${publicPath}/index.html`);
 });
 
+const port = process.env.PORT || 5001;
+console.log("Server runnning at port:", port);
 
 app.listen(port);

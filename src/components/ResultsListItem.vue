@@ -1,0 +1,180 @@
+<template>
+  <li class="movie-item" ref="list-item">
+    <figure ref="poster" class="movie-item__poster" @click="openMoviePopup">
+      <img
+        class="movie-item__img"
+        :alt="posterAltText"
+        :data-src="poster"
+        src="/assets/placeholder.png"
+      />
+
+      <div v-if="movie.download" class="progress">
+        <progress :value="movie.download.progress" max="100"></progress>
+        <span>{{ movie.download.state }}: {{ movie.download.progress }}%</span>
+      </div>
+    </figure>
+
+    <div class="movie-item__info">
+      <p v-if="movie.title || movie.name" class="movie-item__title">
+        {{ movie.title || movie.name }}
+      </p>
+      <p v-if="movie.year">{{ movie.year }}</p>
+      <p v-if="movie.type == 'person'">
+        Known for: {{ movie.known_for_department }}
+      </p>
+    </div>
+  </li>
+</template>
+
+<script>
+import { mapActions } from "vuex";
+import img from "../directives/v-image";
+import { buildImageProxyUrl } from "../utils";
+
+export default {
+  props: {
+    movie: {
+      type: Object,
+      required: true
+    }
+  },
+  directives: {
+    img: img
+  },
+  data() {
+    return {
+      poster: null,
+      observed: false
+    };
+  },
+  computed: {
+    posterAltText: function () {
+      const type = this.movie.type || "";
+      const title = this.movie.title || this.movie.name;
+      return this.movie.poster
+        ? `Poster for ${type} ${title}`
+        : `Missing image for ${type} ${title}`;
+    },
+    imageWidth() {
+      if (this.image)
+        return Math.ceil(this.image.getBoundingClientRect().width);
+    },
+    imageHeight() {
+      if (this.image)
+        return Math.ceil(this.image.getBoundingClientRect().height);
+    }
+  },
+  beforeMount() {
+    if (this.movie.poster == null) {
+      this.poster = "/assets/no-image.svg";
+      return;
+    }
+
+    this.poster = `https://image.tmdb.org/t/p/w500${this.movie.poster}`;
+    // this.poster = this.buildProxyURL(
+    //   this.imageWidth,
+    //   this.imageHeight,
+    //   assetUrl
+    // );
+  },
+  mounted() {
+    const poster = this.$refs["poster"];
+    this.image = poster.getElementsByTagName("img")[0];
+    if (this.image == null) return;
+
+    const imageObserver = new IntersectionObserver((entries, imgObserver) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && this.observed == false) {
+          const lazyImage = entry.target;
+          lazyImage.src = lazyImage.dataset.src;
+          poster.className = poster.className + " is-loaded";
+          this.observed = true;
+        }
+      });
+    });
+
+    imageObserver.observe(this.image);
+  },
+  methods: {
+    ...mapActions("popup", ["open"]),
+    openMoviePopup() {
+      this.open({
+        id: this.movie.id,
+        type: this.movie.type
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+@import "src/scss/variables";
+@import "src/scss/media-queries";
+@import "src/scss/main";
+
+.movie-item {
+  padding: 15px;
+  width: 100%;
+  background-color: var(--background-color);
+
+  &:hover &__info > p {
+    color: $text-color;
+  }
+
+  &__poster {
+    text-decoration: none;
+    color: $text-color-70;
+    font-weight: 300;
+    position: relative;
+    transform: scale(0.97) translateZ(0);
+
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      background-color: var(--background-color);
+      transition: 1s background-color ease;
+    }
+
+    &:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba($dark, 0.1);
+    }
+
+    &.is-loaded::before {
+      background-color: transparent;
+    }
+
+    img {
+      width: 100%;
+      border-radius: 10px;
+    }
+  }
+
+  &__info {
+    padding-top: 10px;
+    font-weight: 300;
+
+    > p {
+      color: $text-color-70;
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      transition: color 0.5s ease;
+      cursor: pointer;
+      @include mobile-ls-min {
+        font-size: 12px;
+      }
+      @include tablet-min {
+        font-size: 14px;
+      }
+    }
+  }
+
+  &__title {
+    font-weight: 400;
+  }
+}
+</style>

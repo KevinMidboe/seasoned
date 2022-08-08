@@ -1,18 +1,67 @@
+@import "src/scss/variables";
 
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none;   /* Safari */
-  -khtml-user-select: none;    /* Konqueror HTML */
-  -moz-user-select: none;      /* Firefox */
-  -ms-user-select: none;       /* Internet Explorer/Edge */
-  user-select: none;           /* Non-prefixed version, currently */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently */
 }
 
-.end-section {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin: 1rem 0;
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  line-height: var(--line-height);
+  background: var(--background-color);
+  color: var(--text-color);
+
+  * {
+    transition: 0.5s ease;
+  }
+
+  &.hidden {
+    overflow: hidden;
+  }
+}
+a:any-link {
+  color: inherit;
+}
+input,
+textarea,
+button {
+  font-family: "Roboto", sans-serif;
+}
+figure {
+  padding: 0;
+  margin: 0;
+}
+img {
+  display: block;
+  height: auto;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+@mixin noscrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar {
+    /* WebKit */
+    width: 0;
+    height: 0;
+  }
 }
 
 .button--group {

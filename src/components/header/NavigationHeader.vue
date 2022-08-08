@@ -1,0 +1,126 @@
+<template>
+  <nav>
+    <a v-if="isHome" class="nav__logo" href="/">
+      <TmdbLogo class="logo" />
+    </a>
+    <router-link v-else class="nav__logo" to="/" exact>
+      <TmdbLogo class="logo" />
+    </router-link>
+
+    <SearchInput />
+
+    <Hamburger class="mobile-only" />
+
+    <NavigationIcon class="desktop-only" :route="profileRoute" />
+
+    <div class="navigation-icons-grid mobile-only" :class="{ open: isOpen }">
+      <NavigationIcons>
+        <NavigationIcon :route="profileRoute" />
+      </NavigationIcons>
+    </div>
+  </nav>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+import TmdbLogo from "@/icons/tmdb-logo";
+import IconProfile from "@/icons/IconProfile";
+import IconProfileLock from "@/icons/IconProfileLock";
+import IconSettings from "@/icons/IconSettings";
+import IconActivity from "@/icons/IconActivity";
+import SearchInput from "@/components/header/SearchInput";
+import NavigationIcons from "src/components/header/NavigationIcons";
+import NavigationIcon from "src/components/header/NavigationIcon";
+import Hamburger from "@/components/ui/Hamburger";
+
+export default {
+  components: {
+    NavigationIcons,
+    NavigationIcon,
+    SearchInput,
+    TmdbLogo,
+    IconProfile,
+    IconProfileLock,
+    IconSettings,
+    IconActivity,
+    Hamburger
+  },
+  computed: {
+    ...mapGetters("user", ["loggedIn"]),
+    ...mapGetters("hamburger", ["isOpen"]),
+    isHome() {
+      return this.$route.path === "/";
+    },
+    profileRoute() {
+      return {
+        title: !this.loggedIn ? "Signin" : "Profile",
+        route: !this.loggedIn ? "/signin" : "/profile",
+        icon: !this.loggedIn ? IconProfileLock : IconProfile
+      };
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+@import "src/scss/variables";
+@import "src/scss/media-queries";
+
+.spacer {
+  @include mobile-only {
+    width: 100%;
+    height: $header-size;
+  }
+}
+
+nav {
+  display: grid;
+  grid-template-columns: var(--header-size) 1fr var(--header-size);
+
+  > * {
+    z-index: 10;
+  }
+}
+
+.nav__logo {
+  overflow: hidden;
+}
+
+.logo {
+  padding: 1rem;
+  fill: var(--color-green);
+  width: var(--header-size);
+  height: var(--header-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $background-nav-logo;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  @include mobile {
+    padding: 0.5rem;
+  }
+}
+
+.navigation-icons-grid {
+  display: flex;
+  flex-wrap: wrap;
+  position: fixed;
+  top: var(--header-size);
+  left: 0;
+  width: 100%;
+  background-color: $background-95;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+
+  &.open {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+</style>

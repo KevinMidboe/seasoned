@@ -3,77 +3,77 @@
 $phone-xs-width: 480px;
 $tablet-p-width: 768px;
 $tablet-l-width: 1024px;
-$desktop-width:  1200px;
+$desktop-width: 1200px;
 $desktop-l-width: 1600px;
 $mobile-width: 768px;
 
 @mixin desktop {
 	@media (min-width: #{$mobile-width + 1px}) {
-    @content;
-  }
+		@content;
+	}
 }
 
 @mixin mobile {
 	@media (max-width: #{$mobile-width}) {
-    @content;
-  }
+		@content;
+	}
 }
 
 .desktop-only {
 	@include mobile {
-		display: none;
+		display: none !important;
 	}
 }
 
 .mobile-only {
 	@include desktop {
-		display: none;
+		display: none !important;
 	}
 }
 
 // Media
-@mixin mobile-only{
-	@media (max-width: #{$tablet-p-width - 1px}){
+@mixin mobile-only {
+	@media (max-width: #{$tablet-p-width - 1px}) {
 		@content;
 	}
 }
-@mixin mobile-ls-min{
-  @media (min-width: #{$phone-xs-width}){
+@mixin mobile-ls-min {
+	@media (min-width: #{$phone-xs-width}) {
 		@content;
 	}
 }
-@mixin tablet-only{
-	@media (min-width: #{$tablet-p-width}) and (max-width: #{$desktop-width - 1px}){
+@mixin tablet-only {
+	@media (min-width: #{$tablet-p-width}) and (max-width: #{$desktop-width - 1px}) {
 		@content;
 	}
 }
-@mixin tablet-min{
-	@media (min-width: #{$tablet-p-width}){
+@mixin tablet-min {
+	@media (min-width: #{$tablet-p-width}) {
 		@content;
 	}
 }
-@mixin tablet-portrait-only{
-	@media (min-width: #{$tablet-p-width}) and (max-width: #{$tablet-l-width - 1px}){
+@mixin tablet-portrait-only {
+	@media (min-width: #{$tablet-p-width}) and (max-width: #{$tablet-l-width - 1px}) {
 		@content;
 	}
 }
-@mixin tablet-landscape-min{
-	@media (min-width: #{$tablet-l-width}){
+@mixin tablet-landscape-min {
+	@media (min-width: #{$tablet-l-width}) {
 		@content;
 	}
 }
-@mixin desktop-min{
-	@media (min-width: #{$desktop-width}){
+@mixin desktop-min {
+	@media (min-width: #{$desktop-width}) {
 		@content;
 	}
 }
-@mixin desktop-lg-min{
-	@media (min-width: #{$desktop-l-width}){
+@mixin desktop-lg-min {
+	@media (min-width: #{$desktop-l-width}) {
 		@content;
 	}
 }
-@mixin retina{
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi){
-    @content;
-  }
+@mixin retina {
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+		@content;
+	}
 }

@@ -1,15 +1,23 @@
 <template>
-  <button type="button" @click="emit('click')" :class="{ active: active }">
+  <button
+    type="button"
+    @click="emit('click')"
+    :class="{ active: active, fullwidth: fullWidth }"
+  >
     <slot></slot>
   </button>
 </template>
 
 <script>
-
 export default {
-  name: 'seasonedButton',
+  name: "seasonedButton",
   props: {
     active: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    fullWidth: {
       type: Boolean,
       default: false,
       required: false
@@ -17,15 +25,15 @@ export default {
   },
   methods: {
     emit() {
-      this.$emit('click')
+      this.$emit("click");
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
-@import "./src/scss/media-queries";
+@import "src/scss/variables";
+@import "src/scss/media-queries";
 
 button {
   display: inline-block;
@@ -43,14 +51,25 @@ button {
   background: $background-color-secondary;
   cursor: pointer;
   outline: none;
-  transition: background 0.5s ease, color 0.5s ease, border-color .5s ease;
+  transition: background 0.5s ease, color 0.5s ease, border-color 0.5s ease;
 
   @include desktop {
     font-size: 0.8rem;
     padding: 6px 20px 5px 20px;
   }
 
-  &:focus, &:active, &.active {
+  &.fullwidth {
+    font-size: 14px;
+    width: 40%;
+
+    @include mobile {
+      width: 60%;
+    }
+  }
+
+  &:focus,
+  &:active,
+  &.active {
     background: $text-color;
     color: $background-color;
   }

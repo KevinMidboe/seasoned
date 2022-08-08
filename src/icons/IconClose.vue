@@ -1,0 +1,15 @@
+<template>
+  <svg
+    id="icon-cross"
+    viewBox="0 0 32 32"
+    xmlns="http://www.w3.org/2000/svg"
+    @click="$emit('click')"
+    @keydown="event => $emit('keydown', event)"
+    style="transition-duration: 0s;"
+  >
+    <path
+      fill="inherit"
+      d="M27.942 5.942l-1.883-1.883-10.058 10.054-10.058-10.054-1.883 1.883 10.054 10.058-10.054 10.058 1.883 1.883 10.058-10.054 10.058 10.054 1.883-1.883-10.054-10.058z"
+    ></path>
+  </svg>
+</template>

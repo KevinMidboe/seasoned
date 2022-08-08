@@ -7,7 +7,7 @@
 </template>
 
 <style lang="scss" scoped>
-@import "./src/scss/variables";
+@import "src/scss/variables";
 
 .loader {
   display: flex;
@@ -16,7 +16,7 @@
   justify-content: center;
   align-items: center;
 
-  &--icon{
+  &--icon {
     border: 2px solid $text-color-70;
     border-radius: 50%;
     display: block;
@@ -32,7 +32,7 @@
       &:after {
         border: 7px solid $green-90;
         border-radius: 50%;
-        content: '';
+        content: "";
         left: 8px;
         position: absolute;
         top: 22px;
@@ -40,7 +40,9 @@
     }
   }
   @keyframes load {
-    100% { transform: rotate(360deg); }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 }
 </style>

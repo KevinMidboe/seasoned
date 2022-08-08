@@ -1,15 +1,26 @@
-<template> 
-  <ul class="results" :class="{'shortList': shortList}">
-    <movies-list-item v-for='movie in results' :movie="movie" />
-  </ul>
+<template>
+  <div>
+    <ul
+      v-if="results && results.length"
+      class="results"
+      :class="{ shortList: shortList }"
+    >
+      <results-list-item
+        v-for="(movie, index) in results"
+        :key="`${movie.type}-${movie.id}-${index}`"
+        :movie="movie"
+      />
+    </ul>
+
+    <span v-else-if="!loading" class="no-results">No results found</span>
+  </div>
 </template>
 
-
 <script>
-import MoviesListItem from '@/components/MoviesListItem'
+import ResultsListItem from "@/components/ResultsListItem";
 
 export default {
-  components: { MoviesListItem },
+  components: { ResultsListItem },
   props: {
     results: {
       type: Array,
@@ -19,50 +30,54 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   }
-}  
+};
 </script>
 
+<style lang="scss">
+@import "src/scss/media-queries";
+@import "src/scss/main";
 
-<style lang="scss" scoped>
-@import './src/scss/media-queries';
+.no-results {
+  width: 100%;
+  display: block;
+  text-align: center;
+  margin: 1.5rem;
+  font-size: 1.2rem;
+}
 
 .results {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+  grid-auto-rows: auto;
   margin: 0;
   padding: 0;
   list-style: none;
 
-  &.shortList > li {
-    display: none;
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    &:nth-child(-n+4) {
-      display: block;
+  &.shortList {
+    overflow: auto;
+    grid-auto-flow: column;
+    max-width: 100vw;
+
+    @include noscrollbar;
+
+    > li {
+      min-width: 225px;
+    }
+
+    @include tablet-min {
+      max-width: calc(100vw - var(--header-size));
     }
   }
 }
-
-@include tablet-min {
-  .results.shortList > li:nth-child(-n+6) {
-    display: block;
-  }
-}
-@include tablet-landscape-min {
-  .results.shortList > li:nth-child(-n+8) {
-    display: block;
-  }
-}
-@include desktop-min {
-  .results.shortList > li:nth-child(-n+10) {
-    display: block;
-  }
-}
-@include desktop-lg-min {
-  .results.shortList > li:nth-child(-n+16) {
-    display: block;
-  }
-}
-
 </style>
