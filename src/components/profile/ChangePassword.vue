@@ -34,8 +34,9 @@
   import SeasonedInput from "@/components/ui/SeasonedInput.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import SeasonedMessages from "@/components/ui/SeasonedMessages.vue";
+  import { ErrorMessageTypes } from "../../interfaces/IErrorMessage";
   import type { Ref } from "vue";
-  import type IErrorMessage from "../../interfaces/IErrorMessage";
+  import type { IErrorMessage } from "../../interfaces/IErrorMessage";
 
   interface ResetPasswordPayload {
     old_password: string;
@@ -52,7 +53,11 @@
   }
 
   function addWarningMessage(message: string, title?: string) {
-    messages.value.push({ message, title, type: "warning" });
+    messages.value.push({
+      message,
+      title,
+      type: ErrorMessageTypes.Warning
+    } as IErrorMessage);
   }
 
   function validate() {

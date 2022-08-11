@@ -1,5 +1,12 @@
-export default interface IErrorMessage {
+export enum ErrorMessageTypes {
+  Error = "error",
+  Success = "success",
+  Warning = "warning"
+}
+
+export interface IErrorMessage {
+  id: string;
   title: string;
   message: string;
-  type: "error" | "success" | "warning";
+  type: ErrorMessageTypes;
 }

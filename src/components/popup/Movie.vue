@@ -15,7 +15,7 @@
       </figure>
 
       <div v-if="media" class="movie__title">
-        <h1>{{ media.title || media.name }}</h1>
+        <h1>{{ media.title }}</h1>
         <i>{{ media.tagline }}</i>
       </div>
       <loading-placeholder v-else :count="2" />
@@ -111,9 +111,13 @@
               title="Release date"
               :detail="media.year"
             />
-            <Detail v-if="media.rating" title="Rating" :detail="media.rating" />
             <Detail
-              v-if="media.type == ListTypes.Show"
+              v-if="media.type === MediaTypes.Movie && media.rating"
+              title="Rating"
+              :detail="media.rating"
+            />
+            <Detail
+              v-if="media.type == MediaTypes.Show"
               title="Seasons"
               :detail="media.seasons"
             />
@@ -184,7 +188,7 @@
     IMediaCredits,
     ICast
   } from "../../interfaces/IList";
-  import { ListTypes } from "../../interfaces/IList";
+  import { MediaTypes } from "../../interfaces/IList";
 
   import { humanMinutes } from "../../utils";
   import {
@@ -200,7 +204,7 @@
 
   interface Props {
     id: number;
-    type: ListTypes.Movie | ListTypes.Show;
+    type: MediaTypes.Movie | MediaTypes.Show;
   }
 
   const props = defineProps<Props>();
@@ -243,10 +247,10 @@
     let apiFunction: Function;
     let parameters: object;
 
-    if (props.type === ListTypes.Movie) {
+    if (props.type === MediaTypes.Movie) {
       apiFunction = getMovie;
       parameters = { checkExistance: true, credits: false };
-    } else if (props.type === ListTypes.Show) {
+    } else if (props.type === MediaTypes.Show) {
       apiFunction = getShow;
       parameters = { checkExistance: true, credits: false };
     }
@@ -260,11 +264,11 @@
   }
 
   function getCredits(
-    type: ListTypes.Movie | ListTypes.Show
+    type: MediaTypes.Movie | MediaTypes.Show
   ): Promise<IMediaCredits> {
-    if (type === ListTypes.Movie) {
+    if (type === MediaTypes.Movie) {
       return getMovieCredits(props.id);
-    } else if (type === ListTypes.Show) {
+    } else if (type === MediaTypes.Show) {
       return getShowCredits(props.id);
     }
 
@@ -301,7 +305,7 @@
   }
 
   function openTmdb() {
-    const tmdbType = props.type === ListTypes.Show ? "tv" : props.type;
+    const tmdbType = props.type === MediaTypes.Show ? "tv" : props.type;
     const tmdbURL = "https://www.themoviedb.org/" + tmdbType + "/" + props.id;
     window.location.href = tmdbURL;
   }

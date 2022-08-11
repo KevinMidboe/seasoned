@@ -46,8 +46,9 @@
   import SeasonedMessages from "@/components/ui/SeasonedMessages.vue";
   import { register } from "../api";
   import { focusFirstFormInput, focusOnNextElement } from "../utils";
+  import { ErrorMessageTypes } from "../interfaces/IErrorMessage";
   import type { Ref } from "vue";
-  import type IErrorMessage from "../interfaces/IErrorMessage";
+  import type { IErrorMessage } from "../interfaces/IErrorMessage";
 
   const username: Ref<string> = ref("");
   const password: Ref<string> = ref("");
@@ -65,11 +66,19 @@
   }
 
   function addErrorMessage(message: string, title?: string) {
-    messages.value.push({ message, title, type: "error" });
+    messages.value.push({
+      message,
+      title,
+      type: ErrorMessageTypes.Error
+    } as IErrorMessage);
   }
 
   function addWarningMessage(message: string, title?: string) {
-    messages.value.push({ message, title, type: "warning" });
+    messages.value.push({
+      message,
+      title,
+      type: ErrorMessageTypes.Warning
+    } as IErrorMessage);
   }
 
   function validate(): Promise<boolean> {

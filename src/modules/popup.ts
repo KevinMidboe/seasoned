@@ -1,5 +1,5 @@
 import router from "../routes";
-import { ListTypes } from "../interfaces/IList";
+import { MediaTypes } from "../interfaces/IList";
 import type { IStatePopup } from "../interfaces/IStatePopup";
 
 const removeIncludedQueryParams = (params, key) => {
@@ -16,7 +16,7 @@ function paramsToObject(entries) {
   return result;
 }
 
-const updateQueryParams = (id: number | null = null, type: string = "") => {
+const updateQueryParams = (id: number = null, type: MediaTypes = null) => {
   let params = new URLSearchParams(window.location.search);
   params = removeIncludedQueryParams(params, "movie");
   params = removeIncludedQueryParams(params, "show");
@@ -59,7 +59,7 @@ export default {
     }
   },
   actions: {
-    open: ({ commit }, { id, type = "movie" }) => {
+    open: ({ commit }, { id, type }: { id: number; type: MediaTypes }) => {
       if (!isNaN(id)) id = Number(id);
       commit("SET_OPEN", { id, type });
       updateQueryParams(id, type);

@@ -26,7 +26,7 @@
   import PageHeader from "@/components/PageHeader.vue";
   import ToggleButton from "@/components/ui/ToggleButton.vue";
   import type { Ref } from "vue";
-  import { ListTypes } from "../interfaces/IList";
+  import { MediaTypes } from "../interfaces/IList";
 
   // interface ISearchParams {
   //   query: string;
@@ -38,11 +38,11 @@
   const route = useRoute();
   const router = useRouter();
 
-  const toggleOptions = ["all", ...Object.values(ListTypes)];
+  const toggleOptions = ["all", ...Object.values(MediaTypes)];
   const query: Ref<string> = ref(null);
   const page: Ref<number> = ref(1);
   const adult: Ref<boolean> = ref(false);
-  const mediaType: Ref<ListTypes> = ref(null);
+  const mediaType: Ref<MediaTypes> = ref(null);
 
   const title = computed(() => `Search results: ${query.value}`);
 
@@ -51,7 +51,7 @@
     query.value = decodeURIComponent(urlQuery?.query?.toString());
     page.value = Number(urlQuery?.page) || 1;
     adult.value = Boolean(urlQuery?.adult) || adult.value;
-    mediaType.value = (urlQuery?.media_type as ListTypes) || mediaType.value;
+    mediaType.value = (urlQuery?.media_type as MediaTypes) || mediaType.value;
   }
 
   let search = (

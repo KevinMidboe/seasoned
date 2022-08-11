@@ -7,7 +7,7 @@
     >
       <results-list-item
         v-for="(result, index) in results"
-        :key="`${result.type}-${result.id}-${index}`"
+        :key="generateResultKey(index, `${result.type}-${result.id}`)"
         :listItem="result"
       />
     </ul>
@@ -28,6 +28,10 @@
   }
 
   const props = defineProps<Props>();
+
+  function generateResultKey(index: string | number | symbol, value: string) {
+    return `${String(index)}-${value}`;
+  }
 </script>
 
 <style lang="scss" scoped>

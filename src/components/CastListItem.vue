@@ -11,10 +11,10 @@
 <script setup lang="ts">
   import { defineProps, computed } from "vue";
   import { useStore } from "vuex";
-  import type { MediaTypes, CreditTypes } from "../interfaces/IList";
+  import type { ICast, ICrew, IMovie, IShow } from "../interfaces/IList";
 
   interface Props {
-    creditItem: MediaTypes | CreditTypes;
+    creditItem: ICast | ICrew | IMovie | IShow;
   }
 
   const props = defineProps<Props>();

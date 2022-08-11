@@ -2,7 +2,7 @@
   <section>
     <LandingBanner />
 
-    <div v-for="list in lists" :key="list.name">
+    <div v-for="list in lists" :key="list.title">
       <ResultsSection
         :apiFunction="list.apiFunction"
         :title="list.title"

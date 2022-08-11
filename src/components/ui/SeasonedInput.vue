@@ -39,7 +39,7 @@
 
   interface Emit {
     (e: "change");
-    (e: "enter");
+    (e: "enter", event?: KeyboardEvent);
     (e: "update:modelValue", value: string);
   }
 

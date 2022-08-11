@@ -13,10 +13,16 @@
 <script setup lang="ts">
   import { defineProps } from "vue";
   import CastListItem from "src/components/CastListItem.vue";
-  import type { MediaTypes, CreditTypes } from "../interfaces/IList";
+  import type {
+    IMovie,
+    IShow,
+    IPerson,
+    ICast,
+    ICrew
+  } from "../interfaces/IList";
 
   interface Props {
-    cast: Array<MediaTypes | CreditTypes>;
+    cast: Array<IMovie | IShow | IPerson | ICast | ICrew>;
   }
 
   defineProps<Props>();

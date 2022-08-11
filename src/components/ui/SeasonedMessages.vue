@@ -3,33 +3,31 @@
     <div
       class="card"
       v-for="(message, index) in messages"
-      :key="`${index}-${message.title}-${message.type}}`"
+      :key="generateMessageKey(index, message)"
       :class="message.type || 'warning'"
     >
       <span class="pinstripe"></span>
       <div class="content">
         <h2 class="title">
-          {{ message.title || defaultTitles[message.type] }}
+          {{ message.title }}
         </h2>
         <span v-if="message.message" class="message">{{
           message.message
         }}</span>
       </div>
 
-      <button class="dismiss" @click="dismiss(index)">X</button>
+      <button class="dismiss" @click="dismiss(Number(index))">X</button>
     </div>
   </transition-group>
 </template>
 
 <script setup lang="ts">
   import { defineProps, defineEmits } from "vue";
+  import type {
+    ErrorMessageTypes,
+    IErrorMessage
+  } from "../../interfaces/IErrorMessage";
   import type { Ref } from "vue";
-
-  interface IErrorMessage {
-    title: string;
-    message: string;
-    type: "error" | "success" | "warning";
-  }
 
   interface Props {
     messages: IErrorMessage[];
@@ -45,13 +43,24 @@
   const defaultTitles = {
     error: "Unexpected error",
     warning: "Something went wrong",
-    success: "",
+    success: "Success!",
     undefined: "Something went wrong"
   };
+
+  function titleFromType(type: ErrorMessageTypes) {
+    return defaultTitles[type];
+  }
 
   function dismiss(index: number) {
     props.messages.splice(index, 1);
     emit("update:messages", [...props.messages]);
+  }
+
+  function generateMessageKey(
+    index: string | number | symbol,
+    errorMessage: IErrorMessage
+  ) {
+    return `${String(index)}-${errorMessage.title}-${errorMessage.type}`;
   }
 </script>
 

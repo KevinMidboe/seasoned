@@ -14,13 +14,12 @@
   import { useStore } from "vuex";
   import Movie from "@/components/popup/Movie.vue";
   import Person from "@/components/popup/Person.vue";
-  import { ListTypes } from "../interfaces/IList";
-  import type { MediaTypes } from "../interfaces/IList";
+  import { MediaTypes } from "../interfaces/IList";
   import type { Ref } from "vue";
 
   interface URLQueryParameters {
     id: number;
-    type: ListTypes;
+    type: MediaTypes;
   }
 
   const store = useStore();
@@ -41,14 +40,23 @@
   });
 
   function getFromURLQuery(): URLQueryParameters {
-    let id, type;
+    let id: number;
+    let type: MediaTypes;
 
     const params = new URLSearchParams(window.location.search);
     params.forEach((value, key) => {
-      if (!(key in ListTypes)) return;
+      if (
+        !(
+          key === MediaTypes.Movie ||
+          key === MediaTypes.Show ||
+          key === MediaTypes.Person
+        )
+      ) {
+        return;
+      }
 
       id = Number(params.get(key));
-      type = key;
+      type = MediaTypes[key];
     });
 
     return { id, type };

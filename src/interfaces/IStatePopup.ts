@@ -11,7 +11,7 @@ import type { MediaTypes } from "./IList";
 // }
 
 export interface IStatePopup {
-  id: number | null;
-  type: MediaTypes | null;
+  id: number;
+  type: MediaTypes;
   open: boolean;
 }

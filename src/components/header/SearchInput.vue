@@ -52,13 +52,13 @@
   import IconClose from "@/icons/IconClose.vue";
   import config from "../../config";
   import type { Ref } from "vue";
-  import type { ListTypes } from "../../interfaces/IList";
+  import type { MediaTypes } from "../../interfaces/IList";
 
   interface ISearchResult {
     title: string;
     id: number;
     adult: boolean;
-    type: ListTypes;
+    type: MediaTypes;
   }
 
   const store = useStore();

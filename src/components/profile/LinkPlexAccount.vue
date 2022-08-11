@@ -49,8 +49,9 @@
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import SeasonedMessages from "@/components/ui/SeasonedMessages.vue";
   import { linkPlexAccount, unlinkPlexAccount } from "../../api";
+  import { ErrorMessageTypes } from "../../interfaces/IErrorMessage";
   import type { Ref, ComputedRef } from "vue";
-  import type IErrorMessage from "../../interfaces/IErrorMessage";
+  import type { IErrorMessage } from "../../interfaces/IErrorMessage";
 
   interface Emit {
     (e: "reload");
@@ -89,10 +90,10 @@
     }
 
     messages.value.push({
-      type: success ? "success" : "error",
+      type: success ? ErrorMessageTypes.Success : ErrorMessageTypes.Error,
       title: success ? "Authenticated with plex" : "Something went wrong",
       message: message
-    });
+    } as IErrorMessage);
   }
 
   async function unauthenticatePlex() {
@@ -103,12 +104,14 @@
     }
 
     messages.value.push({
-      type: response.success ? "success" : "error",
+      type: response.success
+        ? ErrorMessageTypes.Success
+        : ErrorMessageTypes.Error,
       title: response.success
         ? "Unlinked plex account "
         : "Something went wrong",
       message: response.message
-    });
+    } as IErrorMessage);
   }
 </script>
 

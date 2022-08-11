@@ -38,10 +38,10 @@
   import { useStore } from "vuex";
   import { buildImageProxyUrl } from "../utils";
   import type { Ref } from "vue";
-  import type { MediaTypes } from "../interfaces/IList";
+  import type { IMovie, IShow, IPerson, IRequest } from "../interfaces/IList";
 
   interface Props {
-    listItem: MediaTypes;
+    listItem: IMovie | IShow | IPerson;
   }
 
   const props = defineProps<Props>();

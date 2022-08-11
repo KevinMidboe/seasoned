@@ -3,7 +3,7 @@
     <header ref="header">
       <div class="info">
         <h1 v-if="person">
-          {{ person.title || person.name }}
+          {{ person.name }}
         </h1>
         <div v-else>
           <loading-placeholder :count="1" />
@@ -84,7 +84,7 @@
     IMovie,
     IShow
   } from "../../interfaces/IList";
-  import { ListTypes } from "../../interfaces/IList";
+  import { MediaTypes } from "../../interfaces/IList";
 
   interface Props {
     id: number;
@@ -137,12 +137,12 @@
 
   function personCreditedFrom(cast: Array<IMovie | IShow>): void {
     creditedMovies.value = cast
-      .filter(credit => credit.type === ListTypes.Movie)
+      .filter(credit => credit.type === MediaTypes.Movie)
       .filter(alreadyExists)
       .sort(sortPopularity);
 
     creditedShows.value = cast
-      .filter(credit => credit.type === ListTypes.Show)
+      .filter(credit => credit.type === MediaTypes.Show)
       .filter(alreadyExists)
       .sort(sortPopularity);
   }
