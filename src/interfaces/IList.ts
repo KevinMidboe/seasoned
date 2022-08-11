@@ -18,19 +18,66 @@ export interface IPersonCredits {
   type?: string;
 }
 
-export type MediaTypes = IMovie | IShow | IPerson | IRequest;
-export type CreditTypes = ICast | ICrew;
-export type ListResults = Array<MediaTypes>;
+export type ListResults = Array<IMovie | IShow | IPerson | IRequest>;
 
-export enum ListTypes {
+export enum MediaTypes {
   Movie = "movie",
   Show = "show",
-  Person = "person",
-  Request = "request"
+  Person = "person"
 }
 
 export enum RequestTypes {
   Requested = "requested"
+}
+
+export enum MovieGenres {
+  Action = "Action",
+  Adventure = "Adventure",
+  Animation = "Animation",
+  Comedy = "Comedy",
+  Crime = "Crime",
+  Documentary = "Documentary",
+  Drama = "Drama",
+  Family = "Family",
+  Fantasy = "Fantasy",
+  History = "History",
+  Horror = "Horror",
+  Music = "Music",
+  Mystery = "Mystery",
+  Romance = "Romance",
+  Science_Fiction = "Science Fiction",
+  TV_Movie = "TV Movie",
+  Thriller = "Thriller",
+  War = "War",
+  Western = "Western"
+}
+
+export enum MovieProductionStatus {
+  Rumored = "Rumored",
+  Planned = "Planned",
+  In_Production = "In Production",
+  Post_Production = "Post Production",
+  Released = "Released",
+  Canceled = "Canceled"
+}
+
+export enum ShowGenres {
+  Action_Adventure = "Action & Adventure",
+  Animation = "Animation",
+  Comedy = "Comedy",
+  Crime = "Crime",
+  Documentary = "Documentary",
+  Drama = "Drama",
+  Family = "Family",
+  Kids = "Kids",
+  Mystery = "Mystery",
+  News = "News",
+  Reality = "Reality",
+  SciFi_Fantasy = "Sci-Fi & Fantasy",
+  Soap = "Soap",
+  Talk = "Talk",
+  War_Politics = "War & Politics",
+  Western = "Western"
 }
 
 export interface IMovie {
@@ -42,8 +89,14 @@ export interface IMovie {
   backdrop: string;
   release_date: string | Date;
   rating: number;
+  genres: Array<MovieGenres>;
+  production_status: MovieProductionStatus;
+  tagline: string;
+  runtime: number;
   popularity?: number;
-  type: ListTypes.Movie;
+  imdb_db: string;
+  exists_in_plex?: boolean;
+  type: MediaTypes.Movie;
 }
 
 export interface IShow {
@@ -51,16 +104,17 @@ export interface IShow {
   title: string;
   year: number;
   overview: string;
+  tagline?: string;
   poster: string;
   backdrop: string;
   seasons?: number;
   episodes?: number;
   popularity?: number;
-  genres?: Array<string>;
+  genres?: Array<ShowGenres>;
   production_status?: string;
   runtime?: Array<number>;
   exists_in_plex?: boolean;
-  type: ListTypes.Show;
+  type: MediaTypes.Show;
 }
 
 export interface IPerson {
@@ -69,9 +123,11 @@ export interface IPerson {
   poster: string;
   birthday: string | null;
   deathday: string | null;
+  place_of_birth?: string;
+  biography?: string;
   known_for_department: string;
   adult: boolean;
-  type: ListTypes.Person;
+  type: MediaTypes.Person;
 }
 
 export interface IRequest extends IMovie {
