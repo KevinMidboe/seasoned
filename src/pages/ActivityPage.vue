@@ -8,10 +8,9 @@
         <input
           class="dayinput"
           v-model="days"
-          placeholder="number of days"
+          placeholder="days"
           type="number"
           pattern="[0-9]*"
-          :style="{ maxWidth: `${3 + 0.5 * days.length}rem` }"
           @change="fetchChartData"
         />
       </label>
@@ -168,7 +167,7 @@
     input {
       width: 100%;
       font-size: inherit;
-      max-width: 3rem;
+      max-width: 6rem;
       background-color: $background-ui;
       color: $text-color;
     }
