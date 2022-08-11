@@ -45,9 +45,7 @@ steps:
         - /home/kevin/deploy/seasoned.sh
 
 trigger:
-  branch:
-    - master
   event:
     include:
-      - pull_request
       - push
+      - pull_request
