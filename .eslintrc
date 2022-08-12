@@ -1,0 +1,31 @@
+{
+  "root": true,
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "@vue/eslint-config-airbnb",
+    "plugin:vue/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+  ],
+  "rules": {
+    "vue/no-v-model-argument": "off",
+    "no-underscore-dangle": "off",
+    "vue/multi-word-component-names": "off",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
+  },
+  "settings": {
+    "import/resolver": {
+      webpack: {
+        config: "./webpack.config.js"
+      }
+    }
+  }
+}
