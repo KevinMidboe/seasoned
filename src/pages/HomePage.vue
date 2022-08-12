@@ -4,9 +4,9 @@
 
     <div v-for="list in lists" :key="list.title">
       <ResultsSection
-        :apiFunction="list.apiFunction"
+        :api-function="list.apiFunction"
         :title="list.title"
-        :shortList="true"
+        :short-list="true"
       />
     </div>
   </section>
