@@ -5,8 +5,8 @@
         <th
           v-for="column in columns"
           :key="column"
-          @click="sortTable(column)"
           :class="column === selectedColumn ? 'active' : null"
+          @click="sortTable(column)"
         >
           {{ column }}
           <span v-if="prevCol === column && direction">↑</span>
@@ -18,13 +18,32 @@
     <tbody>
       <tr
         v-for="torrent in torrents"
-        class="table__content"
         :key="torrent.magnet"
+        class="table__content"
       >
-        <td @click="expand($event, torrent.name)">{{ torrent.name }}</td>
-        <td @click="expand($event, torrent.name)">{{ torrent.seed }}</td>
-        <td @click="expand($event, torrent.name)">{{ torrent.size }}</td>
-        <td @click="() => emit('magnet', torrent)" class="download">
+        <td
+          @click="expand($event, torrent.name)"
+          @keydown.enter="expand($event, torrent.name)"
+        >
+          {{ torrent.name }}
+        </td>
+        <td
+          @click="expand($event, torrent.name)"
+          @keydown.enter="expand($event, torrent.name)"
+        >
+          {{ torrent.seed }}
+        </td>
+        <td
+          @click="expand($event, torrent.name)"
+          @keydown.enter="expand($event, torrent.name)"
+        >
+          {{ torrent.size }}
+        </td>
+        <td
+          class="download"
+          @click="() => emit('magnet', torrent)"
+          @keydown.enter="() => emit('magnet', torrent)"
+        >
           <IconMagnet />
         </td>
       </tr>
@@ -35,8 +54,8 @@
 <script setup lang="ts">
   import { ref, defineProps, defineEmits } from "vue";
   import IconMagnet from "@/icons/IconMagnet.vue";
-  import { sortableSize } from "../../utils";
   import type { Ref } from "vue";
+  import { sortableSize } from "../../utils";
   import type ITorrent from "../../interfaces/ITorrent";
 
   interface Props {
@@ -87,18 +106,6 @@
     tableRow.insertAdjacentElement("afterend", expandedRow);
   }
 
-  function sortTable(col, sameDirection = false) {
-    if (prevCol.value === col && sameDirection === false) {
-      direction.value = !direction.value;
-    }
-
-    if (col === "name") sortName();
-    else if (col === "seed") sortSeed();
-    else if (col === "size") sortSize();
-
-    prevCol.value = col;
-  }
-
   function sortName() {
     const torrentsCopy = [...torrents.value];
     if (direction.value) {
@@ -112,11 +119,11 @@
     const torrentsCopy = [...torrents.value];
     if (direction.value) {
       torrents.value = torrentsCopy.sort(
-        (a, b) => parseInt(a.seed) - parseInt(b.seed)
+        (a, b) => parseInt(a.seed, 10) - parseInt(b.seed, 10)
       );
     } else {
       torrents.value = torrentsCopy.sort(
-        (a, b) => parseInt(b.seed) - parseInt(a.seed)
+        (a, b) => parseInt(b.seed, 10) - parseInt(a.seed, 10)
       );
     }
   }
@@ -132,6 +139,18 @@
         (a, b) => sortableSize(b.size) - sortableSize(a.size)
       );
     }
+  }
+
+  function sortTable(col, sameDirection = false) {
+    if (prevCol.value === col && sameDirection === false) {
+      direction.value = !direction.value;
+    }
+
+    if (col === "name") sortName();
+    else if (col === "seed") sortSeed();
+    else if (col === "size") sortSize();
+
+    prevCol.value = col;
   }
 </script>
 

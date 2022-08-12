@@ -10,14 +10,14 @@
 
       <form class="form">
         <seasoned-input
+          v-model="username"
           placeholder="plex username"
           type="email"
-          v-model="username"
         />
         <seasoned-input
+          v-model="password"
           placeholder="plex password"
           type="password"
-          v-model="password"
           @enter="authenticatePlex"
         >
         </seasoned-input>
@@ -48,9 +48,9 @@
   import seasonedInput from "@/components/ui/SeasonedInput.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import SeasonedMessages from "@/components/ui/SeasonedMessages.vue";
+  import type { Ref, ComputedRef } from "vue";
   import { linkPlexAccount, unlinkPlexAccount } from "../../api";
   import { ErrorMessageTypes } from "../../interfaces/IErrorMessage";
-  import type { Ref, ComputedRef } from "vue";
   import type { IErrorMessage } from "../../interfaces/IErrorMessage";
 
   interface Emit {
@@ -64,20 +64,11 @@
   const store = useStore();
   const emit = defineEmits<Emit>();
 
-  const loggedIn: ComputedRef<boolean> = computed(
-    () => store.getters["user/loggedIn"]
-  );
   const plexId: ComputedRef<boolean> = computed(
     () => store.getters["user/plexId"]
   );
-  const settings: ComputedRef<boolean> = computed(
-    () => store.getters["user/settings"]
-  );
 
   async function authenticatePlex() {
-    let username = this.plexUsername;
-    let password = this.plexPassword;
-
     const { success, message } = await linkPlexAccount(
       username.value,
       password.value
@@ -92,7 +83,7 @@
     messages.value.push({
       type: success ? ErrorMessageTypes.Success : ErrorMessageTypes.Error,
       title: success ? "Authenticated with plex" : "Something went wrong",
-      message: message
+      message
     } as IErrorMessage);
   }
 

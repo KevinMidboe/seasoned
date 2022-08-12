@@ -4,8 +4,8 @@
       v-for="option in options"
       :key="option"
       class="toggle-button"
-      @click="toggleTo(option)"
       :class="selected === option ? 'selected' : null"
+      @click="() => toggleTo(option)"
     >
       {{ option }}
     </button>
@@ -13,8 +13,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, defineEmits } from "vue";
-  import type { Ref } from "vue";
+  import { defineProps, defineEmits } from "vue";
 
   interface Props {
     options: string[];

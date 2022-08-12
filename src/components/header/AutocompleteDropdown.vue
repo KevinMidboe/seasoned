@@ -1,13 +1,12 @@
 <template>
   <transition name="shut">
     <ul class="dropdown">
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
       <li
-        v-for="result in searchResults"
-        :key="`${result.index}-${result.title}-${result.type}`"
+        v-for="(result, _index) in searchResults"
+        :key="`${_index}-${result.title}-${result.type}`"
+        :class="`result di-${_index} ${_index === index ? 'active' : ''}`"
         @click="openPopup(result)"
-        :class="`result di-${result.index} ${
-          result.index === index ? 'active' : ''
-        }`"
       >
         <IconMovie v-if="result.type == 'movie'" class="type-icon" />
         <IconShow v-if="result.type == 'show'" class="type-icon" />
@@ -29,36 +28,38 @@
   import { useStore } from "vuex";
   import IconMovie from "@/icons/IconMovie.vue";
   import IconShow from "@/icons/IconShow.vue";
-  import IconPerson from "@/icons/IconPerson.vue";
-  import { elasticSearchMoviesAndShows } from "../../api";
   import type { Ref } from "vue";
+  import { elasticSearchMoviesAndShows } from "../../api";
+  import { MediaTypes } from "../../interfaces/IList";
+  import { Index } from "../../interfaces/IAutocompleteSearch";
+  import type {
+    IAutocompleteResult,
+    IAutocompleteSearchResults
+  } from "../../interfaces/IAutocompleteSearch";
 
   interface Props {
     query?: string;
-    index?: Number;
-    results?: Array<any>;
+    index?: number;
+    results?: Array<IAutocompleteResult>;
   }
 
   interface Emit {
-    (e: "update:results", value: Array<any>);
+    (e: "update:results", value: Array<IAutocompleteResult>);
   }
 
-  const numberOfResults: number = 10;
+  const numberOfResults = 10;
   const props = defineProps<Props>();
   const emit = defineEmits<Emit>();
   const store = useStore();
 
-  const searchResults: Ref<Array<any>> = ref([]);
+  const searchResults: Ref<Array<IAutocompleteResult>> = ref([]);
   const keyboardNavigationIndex: Ref<number> = ref(0);
-
-  // on load functions
-  fetchAutocompleteResults();
-  // end on load functions
 
   watch(
     () => props.query,
     newQuery => {
-      if (newQuery?.length > 0) fetchAutocompleteResults();
+      if (newQuery?.length > 0)
+        fetchAutocompleteResults(); /* eslint-disable-line no-use-before-define */
     }
   );
 
@@ -66,6 +67,53 @@
     if (!result.id || !result.type) return;
 
     store.dispatch("popup/open", { ...result });
+  }
+
+  function removeDuplicates(_searchResults) {
+    const filteredResults = [];
+    _searchResults.forEach(result => {
+      if (result === undefined) return;
+      const numberOfDuplicates = filteredResults.filter(
+        filterItem => filterItem.id === result.id
+      );
+      if (numberOfDuplicates.length >= 1) {
+        return;
+      }
+
+      filteredResults.push(result);
+    });
+
+    return filteredResults;
+  }
+
+  function elasticIndexToMediaType(index: Index): MediaTypes {
+    if (index === Index.Movies) return MediaTypes.Movie;
+    if (index === Index.Shows) return MediaTypes.Show;
+
+    return null;
+  }
+
+  function parseElasticResponse(elasticResponse: IAutocompleteSearchResults) {
+    const data = elasticResponse.hits.hits;
+
+    const results: Array<IAutocompleteResult> = [];
+
+    data.forEach(item => {
+      if (!Object.values(Index).includes(item._index)) {
+        return;
+      }
+
+      results.push({
+        title: item._source?.original_name || item._source.original_title,
+        id: item._source.id,
+        adult: item._source.adult,
+        type: elasticIndexToMediaType(item._index)
+      });
+    });
+
+    return removeDuplicates(results).map((el, index) => {
+      return { ...el, index };
+    });
   }
 
   function fetchAutocompleteResults() {
@@ -80,44 +128,9 @@
       });
   }
 
-  function parseElasticResponse(elasticResponse: any) {
-    const data = elasticResponse.hits.hits;
-
-    let results = data.map(item => {
-      let index = null;
-      if (item._source.log.file.path.includes("movie")) index = "movie";
-      if (item._source.log.file.path.includes("series")) index = "show";
-
-      if (index === "movie" || index === "show") {
-        return {
-          title: item._source.original_name || item._source.original_title,
-          id: item._source.id,
-          adult: item._source.adult,
-          type: index
-        };
-      }
-    });
-
-    return removeDuplicates(results).map((el, index) => {
-      return { ...el, index };
-    });
-  }
-
-  function removeDuplicates(searchResults) {
-    let filteredResults = [];
-    searchResults.map(result => {
-      if (result === undefined) return;
-      const numberOfDuplicates = filteredResults.filter(
-        filterItem => filterItem.id == result.id
-      );
-      if (numberOfDuplicates.length >= 1) {
-        return null;
-      }
-      filteredResults.push(result);
-    });
-
-    return filteredResults;
-  }
+  // on load functions
+  fetchAutocompleteResults();
+  // end on load functions
 </script>
 
 <style lang="scss" scoped>

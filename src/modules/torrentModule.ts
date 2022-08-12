@@ -6,12 +6,10 @@ const state: IStateTorrent = {
   resultCount: null
 };
 
+/* eslint-disable @typescript-eslint/no-shadow */
 export default {
   namespaced: true,
-  state: {
-    results: [],
-    resultCount: null
-  },
+  state,
   getters: {
     results: (state: IStateTorrent) => {
       return state.results;

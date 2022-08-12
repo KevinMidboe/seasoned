@@ -2,13 +2,15 @@
   <div>
     <torrent-search-results
       :query="query"
-      :tmdb_id="tmdb_id"
+      :tmdb-id="tmdbId"
       :class="{ truncated: truncated }"
       ><div
         v-if="truncated"
         class="load-more"
+        tabindex="0"
         role="button"
         @click="truncated = false"
+        @keydown.enter="truncated = false"
       >
         <icon-arrow-down />
       </div>
@@ -32,7 +34,7 @@
 
   interface Props {
     query: string;
-    tmdb_id?: number;
+    tmdbId?: number;
   }
 
   const props = defineProps<Props>();

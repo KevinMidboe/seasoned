@@ -3,8 +3,8 @@
     <ol class="persons">
       <CastListItem
         v-for="credit in cast"
-        :creditItem="credit"
         :key="credit.id"
+        :credit-item="credit"
       />
     </ol>
   </div>

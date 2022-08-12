@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps, onMounted, watch } from "vue";
+  import { ref, defineProps, onMounted, watch } from "vue";
   import {
     Chart,
     LineElement,
@@ -19,6 +19,11 @@
     ChartType
   } from "chart.js";
 
+  import type { Ref } from "vue";
+  import { convertSecondsToHumanReadable } from "../utils";
+  import { GraphValueTypes } from "../interfaces/IGraph";
+  import type { IGraphDataset, IGraphData } from "../interfaces/IGraph";
+
   Chart.register(
     LineElement,
     BarElement,
@@ -31,23 +36,6 @@
     Title,
     Tooltip
   );
-  import {} from "chart.js";
-  import type { Ref } from "vue";
-
-  enum GraphValueTypes {
-    Number = "number",
-    Time = "time"
-  }
-
-  interface IGraphDataset {
-    name: string;
-    data: Array<number>;
-  }
-
-  interface IGraphData {
-    labels: Array<string>;
-    series: Array<IGraphDataset>;
-  }
 
   interface Props {
     name?: string;
@@ -69,8 +57,10 @@
   const graphCanvas: Ref<HTMLCanvasElement> = ref(null);
   let graphInstance = null;
 
+  /* eslint-disable no-use-before-define */
   onMounted(() => generateGraph());
   watch(() => props.data, generateGraph);
+  /* eslint-enable no-use-before-define */
 
   const graphTemplates = [
     {
@@ -92,9 +82,9 @@
       tension: 0.4
     }
   ];
-  const gridColor = getComputedStyle(document.documentElement).getPropertyValue(
-    "--text-color-5"
-  );
+  // const gridColor = getComputedStyle(document.documentElement).getPropertyValue(
+  //   "--text-color-5"
+  // );
 
   function hydrateGraphLineOptions(dataset: IGraphDataset, index: number) {
     return {
@@ -105,6 +95,7 @@
   }
 
   function removeEmptyDataset(dataset: IGraphDataset) {
+    /* eslint-disable-next-line no-unneeded-ternary */
     return dataset.data.every(point => point === 0) ? false : true;
   }
 
@@ -143,7 +134,7 @@
         yAxes: {
           stacked: props.stacked,
           ticks: {
-            callback: (value, index, values) => {
+            callback: value => {
               if (props.graphValueType === GraphValueTypes.Time) {
                 return convertSecondsToHumanReadable(value);
               }
@@ -173,40 +164,6 @@
       data: chartData,
       options: graphOptions
     });
-  }
-
-  function convertSecondsToHumanReadable(value, values = null) {
-    const highestValue = values ? values[0] : value;
-
-    // minutes
-    if (highestValue < 3600) {
-      const minutes = Math.floor(value / 60);
-
-      value = `${minutes} m`;
-    }
-    // hours and minutes
-    else if (highestValue > 3600 && highestValue < 86400) {
-      const hours = Math.floor(value / 3600);
-      const minutes = Math.floor((value % 3600) / 60);
-
-      value = hours != 0 ? `${hours} h ${minutes} m` : `${minutes} m`;
-    }
-    // days and hours
-    else if (highestValue > 86400 && highestValue < 31557600) {
-      const days = Math.floor(value / 86400);
-      const hours = Math.floor((value % 86400) / 3600);
-
-      value = days != 0 ? `${days} d ${hours} h` : `${hours} h`;
-    }
-    // years and days
-    else if (highestValue > 31557600) {
-      const years = Math.floor(value / 31557600);
-      const days = Math.floor((value % 31557600) / 86400);
-
-      value = years != 0 ? `${years} y ${days} d` : `${days} d`;
-    }
-
-    return value;
   }
 </script>
 

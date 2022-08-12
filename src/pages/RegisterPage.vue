@@ -2,27 +2,27 @@
   <section>
     <h1>Register new user</h1>
 
-    <form class="form" ref="formElement">
+    <form ref="formElement" class="form">
       <seasoned-input
+        v-model="username"
         placeholder="username"
         icon="Email"
         type="email"
-        v-model="username"
         @keydown.enter="focusOnNextElement"
       />
 
       <seasoned-input
+        v-model="password"
         placeholder="password"
         icon="Keyhole"
         type="password"
-        v-model="password"
         @keydown.enter="focusOnNextElement"
       />
       <seasoned-input
+        v-model="passwordRepeat"
         placeholder="repeat password"
         icon="Keyhole"
         type="password"
-        v-model="passwordRepeat"
         @keydown.enter="submit"
       />
 
@@ -44,10 +44,10 @@
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import SeasonedInput from "@/components/ui/SeasonedInput.vue";
   import SeasonedMessages from "@/components/ui/SeasonedMessages.vue";
+  import type { Ref } from "vue";
   import { register } from "../api";
   import { focusFirstFormInput, focusOnNextElement } from "../utils";
   import { ErrorMessageTypes } from "../interfaces/IErrorMessage";
-  import type { Ref } from "vue";
   import type { IErrorMessage } from "../interfaces/IErrorMessage";
 
   const username: Ref<string> = ref("");
@@ -85,30 +85,25 @@
     return new Promise((resolve, reject) => {
       if (!username.value || username?.value?.length === 0) {
         addWarningMessage("Missing username", "Validation error");
-        return reject();
+        reject();
       }
 
       if (!password.value || password?.value?.length === 0) {
         addWarningMessage("Missing password", "Validation error");
-        return reject();
+        reject();
       }
 
-      if (passwordRepeat.value == null || passwordRepeat.value.length == 0) {
+      if (passwordRepeat.value == null || passwordRepeat.value.length === 0) {
         addWarningMessage("Missing repeat password", "Validation error");
-        return reject();
+        reject();
       }
-      if (passwordRepeat != password) {
+      if (passwordRepeat.value !== password.value) {
         addWarningMessage("Passwords do not match", "Validation error");
-        return reject();
+        reject();
       }
 
       resolve(true);
     });
-  }
-
-  function submit() {
-    clearMessages();
-    validate().then(registerUser);
   }
 
   function registerUser() {
@@ -120,14 +115,18 @@
       })
       .catch(error => {
         if (error?.status === 401) {
-          return addErrorMessage(
-            "Incorrect username or password",
-            "Access denied"
-          );
+          addErrorMessage("Incorrect username or password", "Access denied");
+          return null;
         }
 
         addErrorMessage(error?.message, "Unexpected error");
+        return null;
       });
+  }
+
+  function submit() {
+    clearMessages();
+    validate().then(registerUser);
   }
 </script>
 

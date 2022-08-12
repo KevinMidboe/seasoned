@@ -1,17 +1,14 @@
 <template>
   <div id="app">
     <!-- Header and hamburger navigation -->
-    <NavigationHeader class="header"></NavigationHeader>
+    <NavigationHeader class="header" />
 
     <div class="navigation-icons-gutter desktop-only">
       <NavigationIcons />
     </div>
 
     <!-- Display the component assigned to the given route (default: home) -->
-    <router-view
-      class="content"
-      :key="router.currentRoute.value.path"
-    ></router-view>
+    <router-view :key="router.currentRoute.value.path" class="content" />
 
     <!-- Popup that will show above existing rendered content -->
     <popup />

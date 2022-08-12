@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-if="query?.length">
+  <div v-if="query?.length" class="container">
     <h2 class="torrent-header-text">
       Searching for: <span class="query">{{ query }}</span>
     </h2>
@@ -22,22 +22,19 @@
 <script setup lang="ts">
   import { ref, inject, defineProps } from "vue";
   import { useStore } from "vuex";
-  import { sortableSize } from "../../utils";
-  import { searchTorrents, addMagnet } from "../../api";
-
   import Loader from "@/components/ui/Loader.vue";
   import TorrentTable from "@/components/torrent/TorrentTable.vue";
   import type { Ref } from "vue";
+  import { searchTorrents, addMagnet } from "../../api";
   import type ITorrent from "../../interfaces/ITorrent";
 
   interface Props {
     query: string;
-    tmdb_id?: number;
+    tmdbId?: number;
   }
 
   const loading: Ref<boolean> = ref(true);
   const torrents: Ref<ITorrent[]> = ref([]);
-  const release_types: Ref<string[]> = ref(["all"]);
 
   const props = defineProps<Props>();
   const store = useStore();
@@ -47,15 +44,12 @@
     error;
   } = inject("notifications");
 
-  fetchTorrents();
+  function setTorrents(_torrents: ITorrent[]) {
+    torrents.value = _torrents || [];
+  }
 
-  function fetchTorrents() {
-    loading.value = true;
-
-    searchTorrents(props.query)
-      .then(torrentResponse => (torrents.value = torrentResponse?.results))
-      .then(() => updateResultCountDisplay())
-      .finally(() => (loading.value = false));
+  function setLoading(state: boolean) {
+    loading.value = state;
   }
 
   function updateResultCountDisplay() {
@@ -64,6 +58,15 @@
       "torrentModule/setResultCount",
       torrents.value?.length || -1
     );
+  }
+
+  function fetchTorrents() {
+    loading.value = true;
+
+    searchTorrents(props.query)
+      .then(torrentResponse => setTorrents(torrentResponse?.results))
+      .then(() => updateResultCountDisplay())
+      .finally(() => setLoading(false));
   }
 
   function addTorrent(torrent: ITorrent) {
@@ -75,16 +78,15 @@
       timeout: 3000
     });
 
-    addMagnet(magnet, name, props.tmdb_id)
-      .then(resp => {
+    addMagnet(magnet, name, props.tmdbId)
+      .then(() => {
         notifications.success({
           title: "Torrent added 🎉",
           description: props.query,
           timeout: 3000
         });
       })
-      .catch(resp => {
-        console.log("Error while adding torrent:", resp?.data);
+      .catch(() => {
         notifications.error({
           title: "Failed to add torrent 🙅‍♀️",
           description: "Check console for more info",
@@ -92,6 +94,8 @@
         });
       });
   }
+
+  fetchTorrents();
 </script>
 
 <style lang="scss" scoped>

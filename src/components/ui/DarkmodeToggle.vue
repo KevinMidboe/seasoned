@@ -1,13 +1,23 @@
 <template>
   <div class="darkToggle">
-    <span @click="toggleDarkmode">{{ darkmodeToggleIcon }}</span>
+    <span @click="toggleDarkmode" @keydown.enter="toggleDarkmode">{{
+      darkmodeToggleIcon
+    }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, computed } from "vue";
 
-  let darkmode = ref(systemDarkModeEnabled());
+  function systemDarkModeEnabled() {
+    const computedStyle = window.getComputedStyle(document.body);
+    if (computedStyle?.colorScheme != null) {
+      return computedStyle.colorScheme.includes("dark");
+    }
+    return false;
+  }
+
+  const darkmode = ref(systemDarkModeEnabled());
   const darkmodeToggleIcon = computed(() => {
     return darkmode.value ? "🌝" : "🌚";
   });
@@ -15,14 +25,6 @@
   function toggleDarkmode() {
     darkmode.value = !darkmode.value;
     document.body.className = darkmode.value ? "dark" : "light";
-  }
-
-  function systemDarkModeEnabled() {
-    const computedStyle = window.getComputedStyle(document.body);
-    if (computedStyle["colorScheme"] != null) {
-      return computedStyle.colorScheme.includes("dark");
-    }
-    return false;
   }
 </script>
 

@@ -1,27 +1,26 @@
 <template>
   <button
     type="button"
-    @click="emit('click')"
     :class="{ active: active, fullwidth: fullWidth }"
+    @click="emit('click')"
   >
     <slot></slot>
   </button>
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, defineEmits } from "vue";
-  import type { Ref } from "vue";
+  import { defineProps, defineEmits } from "vue";
 
   interface Props {
-    active?: Boolean;
-    fullWidth?: Boolean;
+    active?: boolean;
+    fullWidth?: boolean;
   }
 
   interface Emit {
     (e: "click");
   }
 
-  const props = defineProps<Props>();
+  defineProps<Props>();
   const emit = defineEmits<Emit>();
 </script>
 

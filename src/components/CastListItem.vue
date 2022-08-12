@@ -1,7 +1,7 @@
 <template>
   <li class="card">
-    <a @click="openCastItem">
-      <img :src="pictureUrl" />
+    <a @click="openCastItem" @keydown.enter="openCastItem">
+      <img :src="pictureUrl" alt="Movie or person poster image" />
       <p class="name">{{ creditItem.name || creditItem.title }}</p>
       <p class="meta">{{ creditItem.character || creditItem.year }}</p>
     </a>
@@ -25,7 +25,8 @@
 
     if ("profile_path" in props.creditItem && props.creditItem.profile_path) {
       return baseUrl + props.creditItem.profile_path;
-    } else if ("poster" in props.creditItem && props.creditItem.poster) {
+    }
+    if ("poster" in props.creditItem && props.creditItem.poster) {
       return baseUrl + props.creditItem.poster;
     }
 

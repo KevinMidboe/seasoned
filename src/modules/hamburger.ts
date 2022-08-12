@@ -4,6 +4,7 @@ const state: IStateHamburger = {
   open: false
 };
 
+/* eslint-disable @typescript-eslint/no-shadow, no-return-assign */
 export default {
   namespaced: true,
   state,

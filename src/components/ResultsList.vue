@@ -8,7 +8,7 @@
       <results-list-item
         v-for="(result, index) in results"
         :key="generateResultKey(index, `${result.type}-${result.id}`)"
-        :listItem="result"
+        :list-item="result"
       />
     </ul>
 
@@ -23,11 +23,11 @@
 
   interface Props {
     results: Array<ListResults>;
-    shortList?: Boolean;
-    loading?: Boolean;
+    shortList?: boolean;
+    loading?: boolean;
   }
 
-  const props = defineProps<Props>();
+  defineProps<Props>();
 
   function generateResultKey(index: string | number | symbol, value: string) {
     return `${String(index)}-${value}`;

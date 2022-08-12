@@ -5,6 +5,7 @@ const state: IStateDarkmode = {
   userChoice: undefined
 };
 
+/* eslint-disable @typescript-eslint/no-shadow */
 export default {
   namespaced: true,
   state,

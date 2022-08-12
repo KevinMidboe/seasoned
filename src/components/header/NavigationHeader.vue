@@ -1,8 +1,10 @@
 <template>
   <nav>
+    <!-- eslint-disable-next-line vuejs-accessibility/anchor-has-content -->
     <a v-if="isHome" class="nav__logo" href="/">
       <TmdbLogo class="logo" />
     </a>
+
     <router-link v-else class="nav__logo" to="/" exact>
       <TmdbLogo class="logo" />
     </router-link>
@@ -13,7 +15,7 @@
     <NavigationIcon class="desktop-only" :route="profileRoute" />
 
     <!-- <div class="navigation-icons-grid mobile-only" :class="{ open: isOpen }"> -->
-    <div class="navigation-icons-grid mobile-only" v-if="isOpen">
+    <div v-if="isOpen" class="navigation-icons-grid mobile-only">
       <NavigationIcons>
         <NavigationIcon :route="profileRoute" />
       </NavigationIcons>
@@ -22,8 +24,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, defineProps, PropType } from "vue";
-  import type { App } from "vue";
+  import { computed } from "vue";
   import { useStore } from "vuex";
   import { useRoute } from "vue-router";
   import SearchInput from "@/components/header/SearchInput.vue";

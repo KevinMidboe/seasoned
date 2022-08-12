@@ -1,8 +1,9 @@
 <template>
   <li
     class="sidebar-list-element"
-    @click="emit('click')"
     :class="{ active, disabled }"
+    @click="emit('click')"
+    @keydown.enter="emit('click')"
   >
     <slot></slot>
   </li>
@@ -12,8 +13,8 @@
   import { defineProps, defineEmits } from "vue";
 
   interface Props {
-    active?: Boolean;
-    disabled?: Boolean;
+    active?: boolean;
+    disabled?: boolean;
   }
 
   interface Emit {

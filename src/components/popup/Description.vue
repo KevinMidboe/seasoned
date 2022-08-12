@@ -3,6 +3,7 @@
     ref="descriptionElement"
     class="movie-description noselect"
     @click="overflow ? (truncated = !truncated) : null"
+    @keydown.enter="overflow ? (truncated = !truncated) : null"
   >
     <span :class="{ truncated }">{{ description }}</span>
 
@@ -14,8 +15,8 @@
 
 <script setup lang="ts">
   import { ref, defineProps, onMounted } from "vue";
-  import IconArrowDown from "../../icons/IconArrowDown.vue";
   import type { Ref } from "vue";
+  import IconArrowDown from "../../icons/IconArrowDown.vue";
 
   interface Props {
     description: string;
@@ -26,7 +27,10 @@
   const overflow: Ref<boolean> = ref(false);
   const descriptionElement: Ref<HTMLElement> = ref(null);
 
-  onMounted(checkDescriptionOverflowing);
+  // eslint-disable-next-line no-undef
+  function removeElements(elems: NodeListOf<Element>) {
+    elems.forEach(el => el.remove());
+  }
 
   // The description element overflows text after 4 rows with css
   // line-clamp this takes the same text and adds to a temporary
@@ -53,15 +57,13 @@
 
     document.body.appendChild(descriptionComparisonElement);
     const elemWithoutOverflowHeight =
-      descriptionComparisonElement.getBoundingClientRect()["height"];
+      descriptionComparisonElement.getBoundingClientRect().height;
 
     overflow.value = elemWithoutOverflowHeight > height;
     removeElements(document.querySelectorAll(".dummy-non-overflow"));
   }
 
-  function removeElements(elems: NodeListOf<Element>) {
-    elems.forEach(el => el.remove());
-  }
+  onMounted(checkDescriptionOverflowing);
 </script>
 
 <style lang="scss" scoped>

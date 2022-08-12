@@ -1,6 +1,6 @@
 <template>
   <header ref="headerElement" :class="{ expanded, noselect: true }">
-    <img :src="bannerImage" ref="imageElement" />
+    <img ref="imageElement" :src="bannerImage" alt="Page banner image" />
     <div class="container">
       <h1 class="title">Request movies or tv shows</h1>
       <strong class="subtitle"
@@ -8,7 +8,13 @@
       >
     </div>
 
-    <div class="expand-icon" @click="expand" @mouseover="upgradeImage">
+    <div
+      class="expand-icon"
+      @click="expand"
+      @keydown.enter="expand"
+      @mouseover="upgradeImage"
+      @focus="focus"
+    >
       <IconExpand v-if="!expanded" />
       <IconShrink v-else />
     </div>
@@ -16,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted } from "vue";
+  import { ref } from "vue";
   import IconExpand from "@/icons/IconExpand.vue";
   import IconShrink from "@/icons/IconShrink.vue";
   import type { Ref } from "vue";
@@ -35,9 +41,7 @@
   const headerElement: Ref<HTMLElement> = ref(null);
   const imageElement: Ref<HTMLImageElement> = ref(null);
   const defaultHeaderHeight: Ref<string> = ref();
-  const disableProxy = true;
-
-  bannerImage.value = randomImage();
+  // const disableProxy = true;
 
   function expand() {
     expanded.value = !expanded.value;
@@ -53,10 +57,16 @@
     headerElement.value.style.setProperty("--header-height", height);
   }
 
+  function focus(event: FocusEvent) {
+    event.preventDefault();
+  }
+
   function randomImage(): string {
-    const image = images[Math.floor(Math.random() * images?.length)];
+    const image = images[Math.floor(Math.random() * images.length)];
     return ASSET_URL + image;
   }
+
+  bannerImage.value = randomImage();
 
   // function sliceToHeaderSize(url: string): string {
   //   let width = headerElement.value?.getBoundingClientRect()?.width || 1349;

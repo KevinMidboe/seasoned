@@ -7,10 +7,10 @@
         </h1>
         <div v-else>
           <loading-placeholder :count="1" />
-          <loading-placeholder :count="1" lineClass="short" :top="3.5" />
+          <loading-placeholder :count="1" line-class="short" :top="3.5" />
         </div>
 
-        <span class="known-for" v-if="person && person['known_for_department']">
+        <span v-if="person && person['known_for_department']" class="known-for">
           {{
             person.known_for_department === "Acting"
               ? "Actor"
@@ -21,8 +21,9 @@
 
       <figure class="person__poster">
         <img
-          class="person-item__img is-loaded"
           ref="poster-image"
+          class="person-item__img is-loaded"
+          :alt="`Image of ${person.name}`"
           :src="poster"
         />
       </figure>
@@ -30,9 +31,9 @@
 
     <div v-if="loading">
       <loading-placeholder :count="6" />
-      <loading-placeholder lineClass="short" :top="3" />
-      <loading-placeholder :count="6" lineClass="fullwidth" />
-      <loading-placeholder lineClass="short" :top="4.5" />
+      <loading-placeholder line-class="short" :top="3" />
+      <loading-placeholder :count="6" line-class="fullwidth" />
+      <loading-placeholder line-class="short" :top="4.5" />
       <loading-placeholder />
     </div>
 
@@ -50,17 +51,17 @@
       </Detail>
 
       <Detail
+        v-if="creditedShows.length"
         title="movies"
         :detail="`Credited in ${creditedMovies.length} movies`"
-        v-if="creditedShows.length"
       >
         <CastList :cast="creditedMovies" />
       </Detail>
 
       <Detail
+        v-if="creditedShows.length"
         title="shows"
         :detail="`Credited in ${creditedShows.length} shows`"
-        v-if="creditedShows.length"
       >
         <CastList :cast="creditedShows" />
       </Detail>
@@ -70,17 +71,15 @@
 
 <script setup lang="ts">
   import { ref, computed, defineProps } from "vue";
-  import img from "@/directives/v-image.vue";
   import CastList from "@/components/CastList.vue";
   import Detail from "@/components/popup/Detail.vue";
   import Description from "@/components/popup/Description.vue";
   import LoadingPlaceholder from "@/components/ui/LoadingPlaceholder.vue";
-  import { getPerson, getPersonCredits } from "../../api";
   import type { Ref, ComputedRef } from "vue";
+  import { getPerson, getPersonCredits } from "../../api";
   import type {
     IPerson,
     IPersonCredits,
-    ICast,
     IMovie,
     IShow
   } from "../../interfaces/IList";
@@ -100,38 +99,39 @@
   const creditedMovies: Ref<Array<IMovie | IShow>> = ref([]);
   const creditedShows: Ref<Array<IMovie | IShow>> = ref([]);
 
-  const poster: ComputedRef<string> = computed(() => computePoster());
+  const poster: ComputedRef<string> = computed(() => {
+    if (!person.value) return "/assets/placeholder.png";
+    if (!person.value?.poster) return "/assets/no-image.svg";
+
+    return `${ASSET_URL}${ASSET_SIZES[0]}${person.value.poster}`;
+  });
+
   const age: ComputedRef<string> = computed(() => {
-    if (!person.value?.birthday) return;
+    if (!person.value?.birthday) return "";
 
     const today = new Date().getFullYear();
     const birthYear = new Date(person.value.birthday).getFullYear();
     return `${today - birthYear} years old`;
   });
 
-  // On create functions
-  fetchPerson();
-  //
+  function setCredits(_credits: IPersonCredits) {
+    credits.value = _credits;
+  }
 
-  function fetchPerson() {
-    if (!props.id) {
-      console.error("Unable to fetch person, missing id!");
-      return;
-    }
-
-    getPerson(props.id)
-      .then(_person => (person.value = _person))
-      .then(() => getPersonCredits(person.value?.id))
-      .then(_credits => (credits.value = _credits))
-      .then(() => personCreditedFrom(credits.value?.cast));
+  function setPerson(_person: IPerson) {
+    person.value = _person;
   }
 
   function sortPopularity(a: IMovie | IShow, b: IMovie | IShow): number {
     return a.popularity < b.popularity ? 1 : -1;
   }
 
-  function alreadyExists(item: IMovie | IShow, pos: number, self: any[]) {
-    const names = self.map(item => item.title);
+  function alreadyExists(
+    item: IMovie | IShow,
+    pos: number,
+    self: Array<IMovie | IShow>
+  ) {
+    const names = self.map(_item => _item.title);
     return names.indexOf(item.title) === pos;
   }
 
@@ -147,12 +147,21 @@
       .sort(sortPopularity);
   }
 
-  const computePoster = () => {
-    if (!person.value) return "/assets/placeholder.png";
-    else if (!person.value?.poster) return "/assets/no-image.svg";
+  function fetchPerson() {
+    if (!props.id) {
+      console.error("Unable to fetch person, missing id!"); // eslint-disable-line no-console
+      return;
+    }
 
-    return `${ASSET_URL}${ASSET_SIZES[0]}${person.value.poster}`;
-  };
+    getPerson(props.id)
+      .then(setPerson)
+      .then(() => getPersonCredits(person.value?.id))
+      .then(setCredits)
+      .then(() => personCreditedFrom(credits.value?.cast));
+  }
+
+  // On create functions
+  fetchPerson();
 </script>
 
 <style lang="scss" scoped>

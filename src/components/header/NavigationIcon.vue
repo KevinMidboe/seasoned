@@ -1,11 +1,11 @@
 <template>
   <router-link
-    :to="{ path: route?.route }"
-    :key="route?.title"
     v-if="route?.requiresAuth == undefined || (route?.requiresAuth && loggedIn)"
+    :key="route?.title"
+    :to="{ path: route?.route }"
   >
     <li class="navigation-link" :class="{ active: route.route == active }">
-      <component class="navigation-icon" :is="route.icon"></component>
+      <component :is="route.icon" class="navigation-icon"></component>
       <span>{{ route.title }}</span>
     </li>
   </router-link>

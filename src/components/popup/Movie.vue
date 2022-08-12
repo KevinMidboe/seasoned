@@ -1,6 +1,7 @@
 <template>
   <section class="movie">
     <!-- HEADER w/ POSTER -->
+    <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events -->
     <header
       ref="backdropElement"
       :class="compact ? 'compact' : ''"
@@ -8,8 +9,9 @@
     >
       <figure class="movie__poster">
         <img
-          class="movie-item__img is-loaded"
           ref="poster-image"
+          class="movie-item__img is-loaded"
+          alt="Movie poster"
           :src="poster"
         />
       </figure>
@@ -25,7 +27,7 @@
     <div class="movie__main">
       <div class="movie__wrap movie__wrap--main">
         <!-- SIDEBAR ACTIONS -->
-        <div class="movie__actions" v-if="media">
+        <div v-if="media" class="movie__actions">
           <action-button :active="media?.exists_in_plex" :disabled="true">
             <IconThumbsUp v-if="media?.exists_in_plex" />
             <IconThumbsDown v-else />
@@ -36,7 +38,7 @@
             }}
           </action-button>
 
-          <action-button @click="sendRequest" :active="requested">
+          <action-button :active="requested" @click="sendRequest">
             <transition name="fade" mode="out-in">
               <div v-if="!requested" key="request"><IconRequest /></div>
               <div v-else key="requested"><IconRequested /></div>
@@ -63,8 +65,8 @@
 
           <action-button
             v-if="admin === true"
-            @click="showTorrents = !showTorrents"
             :active="showTorrents"
+            @click="showTorrents = !showTorrents"
           >
             <IconBinoculars />
             Search for torrents
@@ -80,11 +82,11 @@
         </div>
 
         <!-- Loading placeholder -->
-        <div class="movie__actions text-input__loading" v-else>
+        <div v-else class="movie__actions text-input__loading">
           <div
             v-for="index in admin ? Array(4) : Array(3)"
-            class="movie__actions-link"
             :key="index"
+            class="movie__actions-link"
           >
             <div
               class="movie__actions-text text-input__loading--line"
@@ -105,7 +107,7 @@
             :description="media.overview"
           />
 
-          <div class="movie__details" v-if="media">
+          <div v-if="media" class="movie__details">
             <Detail
               v-if="media.year"
               title="Release date"
@@ -144,7 +146,7 @@
 
         <!-- TODO: change this classname, this is general  -->
 
-        <div class="movie__admin" v-if="showCast && cast?.length">
+        <div v-if="showCast && cast?.length" class="movie__admin">
           <Detail title="cast">
             <CastList :cast="cast" />
           </Detail>
@@ -156,7 +158,7 @@
         v-if="media && admin && showTorrents"
         class="torrents"
         :query="media?.title"
-        :tmdb_id="id"
+        :tmdb-id="id"
       ></TorrentList>
     </div>
   </section>
@@ -181,7 +183,7 @@
   import ActionButton from "@/components/popup/ActionButton.vue";
   import Description from "@/components/popup/Description.vue";
   import LoadingPlaceholder from "@/components/ui/LoadingPlaceholder.vue";
-  import type { Ref, ComputedRef } from "vue";
+  import type { Ref } from "vue";
   import type {
     IMovie,
     IShow,
@@ -194,12 +196,11 @@
   import {
     getMovie,
     getShow,
-    getPerson,
     getMovieCredits,
     getShowCredits,
     request,
-    getRequestStatus,
-    watchLink
+    getRequestStatus
+    // watchLink
   } from "../../api";
 
   interface Props {
@@ -222,45 +223,26 @@
 
   const store = useStore();
 
-  const loggedIn = computed(() => store.getters["user/loggedIn"]);
   const admin = computed(() => store.getters["user/admin"]);
   const plexId = computed(() => store.getters["user/plexId"]);
-  const poster = computed(() => computePoster());
+
+  const poster = computed(() => {
+    if (!media.value) return "/assets/placeholder.png";
+    if (!media.value?.poster) return "/assets/no-image.svg";
+
+    return `${ASSET_URL}${ASSET_SIZES[0]}${media.value.poster}`;
+  });
 
   const numberOfTorrentResults = computed(() => {
     const count = store.getters["torrentModule/resultCount"];
     return count ? `${count} results` : null;
   });
 
-  // On created functions
-  fetchMedia();
-  setBackdrop();
-  store.dispatch("torrentModule/setResultCount", null);
-  // End on create functions
-
-  function fetchMedia() {
-    if (!props.id || !props.type) {
-      console.error("Unable to fetch media, requires id & type");
-      return;
-    }
-
-    let apiFunction: Function;
-    let parameters: object;
-
-    if (props.type === MediaTypes.Movie) {
-      apiFunction = getMovie;
-      parameters = { checkExistance: true, credits: false };
-    } else if (props.type === MediaTypes.Show) {
-      apiFunction = getShow;
-      parameters = { checkExistance: true, credits: false };
-    }
-
-    apiFunction(props.id, { ...parameters })
-      .then(setAndReturnMedia)
-      .then(media => getCredits(props.type))
-      .then(credits => (cast.value = credits?.cast))
-      .then(() => getRequestStatus(props.id, props.type))
-      .then(requestStatus => (requested.value = requestStatus || false));
+  function setCast(_cast: ICast[]) {
+    cast.value = _cast;
+  }
+  function setRequested(status: boolean) {
+    requested.value = status;
   }
 
   function getCredits(
@@ -268,7 +250,8 @@
   ): Promise<IMediaCredits> {
     if (type === MediaTypes.Movie) {
       return getMovieCredits(props.id);
-    } else if (type === MediaTypes.Show) {
+    }
+    if (type === MediaTypes.Show) {
       return getShowCredits(props.id);
     }
 
@@ -280,35 +263,64 @@
     return _media;
   }
 
-  const computePoster = () => {
-    if (!media.value) return "/assets/placeholder.png";
-    else if (!media.value?.poster) return "/assets/no-image.svg";
+  function fetchMedia() {
+    if (!props.id || !props.type) {
+      console.error("Unable to fetch media, requires id & type"); // eslint-disable-line no-console
+      return;
+    }
 
-    return `${ASSET_URL}${ASSET_SIZES[0]}${media.value.poster}`;
-  };
+    let apiFunction: typeof getMovie;
+    let parameters: {
+      checkExistance: boolean;
+      credits: boolean;
+      releaseDates?: boolean;
+    };
 
-  function setBackdrop() {
-    if (!media.value?.backdrop || !backdropElement.value?.style) return "";
+    if (props.type === MediaTypes.Movie) {
+      apiFunction = getMovie;
+      parameters = { checkExistance: true, credits: false };
+    } else if (props.type === MediaTypes.Show) {
+      apiFunction = getShow;
+      parameters = { checkExistance: true, credits: false };
+    }
+
+    apiFunction(props.id, { ...parameters })
+      .then(setAndReturnMedia)
+      .then(() => getCredits(props.type))
+      .then(credits => setCast(credits?.cast || []))
+      .then(() => getRequestStatus(props.id, props.type))
+      .then(requestStatus => setRequested(requestStatus || false));
+  }
+
+  function setBackdrop(): void {
+    if (!media.value?.backdrop || !backdropElement.value?.style) return;
 
     const backdropURL = `${ASSET_URL}${ASSET_SIZES[1]}${media.value.backdrop}`;
     backdropElement.value.style.backgroundImage = `url(${backdropURL})`;
   }
 
   function sendRequest() {
-    request(props.id, props.type).then(
-      resp => (requested.value = resp?.success || false)
+    request(props.id, props.type).then(resp =>
+      setRequested(resp?.success || false)
     );
   }
 
-  function openInPlex() {
-    return;
+  function openInPlex(): boolean {
+    // watchLink()
+    return false;
   }
 
   function openTmdb() {
     const tmdbType = props.type === MediaTypes.Show ? "tv" : props.type;
-    const tmdbURL = "https://www.themoviedb.org/" + tmdbType + "/" + props.id;
+    const tmdbURL = `https://www.themoviedb.org/${tmdbType}/${props.id}`;
     window.location.href = tmdbURL;
   }
+
+  // On created functions
+  fetchMedia();
+  setBackdrop();
+  store.dispatch("torrentModule/setResultCount", null);
+  // End on create functions
 </script>
 
 <style lang="scss" scoped>

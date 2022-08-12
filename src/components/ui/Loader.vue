@@ -1,5 +1,5 @@
 <template>
-  <div :class="`loader type-${type}`">
+  <div :class="`loader type-${type || LoaderHeightType.Page}`">
     <i class="loader--icon">
       <i class="loader--icon-spinner" />
     </i>
@@ -13,17 +13,13 @@
 
 <script setup lang="ts">
   import { defineProps } from "vue";
-
-  enum LoaderHeightType {
-    Page = "page",
-    Section = "section"
-  }
+  import LoaderHeightType from "../../interfaces/ILoader";
 
   interface Props {
     type?: LoaderHeightType;
   }
 
-  const { type = LoaderHeightType.Page } = defineProps<Props>();
+  defineProps<Props>();
 </script>
 
 <style lang="scss" scoped>

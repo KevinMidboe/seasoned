@@ -1,25 +1,3 @@
-export interface IList {
-  results: ListResults;
-  page: number;
-  total_results: number;
-  total_pages: number;
-}
-
-export interface IMediaCredits {
-  cast: Array<ICast>;
-  crew: Array<ICrew>;
-  id: number;
-}
-
-export interface IPersonCredits {
-  cast: Array<IMovie | IShow>;
-  crew: Array<ICrew>;
-  id: number;
-  type?: string;
-}
-
-export type ListResults = Array<IMovie | IShow | IPerson | IRequest>;
-
 export enum MediaTypes {
   Movie = "movie",
   Show = "show",
@@ -154,4 +132,26 @@ export interface ICrew {
   name: string;
   profile_path: string | null;
   type: string;
+}
+
+export interface IMediaCredits {
+  cast: Array<ICast>;
+  crew: Array<ICrew>;
+  id: number;
+}
+
+export interface IPersonCredits {
+  cast: Array<IMovie | IShow>;
+  crew: Array<ICrew>;
+  id: number;
+  type?: string;
+}
+
+export type ListResults = Array<IMovie | IShow | IPerson | IRequest>;
+
+export interface IList {
+  results: ListResults;
+  page: number;
+  total_results: number;
+  total_pages: number;
 }

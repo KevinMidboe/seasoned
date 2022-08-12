@@ -1,18 +1,18 @@
 <template>
   <div>
     <div style="display: flex; flex-direction: row">
-      <label class="filter">
+      <div class="filter">
         <span>Search filter:</span>
 
         <toggle-button
-          :options="toggleOptions"
           v-model:selected="mediaType"
+          :options="toggleOptions"
           @change="toggleChanged"
         />
-      </label>
+      </div>
     </div>
 
-    <ResultsSection v-if="query" :title="title" :apiFunction="search" />
+    <ResultsSection v-if="query" :title="title" :api-function="search" />
     <h1 v-else class="no-results">No query found, please search above</h1>
   </div>
 </template>
@@ -20,12 +20,11 @@
 <script setup lang="ts">
   import { ref, computed } from "vue";
   import { useRoute, useRouter } from "vue-router";
-  import { searchTmdb } from "../api";
 
   import ResultsSection from "@/components/ResultsSection.vue";
-  import PageHeader from "@/components/PageHeader.vue";
   import ToggleButton from "@/components/ui/ToggleButton.vue";
   import type { Ref } from "vue";
+  import { searchTmdb } from "../api";
   import { MediaTypes } from "../interfaces/IList";
 
   // interface ISearchParams {
@@ -54,20 +53,14 @@
     mediaType.value = (urlQuery?.media_type as MediaTypes) || mediaType.value;
   }
 
-  let search = (
+  const search = (
     _page = page.value || 1,
     _mediaType = mediaType.value || "all"
   ) => {
     return searchTmdb(query.value, _page, adult.value, _mediaType);
   };
 
-  function toggleChanged() {
-    updateQueryParams();
-  }
-
   function updateQueryParams() {
-    const { query, page, adult, media_type } = route.query;
-
     router.push({
       path: "search",
       query: {
@@ -75,6 +68,10 @@
         media_type: mediaType.value
       }
     });
+  }
+
+  function toggleChanged() {
+    updateQueryParams();
   }
 </script>
 

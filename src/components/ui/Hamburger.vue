@@ -2,9 +2,9 @@
   <div
     class="nav__hamburger"
     :class="{ open: isOpen }"
+    tabindex="0"
     @click="toggle"
     @keydown.enter="toggle"
-    tabindex="0"
   >
     <div v-for="(_, index) in 3" :key="index" class="bar"></div>
   </div>

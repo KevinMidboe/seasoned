@@ -56,6 +56,7 @@ export default {
     username: state => state.username,
     settings: state => state.settings,
     token: state => state.token,
+    // loggedIn: state => true,
     loggedIn: state => state && state.username !== null,
     admin: state => state.admin,
     plexId: state => {

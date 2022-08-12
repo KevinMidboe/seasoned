@@ -1,34 +1,25 @@
 import config from "./config";
 import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
 
-let { SEASONED_URL, ELASTIC_URL, ELASTIC_INDEX } = config;
-if (!SEASONED_URL) {
-  SEASONED_URL = window.location.origin;
-}
+const { ELASTIC_URL, ELASTIC_INDEX } = config;
 
-// TODO
-//  - Move autorization token and errors here?
-
-const checkStatusAndReturnJson = response => {
-  if (!response.ok) {
-    throw response;
-  }
-  return response.json();
-};
+let { SEASONED_URL } = config;
+if (!SEASONED_URL) SEASONED_URL = window.location.origin;
 
 // - - - TMDB - - -
 
 /**
  * Fetches tmdb movie by id. Can optionally include cast credits in result object.
  * @param {number} id
- * @param {boolean} [credits=false] Include credits
  * @returns {object} Tmdb response
  */
 const getMovie = (
   id,
-  checkExistance = false,
-  credits = false,
-  release_dates = false
+  {
+    checkExistance,
+    credits,
+    releaseDates
+  }: { checkExistance: boolean; credits: boolean; releaseDates?: boolean }
 ) => {
   const url = new URL("/api/v2/movie", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
@@ -38,14 +29,14 @@ const getMovie = (
   if (credits) {
     url.searchParams.append("credits", "true");
   }
-  if (release_dates) {
+  if (releaseDates) {
     url.searchParams.append("release_dates", "true");
   }
 
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error getting movie: ${id}`);
+      console.error(`api error getting movie: ${id}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -56,7 +47,14 @@ const getMovie = (
  * @param {boolean} [credits=false] Include credits
  * @returns {object} Tmdb response
  */
-const getShow = (id, checkExistance = false, credits = false) => {
+const getShow = (
+  id,
+  {
+    checkExistance,
+    credits,
+    releaseDates
+  }: { checkExistance: boolean; credits: boolean; releaseDates?: boolean }
+) => {
   const url = new URL("/api/v2/show", SEASONED_URL);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (checkExistance) {
@@ -65,18 +63,17 @@ const getShow = (id, checkExistance = false, credits = false) => {
   if (credits) {
     url.searchParams.append("credits", "true");
   }
+  if (releaseDates) {
+    url.searchParams.append("release_dates", "true");
+  }
 
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error getting show: ${id}`);
+      console.error(`api error getting show: ${id}`); // eslint-disable-line no-console
       throw error;
     });
 };
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 /**
  * Fetches tmdb person by id. Can optionally include cast credits in result object.
@@ -94,7 +91,7 @@ const getPerson = (id, credits = false) => {
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error getting person: ${id}`);
+      console.error(`api error getting person: ${id}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -111,7 +108,7 @@ const getMovieCredits = (id: number): Promise<IMediaCredits> => {
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error getting movie: ${id}`);
+      console.error(`api error getting movie: ${id}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -128,7 +125,7 @@ const getShowCredits = (id: number): Promise<IMediaCredits> => {
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error getting show: ${id}`);
+      console.error(`api error getting show: ${id}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -145,7 +142,7 @@ const getPersonCredits = (id: number): Promise<IPersonCredits> => {
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error getting person: ${id}`);
+      console.error(`api error getting person: ${id}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -156,15 +153,12 @@ const getPersonCredits = (id: number): Promise<IPersonCredits> => {
  * @param {number} [page=1]
  * @returns {object} Tmdb list response
  */
-const getTmdbMovieListByName = (
-  name: string,
-  page: number = 1
-): Promise<IList> => {
-  const url = new URL("/api/v2/movie/" + name, SEASONED_URL);
+const getTmdbMovieListByName = (name: string, page = 1): Promise<IList> => {
+  const url = new URL(`/api/v2/movie/${name}`, SEASONED_URL);
   url.searchParams.append("page", page.toString());
 
   return fetch(url.href).then(resp => resp.json());
-  // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error })
+  // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error }) // eslint-disable-line no-console
 };
 
 /**
@@ -172,12 +166,12 @@ const getTmdbMovieListByName = (
  * @param {number} [page=1]
  * @returns {object} Request response
  */
-const getRequests = (page: number = 1) => {
+const getRequests = (page = 1) => {
   const url = new URL("/api/v2/request", SEASONED_URL);
   url.searchParams.append("page", page.toString());
 
   return fetch(url.href).then(resp => resp.json());
-  // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error })
+  // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error }) // eslint-disable-line no-console
 };
 
 const getUserRequests = (page = 1) => {
@@ -206,7 +200,7 @@ const searchTmdb = (query, page = 1, adult = false, mediaType = null) => {
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error searching: ${query}, page: ${page}`);
+      console.error(`api error searching: ${query}, page: ${page}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -226,7 +220,7 @@ const searchTorrents = query => {
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error searching torrents: ${query}`);
+      console.error(`api error searching torrents: ${query}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -235,26 +229,26 @@ const searchTorrents = query => {
  * Add magnet to download queue.
  * @param {string} magnet Magnet link
  * @param {boolean} name Name of torrent
- * @param {boolean} tmdb_id
+ * @param {boolean} tmdbId
  * @returns {object} Success/Failure response
  */
-const addMagnet = (magnet: string, name: string, tmdb_id: number | null) => {
+const addMagnet = (magnet: string, name: string, tmdbId: number | null) => {
   const url = new URL("/api/v1/pirate/add", SEASONED_URL);
 
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      magnet: magnet,
-      name: name,
-      tmdb_id: tmdb_id
+      magnet,
+      name,
+      tmdb_id: tmdbId
     })
   };
 
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error adding magnet: ${name} ${error}`);
+      console.error(`api error adding magnet: ${name} ${error}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -280,7 +274,7 @@ const request = (id, type) => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error requesting: ${id}, type: ${type}`);
+      console.error(`api error requesting: ${id}, type: ${type}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -298,16 +292,13 @@ const getRequestStatus = (id, type = undefined) => {
 
   return fetch(url.href)
     .then(resp => {
-      const status = resp.status;
-      if (status === 200) {
-        return true;
-      } else if (status === 404) {
-        return false;
-      } else {
-        console.error(
-          `api error getting request status for id ${id} and type ${type}`
-        );
-      }
+      const { status } = resp;
+      if (status === 200) return true;
+
+      const errorMessage = `api error getting request status for id ${id} and type ${type}`;
+      // eslint-disable-next-line no-console
+      console.error(errorMessage);
+      return false;
     })
     .catch(err => Promise.reject(err));
 };
@@ -341,10 +332,10 @@ const register = (username, password) => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(
-        "Unexpected error occured before receiving response. Error:",
-        error
-      );
+      const errorMessage =
+        "Unexpected error occured before receiving response. Error:";
+      // eslint-disable-next-line no-console
+      console.error(errorMessage, error);
       // TODO log to sentry the issue here
       throw error;
     });
@@ -359,10 +350,11 @@ const login = (username, password, throwError = false) => {
   };
 
   return fetch(url.href, options).then(resp => {
-    if (resp.status == 200) return resp.json();
+    if (resp.status === 200) return resp.json();
 
     if (throwError) throw resp;
-    else console.error("Error occured when trying to sign in.\nError:", resp);
+    console.error("Error occured when trying to sign in.\nError:", resp); // eslint-disable-line no-console
+    return Promise.reject(resp);
   });
 };
 
@@ -371,10 +363,11 @@ const logout = (throwError = false) => {
   const options = { method: "POST" };
 
   return fetch(url.href, options).then(resp => {
-    if (resp.status == 200) return resp.json();
+    if (resp.status === 200) return resp.json();
 
     if (throwError) throw resp;
-    else console.error("Error occured when trying to log out.\nError:", resp);
+    console.error("Error occured when trying to log out.\nError:", resp); // eslint-disable-line no-console
+    return Promise.reject(resp);
   });
 };
 
@@ -384,7 +377,7 @@ const getSettings = () => {
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.log("api error getting user settings");
+      console.log("api error getting user settings"); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -401,7 +394,7 @@ const updateSettings = settings => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.log("api error updating user settings");
+      console.log("api error updating user settings"); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -421,7 +414,7 @@ const linkPlexAccount = (username, password) => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error linking plex account: ${username}`);
+      console.error(`api error linking plex account: ${username}`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -437,7 +430,7 @@ const unlinkPlexAccount = () => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error unlinking your plex account`);
+      console.error(`api error unlinking your plex account`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -445,13 +438,13 @@ const unlinkPlexAccount = () => {
 // - - - User graphs - - -
 
 const fetchGraphData = (urlPath, days, chartType) => {
-  const url = new URL("/api/v1/user/" + urlPath, SEASONED_URL);
+  const url = new URL(`/api/v1/user/${urlPath}`, SEASONED_URL);
   url.searchParams.append("days", days);
   url.searchParams.append("y_axis", chartType);
 
   return fetch(url.href).then(resp => {
     if (!resp.ok) {
-      console.log("DAMN WE FAILED!", resp);
+      console.log("DAMN WE FAILED!", resp); // eslint-disable-line no-console
       throw Error(resp.statusText);
     }
 
@@ -467,7 +460,7 @@ const getEmoji = () => {
   return fetch(url.href)
     .then(resp => resp.json())
     .catch(error => {
-      console.log("api error getting emoji");
+      console.log("api error getting emoji"); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -515,7 +508,7 @@ const elasticSearchMoviesAndShows = (query, count = 22) => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.log(`api error searching elasticsearch: ${query}`);
+      console.log(`api error searching elasticsearch: ${query}`); // eslint-disable-line no-console
       throw error;
     });
 };

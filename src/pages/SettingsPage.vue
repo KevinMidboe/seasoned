@@ -11,12 +11,28 @@
 </template>
 
 <script setup lang="ts">
+  import { inject } from "vue";
   import { useStore } from "vuex";
+  import { useRoute } from "vue-router";
   import ChangePassword from "@/components/profile/ChangePassword.vue";
   import LinkPlexAccount from "@/components/profile/LinkPlexAccount.vue";
   import { getSettings } from "../api";
 
   const store = useStore();
+  const route = useRoute();
+  const notifications: {
+    error;
+  } = inject("notifications");
+
+  function displayWarningIfMissingPlexAccount() {
+    if (route.query?.missingPlexAccount === "true") {
+      notifications.error({
+        title: "Missing plex account 🧲",
+        description: "Link your plex account to view activity",
+        timeout: 10000
+      });
+    }
+  }
 
   function reloadSettings() {
     return getSettings().then(response => {
@@ -26,6 +42,9 @@
       store.dispatch("user/setSettings", settings);
     });
   }
+
+  // Functions called on component load
+  displayWarningIfMissingPlexAccount();
 </script>
 
 <style lang="scss">

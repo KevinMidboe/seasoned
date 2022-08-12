@@ -1,13 +1,14 @@
 <template>
-  <div class="wrapper" v-if="plexId">
+  <div v-if="plexId" class="wrapper">
     <h1>Your watch activity</h1>
 
     <div style="display: flex; flex-direction: row">
-      <label class="filter">
+      <label class="filter" for="dayinput">
         <span>Days:</span>
         <input
-          class="dayinput"
+          id="dayinput"
           v-model="days"
+          class="dayinput"
           placeholder="days"
           type="number"
           pattern="[0-9]*"
@@ -15,15 +16,15 @@
         />
       </label>
 
-      <label class="filter">
+      <div class="filter">
         <span>Data sorted by:</span>
         <toggle-button
+          v-model:selected="graphViewMode"
           class="filter-item"
           :options="[GraphTypes.Plays, GraphTypes.Duration]"
-          v-model:selected="graphViewMode"
           @change="fetchChartData"
         />
-      </label>
+      </div>
     </div>
 
     <div class="chart-section">
@@ -34,9 +35,9 @@
           :data="playsByDayData"
           type="line"
           :stacked="false"
-          :datasetDescriptionSuffix="`watch last ${days} days`"
-          :tooltipDescriptionSuffix="selectedGraphViewMode.tooltipLabel"
-          :graphValueType="selectedGraphViewMode.valueType"
+          :dataset-description-suffix="`watch last ${days} days`"
+          :tooltip-description-suffix="selectedGraphViewMode.tooltipLabel"
+          :graph-value-type="selectedGraphViewMode.valueType"
         />
       </div>
 
@@ -44,13 +45,12 @@
       <div class="graph">
         <Graph
           v-if="playsByDayofweekData"
-          class="graph"
           :data="playsByDayofweekData"
           type="bar"
           :stacked="true"
-          :datasetDescriptionSuffix="`watch last ${days} days`"
-          :tooltipDescriptionSuffix="selectedGraphViewMode.tooltipLabel"
-          :graphValueType="selectedGraphViewMode.valueType"
+          :dataset-description-suffix="`watch last ${days} days`"
+          :tooltip-description-suffix="selectedGraphViewMode.tooltipLabel"
+          :graph-value-type="selectedGraphViewMode.valueType"
         />
       </div>
     </div>
@@ -61,23 +61,18 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted } from "vue";
+  import { ref, computed } from "vue";
   import { useStore } from "vuex";
   import Graph from "@/components/Graph.vue";
   import ToggleButton from "@/components/ui/ToggleButton.vue";
   import IconStop from "@/icons/IconStop.vue";
-  import { fetchGraphData } from "../api";
   import type { Ref } from "vue";
-
-  enum GraphTypes {
-    Plays = "plays",
-    Duration = "duration"
-  }
-
-  enum GraphValueTypes {
-    Number = "number",
-    Time = "time"
-  }
+  import { fetchGraphData } from "../api";
+  import {
+    GraphTypes,
+    GraphValueTypes,
+    IGraphData
+  } from "../interfaces/IGraph";
 
   const store = useStore();
 
@@ -85,9 +80,6 @@
   const graphViewMode: Ref<GraphTypes> = ref(GraphTypes.Plays);
   const plexId = computed(() => store.getters["user/plexId"]);
 
-  const selectedGraphViewMode = computed(() =>
-    graphValueViewMode.find(viewMode => viewMode.type === graphViewMode.value)
-  );
   const graphValueViewMode = [
     {
       type: GraphTypes.Plays,
@@ -101,13 +93,27 @@
     }
   ];
 
-  const playsByDayData: Ref<any> = ref(null);
-  const playsByDayofweekData: Ref<any> = ref(null);
-  fetchChartData();
+  const playsByDayData: Ref<IGraphData> = ref(null);
+  const playsByDayofweekData: Ref<IGraphData> = ref(null);
 
-  function fetchChartData() {
-    fetchPlaysByDay();
-    fetchPlaysByDayOfWeek();
+  const selectedGraphViewMode = computed(() =>
+    graphValueViewMode.find(viewMode => viewMode.type === graphViewMode.value)
+  );
+
+  function convertDateStringToDayMonth(date: string): string {
+    if (!date.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)) {
+      return date;
+    }
+
+    const [, month, day] = date.split("-");
+    return `${day}.${month}`;
+  }
+
+  function convertDateLabels(data) {
+    return {
+      labels: data.categories.map(convertDateStringToDayMonth),
+      series: data.series
+    };
   }
 
   async function fetchPlaysByDay() {
@@ -126,21 +132,12 @@
     ).then(data => convertDateLabels(data?.data));
   }
 
-  function convertDateLabels(data) {
-    return {
-      labels: data.categories.map(convertDateStringToDayMonth),
-      series: data.series
-    };
+  function fetchChartData() {
+    fetchPlaysByDay();
+    fetchPlaysByDayOfWeek();
   }
 
-  function convertDateStringToDayMonth(date: string): string {
-    if (!date.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)) {
-      return date;
-    }
-
-    const [year, month, day] = date.split("-");
-    return `${day}.${month}`;
-  }
+  fetchChartData();
 </script>
 
 <style lang="scss" scoped>

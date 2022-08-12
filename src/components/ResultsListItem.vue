@@ -1,9 +1,10 @@
 <template>
-  <li class="movie-item" ref="list-item">
+  <li ref="list-item" class="movie-item">
     <figure
       ref="posterElement"
       class="movie-item__poster"
       @click="openMoviePopup"
+      @keydown.enter="openMoviePopup"
     >
       <img
         class="movie-item__img"
@@ -36,9 +37,8 @@
 <script setup lang="ts">
   import { ref, computed, defineProps, onMounted } from "vue";
   import { useStore } from "vuex";
-  import { buildImageProxyUrl } from "../utils";
   import type { Ref } from "vue";
-  import type { IMovie, IShow, IPerson, IRequest } from "../interfaces/IList";
+  import type { IMovie, IShow, IPerson } from "../interfaces/IList";
 
   interface Props {
     listItem: IMovie | IShow | IPerson;
@@ -53,19 +53,31 @@
   const posterElement: Ref<HTMLElement> = ref(null);
   const observed: Ref<boolean> = ref(false);
 
-  poster.value = props.listItem?.poster
-    ? IMAGE_BASE_URL + props.listItem?.poster
-    : IMAGE_FALLBACK;
+  if (props.listItem?.poster) {
+    poster.value = IMAGE_BASE_URL + props.listItem.poster;
+  } else {
+    poster.value = IMAGE_FALLBACK;
+  }
 
-  onMounted(observePosterAndSetImageSource);
+  const posterAltText = computed(() => {
+    const type = props.listItem.type || "";
+    let title = "";
+
+    if ("name" in props.listItem) title = props.listItem.name;
+    else if ("title" in props.listItem) title = props.listItem.title;
+
+    return props.listItem.poster
+      ? `Poster for ${type} ${title}`
+      : `Missing image for ${type} ${title}`;
+  });
 
   function observePosterAndSetImageSource() {
     const imageElement = posterElement.value.getElementsByTagName("img")[0];
     if (imageElement == null) return;
 
-    const imageObserver = new IntersectionObserver((entries, imgObserver) => {
+    const imageObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.isIntersecting && observed.value == false) {
+        if (entry.isIntersecting && observed.value === false) {
           const lazyImage = entry.target as HTMLImageElement;
           lazyImage.src = lazyImage.dataset.src;
           posterElement.value.classList.add("is-loaded");
@@ -77,30 +89,20 @@
     imageObserver.observe(imageElement);
   }
 
+  onMounted(observePosterAndSetImageSource);
+
   function openMoviePopup() {
     store.dispatch("popup/open", { ...props.listItem });
   }
 
-  const posterAltText = computed(() => {
-    const type = props.listItem.type || "";
-    let title: string = "";
-
-    if ("name" in props.listItem) title = props.listItem.name;
-    else if ("title" in props.listItem) title = props.listItem.title;
-
-    return props.listItem.poster
-      ? `Poster for ${type} ${title}`
-      : `Missing image for ${type} ${title}`;
-  });
-
-  const imageSize = computed(() => {
-    if (!posterElement.value) return;
-    const { height, width } = posterElement.value.getBoundingClientRect();
-    return {
-      height: Math.ceil(height),
-      width: Math.ceil(width)
-    };
-  });
+  // const imageSize = computed(() => {
+  //   if (!posterElement.value) return;
+  //   const { height, width } = posterElement.value.getBoundingClientRect();
+  //   return {
+  //     height: Math.ceil(height),
+  //     width: Math.ceil(width)
+  //   };
+  // });
 
   // import img from "../directives/v-image";
   //   directives: {

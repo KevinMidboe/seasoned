@@ -1,15 +1,15 @@
 <template>
   <transition-group name="fade">
     <div
-      class="card"
       v-for="(message, index) in messages"
       :key="generateMessageKey(index, message)"
+      class="card"
       :class="message.type || 'warning'"
     >
       <span class="pinstripe"></span>
       <div class="content">
         <h2 class="title">
-          {{ message.title }}
+          {{ message.title || titleFromType(message.type) }}
         </h2>
         <span v-if="message.message" class="message">{{
           message.message
@@ -27,7 +27,6 @@
     ErrorMessageTypes,
     IErrorMessage
   } from "../../interfaces/IErrorMessage";
-  import type { Ref } from "vue";
 
   interface Props {
     messages: IErrorMessage[];
@@ -52,8 +51,9 @@
   }
 
   function dismiss(index: number) {
-    props.messages.splice(index, 1);
-    emit("update:messages", [...props.messages]);
+    const _messages = [...props.messages];
+    _messages.splice(index, 1);
+    emit("update:messages", _messages);
   }
 
   function generateMessageKey(

@@ -2,9 +2,10 @@
   <div class="group" :class="{ completed: modelValue, focus }">
     <component :is="inputIcon" v-if="inputIcon" />
 
+    <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
     <input
       class="input"
-      :type="toggledType || type"
+      :type="toggledType || type || 'text'"
       :placeholder="placeholder"
       :value="modelValue"
       @input="handleInput"
@@ -15,10 +16,10 @@
 
     <i
       v-if="modelValue && type === 'password'"
-      @click="toggleShowPassword"
-      @keydown.enter="toggleShowPassword"
       class="show noselect"
       tabindex="0"
+      @click="toggleShowPassword"
+      @keydown.enter="toggleShowPassword"
       >{{ toggledType == "password" ? "show" : "hide" }}</i
     >
   </div>
@@ -43,16 +44,16 @@
     (e: "update:modelValue", value: string);
   }
 
-  const { placeholder, type = "text", modelValue } = defineProps<Props>();
+  const props = defineProps<Props>();
   const emit = defineEmits<Emit>();
 
-  const toggledType: Ref<string> = ref(type);
+  const toggledType: Ref<string> = ref(props.type);
   const focus: Ref<boolean> = ref(false);
 
   const inputIcon = computed(() => {
-    if (type === "password") return IconKey;
-    if (type === "email") return IconEmail;
-    if (type === "torrents") return IconBinoculars;
+    if (props.type === "password") return IconKey;
+    if (props.type === "email") return IconEmail;
+    if (props.type === "torrents") return IconBinoculars;
     return false;
   });
 

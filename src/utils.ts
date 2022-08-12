@@ -5,17 +5,17 @@ export const sortableSize = (string: string): number => {
   if (UNITS.indexOf(unit) === -1) return null;
 
   const exponent = UNITS.indexOf(unit) * 3;
-  return Number(numStr) * Math.pow(10, exponent);
+  return Number(numStr) * exponent ** 10;
 };
 
 export const parseJwt = (token: string) => {
-  var base64Url = token.split(".")[1];
-  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  var jsonPayload = decodeURIComponent(
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      .map(c => {
+        return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
       })
       .join("")
   );
@@ -48,19 +48,15 @@ export function focusFirstFormInput(formElement: HTMLFormElement): void {
 
 export function focusOnNextElement(elementEvent: KeyboardEvent): void {
   const { target } = elementEvent;
-  console.log("target:", target);
   if (!target) return;
 
   const form = document.getElementsByTagName("form")[0];
-  console.log("form:", form);
   if (!form) return;
 
   const inputElements = form.getElementsByTagName("input");
-  console.log("inputElements:", inputElements);
   const targetIndex = Array.from(inputElements).findIndex(
     element => element === target
   );
-  console.log("targetIndex:", targetIndex);
   if (targetIndex < inputElements.length) {
     inputElements[targetIndex + 1].focus();
   }
@@ -68,15 +64,18 @@ export function focusOnNextElement(elementEvent: KeyboardEvent): void {
 
 export function humanMinutes(minutes) {
   if (minutes instanceof Array) {
+    /* eslint-disable-next-line prefer-destructuring, no-param-reassign */
     minutes = minutes[0];
   }
 
   const hours = Math.floor(minutes / 60);
   const minutesLeft = minutes - hours * 60;
 
-  if (minutesLeft == 0) {
+  if (minutesLeft === 0) {
     return hours > 1 ? `${hours} hours` : `${hours} hour`;
-  } else if (hours == 0) {
+  }
+
+  if (hours === 0) {
     return `${minutesLeft} min`;
   }
 
@@ -97,4 +96,39 @@ export function setUrlQueryParameter(parameter: string, value: string): void {
   }${window.location.pathname}${params.toString().length ? `?${params}` : ""}`;
 
   window.history.pushState({}, "search", url);
+}
+
+export function convertSecondsToHumanReadable(_value, values = null) {
+  let value = _value;
+  const highestValue = values ? values[0] : value;
+
+  // minutes
+  if (highestValue < 3600) {
+    const minutes = Math.floor(value / 60);
+
+    value = `${minutes} m`;
+  }
+  // hours and minutes
+  else if (highestValue > 3600 && highestValue < 86400) {
+    const hours = Math.floor(value / 3600);
+    const minutes = Math.floor((value % 3600) / 60);
+
+    value = hours !== 0 ? `${hours} h ${minutes} m` : `${minutes} m`;
+  }
+  // days and hours
+  else if (highestValue > 86400 && highestValue < 31557600) {
+    const days = Math.floor(value / 86400);
+    const hours = Math.floor((value % 86400) / 3600);
+
+    value = days !== 0 ? `${days} d ${hours} h` : `${hours} h`;
+  }
+  // years and days
+  else if (highestValue > 31557600) {
+    const years = Math.floor(value / 31557600);
+    const days = Math.floor((value % 31557600) / 86400);
+
+    value = years !== 0 ? `${years} y ${days} d` : `${days} d`;
+  }
+
+  return value;
 }

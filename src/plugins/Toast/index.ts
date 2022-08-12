@@ -6,11 +6,7 @@ const optionsDefaults = {
   data: {
     type: "info",
     show: true,
-    timeout: 3000,
-
-    onCreate(created = null) {},
-    onEdit(editted = null) {},
-    onRemove(removed = null) {}
+    timeout: 3000
   }
 };
 
@@ -29,8 +25,8 @@ function toast(options) {
 }
 
 export default {
-  install(app, options) {
-    console.log("installing toast plugin!");
+  install(app) {
+    console.log("installing toast plugin!"); // eslint-disable-line no-console
 
     function info(options) {
       toast({ type: "info", ...options });
@@ -53,6 +49,8 @@ export default {
     }
 
     const notifications = { info, success, warning, error, simple };
+
+    /* eslint-disable-next-line no-param-reassign */
     app.config.globalProperties.$notifications = notifications;
 
     app.provide("notifications", notifications);

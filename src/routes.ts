@@ -1,11 +1,7 @@
-import { defineAsyncComponent } from "vue";
-import {
-  createRouter,
-  createWebHistory,
-  RouteRecordRaw,
-  NavigationGuardNext,
-  RouteLocationNormalized
-} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
+import type { RouteRecordRaw, RouteLocationNormalized } from "vue-router";
+
+/* eslint-disable-next-line import/no-cycle */
 import store from "./store";
 
 declare global {
@@ -14,16 +10,16 @@ declare global {
   }
 }
 
-let routes: Array<RouteRecordRaw> = [
+const routes: Array<RouteRecordRaw> = [
   {
     name: "home",
     path: "/",
-    component: () => import("./pages/Home.vue")
+    component: () => import("./pages/HomePage.vue")
   },
   {
     name: "activity",
     path: "/activity",
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresPlexAccount: true },
     component: () => import("./pages/ActivityPage.vue")
   },
   {
@@ -80,7 +76,7 @@ let routes: Array<RouteRecordRaw> = [
   {
     name: "404",
     path: "/404",
-    component: () => import("./pages/404.vue")
+    component: () => import("./pages/404Page.vue")
   }
   // {
   //   path: "*",
@@ -100,9 +96,10 @@ const router = createRouter({
 });
 
 const loggedIn = () => store.getters["user/loggedIn"];
-const popupIsOpen = () => store.getters["popup/isOpen"];
+const hasPlexAccount = () => store.getters["user/plexId"] !== null;
 const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 router.beforeEach(
   (to: RouteLocationNormalized, from: RouteLocationNormalized, next: any) => {
     store.dispatch("documentTitle/updateTitle", to.name);
@@ -116,6 +113,15 @@ router.beforeEach(
     if (to.matched.some(record => record.meta.requiresAuth)) {
       if (!loggedIn()) {
         next({ path: "/signin" });
+      }
+    }
+
+    if (to.matched.some(record => record.meta.requiresPlexAccount)) {
+      if (!hasPlexAccount()) {
+        next({
+          path: "/settings",
+          query: { missingPlexAccount: true }
+        });
       }
     }
 

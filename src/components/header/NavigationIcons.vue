@@ -1,9 +1,9 @@
 <template>
   <ul class="navigation-icons">
     <NavigationIcon
-      v-for="route in routes"
-      :key="route.route"
-      :route="route"
+      v-for="_route in routes"
+      :key="_route.route"
+      :route="_route"
       :active="activeRoute"
     />
     <slot></slot>
@@ -66,7 +66,11 @@
     }
   ];
 
-  watch(route, () => (activeRoute.value = window?.location?.pathname));
+  function setActiveRoute(_route: string) {
+    activeRoute.value = _route;
+  }
+
+  watch(route, () => setActiveRoute(window?.location?.pathname || ""));
 </script>
 
 <style lang="scss" scoped>

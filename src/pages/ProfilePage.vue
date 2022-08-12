@@ -1,14 +1,14 @@
 <template>
   <section class="profile">
-    <div class="profile__content" v-if="loggedIn">
+    <div v-if="loggedIn" class="profile__content">
       <header class="profile__header">
         <h2 class="profile__title">{{ emoji }} Welcome {{ username }}</h2>
 
         <div class="button--group">
-          <seasoned-button @click="toggleSettings" :active="showSettings">{{
+          <seasoned-button :active="showSettings" @click="toggleSettings">{{
             showSettings ? "hide settings" : "show settings"
           }}</seasoned-button>
-          <seasoned-button @click="toggleActivity" :active="showActivity">{{
+          <seasoned-button :active="showActivity" @click="toggleActivity">{{
             showActivity ? "hide activity" : "show activity"
           }}</seasoned-button>
 
@@ -16,15 +16,15 @@
         </div>
       </header>
 
-      <settings v-if="showSettings" />
+      <settings-page v-if="showSettings" />
 
-      <activity v-if="showActivity" />
+      <activity-page v-if="showActivity" />
 
       <page-header title="Your requests" :info="resultCount" />
       <results-list v-if="results" :results="results" />
     </div>
 
-    <section class="not-found" v-if="!loggedIn">
+    <section v-if="!loggedIn" class="not-found">
       <div class="not-found__content">
         <h2 class="not-found__title">Authentication Request Failed</h2>
         <router-link :to="{ name: 'signin' }" exact title="Sign in here">
@@ -40,11 +40,11 @@
   import { useStore } from "vuex";
   import PageHeader from "@/components/PageHeader.vue";
   import ResultsList from "@/components/ResultsList.vue";
-  import Settings from "@/pages/SettingsPage.vue";
-  import Activity from "@/pages/ActivityPage.vue";
+  import SettingsPage from "@/pages/SettingsPage.vue";
+  import ActivityPage from "@/pages/ActivityPage.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
-  import { getEmoji, getUserRequests, getSettings, logout } from "../api";
   import type { Ref, ComputedRef } from "vue";
+  import { getEmoji, getUserRequests } from "../api";
   import type { ListResults } from "../interfaces/IList";
 
   const emoji: Ref<string> = ref("");
@@ -57,13 +57,16 @@
 
   const loggedIn: Ref<boolean> = computed(() => store.getters["user/loggedIn"]);
   const username: Ref<string> = computed(() => store.getters["user/username"]);
-  const settings: Ref<object> = computed(() => store.getters["user/settings"]);
 
   const resultCount: ComputedRef<number | string> = computed(() => {
     const currentCount = results?.value?.length || 0;
     const totalCount = totalResults.value < 10000 ? totalResults.value : "∞";
     return `${currentCount} of ${totalCount} results`;
   });
+
+  function setEmoji(_emoji: string) {
+    emoji.value = _emoji;
+  }
 
   // Component loaded actions
   getUserRequests().then(requestResults => {
@@ -72,25 +75,11 @@
     totalResults.value = requestResults.total_results;
   });
 
-  getEmoji().then(resp => (emoji.value = resp?.emoji));
+  getEmoji().then(resp => setEmoji(resp?.emoji));
 
   showSettings.value = window.location.toString().includes("settings=true");
   showActivity.value = window.location.toString().includes("activity=true");
   // Component loaded actions end
-
-  function toggleSettings() {
-    showSettings.value = !showSettings.value;
-    updateQueryParams("settings", showSettings.value);
-  }
-
-  function toggleActivity() {
-    showActivity.value = !showActivity.value;
-    updateQueryParams("activity", showActivity.value);
-  }
-
-  function _logout() {
-    store.dispatch("user/logout");
-  }
 
   function updateQueryParams(key, value = false) {
     const params = new URLSearchParams(window.location.search);
@@ -111,6 +100,20 @@
         params.toString().length ? `?${params}` : ""
       }`
     );
+  }
+
+  function toggleSettings() {
+    showSettings.value = !showSettings.value;
+    updateQueryParams("settings", showSettings.value);
+  }
+
+  function toggleActivity() {
+    showActivity.value = !showActivity.value;
+    updateQueryParams("activity", showActivity.value);
+  }
+
+  function _logout() {
+    store.dispatch("user/logout");
   }
 </script>
 

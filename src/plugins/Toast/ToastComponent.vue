@@ -1,20 +1,24 @@
+<!-- eslint-disable vuejs-accessibility/click-events-have-key-events, vue/no-v-html -->
 <template>
   <transition name="slide">
-    <div v-if="show" @click="clicked" class="toast" :class="type">
+    <div v-if="show" class="toast" :class="type || 'info'" @click="clicked">
       <div class="toast--content">
         <div class="toast--icon">
-          <i v-if="image"><img class="toast--icon-image" :src="image" /></i>
+          <i v-if="image"
+            ><img class="toast--icon-image" :src="image" alt="Toast icon"
+          /></i>
         </div>
-        <div class="toast--text" v-if="description">
+        <div v-if="description" class="toast--text">
           <span class="toast--text__title">{{ title }}</span>
           <br /><span
             class="toast--text__description"
             v-html="description"
           ></span>
         </div>
-        <div class="toast--text" v-else>
+        <div v-else class="toast--text">
           <span class="toast--text__title-large">{{ title }}</span>
         </div>
+
         <div class="toast--dismiss" @click="dismiss">
           <i class="fas fa-times"></i>
         </div>
@@ -37,14 +41,7 @@
     timeout?: number;
   }
 
-  const {
-    type = "info",
-    title,
-    description,
-    image,
-    link,
-    timeout = 2000
-  } = defineProps<Props>();
+  const props = defineProps<Props>();
   const router = useRouter();
 
   const show: Ref<boolean> = ref(false);
@@ -53,16 +50,16 @@
     show.value = true;
 
     setTimeout(() => {
-      console.log("Notification time is up 👋");
+      console.log("Notification time is up 👋"); // eslint-disable-line no-console
       show.value = false;
-    }, timeout);
+    }, props.timeout || 2000);
   });
 
   function clicked() {
     show.value = false;
 
-    if (link) {
-      router.push(link);
+    if (props.link) {
+      router.push(props.link);
     }
   }
 </script>

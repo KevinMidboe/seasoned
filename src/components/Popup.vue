@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isOpen" class="movie-popup" @click="close">
+  <div v-if="isOpen" class="movie-popup" @click="close" @keydown.enter="close">
     <div class="movie-popup__box" @click.stop>
       <person v-if="type === 'person'" :id="id" type="person" />
       <movie v-else :id="id" :type="type"></movie>
@@ -14,8 +14,8 @@
   import { useStore } from "vuex";
   import Movie from "@/components/popup/Movie.vue";
   import Person from "@/components/popup/Person.vue";
-  import { MediaTypes } from "../interfaces/IList";
   import type { Ref } from "vue";
+  import { MediaTypes } from "../interfaces/IList";
 
   interface URLQueryParameters {
     id: number;
@@ -34,14 +34,16 @@
     id.value = state.popup.id;
     type.value = state.popup.type;
 
-    isOpen.value
-      ? document.getElementsByTagName("body")[0].classList.add("no-scroll")
-      : document.getElementsByTagName("body")[0].classList.remove("no-scroll");
+    if (isOpen.value) {
+      document.getElementsByTagName("body")[0].classList.add("no-scroll");
+    } else {
+      document.getElementsByTagName("body")[0].classList.remove("no-scroll");
+    }
   });
 
   function getFromURLQuery(): URLQueryParameters {
-    let id: number;
-    let type: MediaTypes;
+    let _id: number;
+    let _type: MediaTypes;
 
     const params = new URLSearchParams(window.location.search);
     params.forEach((value, key) => {
@@ -55,16 +57,16 @@
         return;
       }
 
-      id = Number(params.get(key));
-      type = MediaTypes[key];
+      _id = Number(params.get(key));
+      _type = MediaTypes[key];
     });
 
-    return { id, type };
+    return { id: _id, type: _type };
   }
 
-  function open(id: Number, type: string) {
-    if (!id || !type) return;
-    store.dispatch("popup/open", { id, type });
+  function open(_id: number, _type: string) {
+    if (!_id || !_type) return;
+    store.dispatch("popup/open", { id: _id, type: _type });
   }
 
   function close() {
@@ -79,8 +81,8 @@
   window.addEventListener("keyup", checkEventForEscapeKey);
 
   onMounted(() => {
-    const { id, type } = getFromURLQuery();
-    open(id, type);
+    const query = getFromURLQuery();
+    open(query?.id, query?.type);
   });
 
   onBeforeUnmount(() => {

@@ -7,8 +7,8 @@
         <seasoned-input
           v-model="query"
           type="torrents"
-          @keydown.enter="setTorrentQuery"
           placeholder="Search torrents"
+          @keydown.enter="setTorrentQuery"
         />
         <seasoned-button @click="setTorrentQuery">Search</seasoned-button>
       </div>
@@ -27,8 +27,8 @@
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import TorrentList from "@/components/torrent/TorrentSearchResults.vue";
   import ActiveTorrents from "@/components/torrent/ActiveTorrents.vue";
-  import { getValueFromUrlQuery, setUrlQueryParameter } from "../utils";
   import type { Ref } from "vue";
+  import { getValueFromUrlQuery, setUrlQueryParameter } from "../utils";
 
   const urlQuery = getValueFromUrlQuery("query");
 

@@ -6,7 +6,7 @@
       v-if="!loadedPages.includes(1) && loading == false"
       class="button-container"
     >
-      <seasoned-button @click="loadLess" class="load-button" :fullWidth="true"
+      <seasoned-button class="load-button" :full-width="true" @click="loadLess"
         >load previous</seasoned-button
       >
     </div>
@@ -16,10 +16,10 @@
 
     <div ref="loadMoreButton" class="button-container">
       <seasoned-button
-        class="load-button"
         v-if="!loading && !shortList && page != totalPages && results.length"
+        class="load-button"
+        :full-width="true"
         @click="loadMore"
-        :fullWidth="true"
         >load more</seasoned-button
       >
     </div>
@@ -28,12 +28,10 @@
 
 <script setup lang="ts">
   import { defineProps, ref, computed, onMounted } from "vue";
-  import { useStore } from "vuex";
   import PageHeader from "@/components/PageHeader.vue";
   import ResultsList from "@/components/ResultsList.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import Loader from "@/components/ui/Loader.vue";
-  import { getTmdbMovieListByName } from "../api";
   import type { Ref } from "vue";
   import type { IList, ListResults } from "../interfaces/IList";
   import type ISection from "../interfaces/ISection";
@@ -44,7 +42,6 @@
     shortList?: boolean;
   }
 
-  const store = useStore();
   const props = defineProps<Props>();
 
   const results: Ref<ListResults> = ref([]);
@@ -54,12 +51,23 @@
   const totalPages: Ref<number> = ref(0);
   const loading: Ref<boolean> = ref(true);
   const autoLoad: Ref<boolean> = ref(false);
-  const observer: Ref<any> = ref(null);
+  const observer: Ref<IntersectionObserver> = ref(null);
   const resultSection = ref(null);
   const loadMoreButton = ref(null);
 
-  page.value = getPageFromUrl() || page.value;
-  if (results.value?.length === 0) getListResults();
+  function pageCountString(_page: number, _totalPages: number) {
+    return `Page ${_page} of ${_totalPages}`;
+  }
+
+  function resultCountString(_results: ListResults, _totalResults: number) {
+    const loadedResults = _results.length;
+    const __totalResults = _totalResults < 10000 ? _totalResults : "∞";
+    return `${loadedResults} of ${__totalResults} results`;
+  }
+
+  function setLoading(state: boolean) {
+    loading.value = state;
+  }
 
   const info = computed(() => {
     if (results.value.length === 0) return [null, null];
@@ -69,25 +77,30 @@
     return [pageCount, resultCount];
   });
 
-  onMounted(() => {
-    if (!props?.shortList) setupAutoloadObserver();
-  });
-
-  function pageCountString(page: Number, totalPages: Number) {
-    return `Page ${page} of ${totalPages}`;
-  }
-
-  function resultCountString(results: ListResults, totalResults: number) {
-    const loadedResults = results.length;
-    const _totalResults = totalResults < 10000 ? totalResults : "∞";
-    return `${loadedResults} of ${_totalResults} results`;
-  }
-
   function getPageFromUrl() {
-    const page = new URLSearchParams(window.location.search).get("page");
-    if (!page) return null;
+    const _page = new URLSearchParams(window.location.search).get("page");
+    if (!_page) return null;
 
-    return Number(page);
+    return Number(_page);
+  }
+
+  function updateQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("page")) {
+      params.set("page", page.value?.toString());
+    } else if (page.value > 1) {
+      params.append("page", page.value?.toString());
+    }
+
+    window.history.replaceState(
+      {},
+      "search",
+      `${window.location.protocol}//${window.location.hostname}${
+        window.location.port ? `:${window.location.port}` : ""
+      }${window.location.pathname}${
+        params.toString().length ? `?${params}` : ""
+      }`
+    );
   }
 
   function getListResults(front = false) {
@@ -105,7 +118,7 @@
         totalResults.value = listResponse.total_results;
       })
       .then(updateQueryParams)
-      .finally(() => (loading.value = false));
+      .finally(() => setLoading(false));
   }
 
   function loadMore() {
@@ -114,9 +127,9 @@
     }
 
     loading.value = true;
-    let maxPage = [...loadedPages.value].slice(-1)[0];
+    const maxPage = [...loadedPages.value].slice(-1)[0];
 
-    if (maxPage == NaN) return;
+    if (Number.isNaN(maxPage)) return;
     page.value = maxPage + 1;
     getListResults();
   }
@@ -128,25 +141,6 @@
 
     page.value = minPage - 1;
     getListResults(true);
-  }
-
-  function updateQueryParams() {
-    let params = new URLSearchParams(window.location.search);
-    if (params.has("page")) {
-      params.set("page", page.value?.toString());
-    } else if (page.value > 1) {
-      params.append("page", page.value?.toString());
-    }
-
-    window.history.replaceState(
-      {},
-      "search",
-      `${window.location.protocol}//${window.location.hostname}${
-        window.location.port ? `:${window.location.port}` : ""
-      }${window.location.pathname}${
-        params.toString().length ? `?${params}` : ""
-      }`
-    );
   }
 
   function handleButtonIntersection(entries) {
@@ -165,14 +159,12 @@
     observer.value.observe(loadMoreButton.value);
   }
 
-  //   created() {
-  //     if (!this.shortList) {
-  //       store.dispatch(
-  //         "documentTitle/updateTitle",
-  //         `${this.$router.history.current.name} ${this.title}`
-  //       );
-  //     }
-  //   },
+  page.value = getPageFromUrl() || page.value;
+  if (results.value?.length === 0) getListResults();
+  onMounted(() => {
+    if (!props?.shortList) setupAutoloadObserver();
+  });
+
   //   beforeDestroy() {
   //     this.observer = undefined;
   //   }

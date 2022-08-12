@@ -3,15 +3,16 @@
     <div class="search" :class="{ active: inputIsActive }">
       <IconSearch class="search-icon" tabindex="-1" />
 
+      <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
       <input
         ref="inputElement"
+        v-model="query"
         type="text"
         placeholder="Search for movie or show"
         aria-label="Search input for finding a movie or show"
         autocorrect="off"
         autocapitalize="off"
         tabindex="0"
-        v-model="query"
         @input="handleInput"
         @click="focus"
         @keydown.escape="handleEscape"
@@ -23,20 +24,20 @@
       />
 
       <IconClose
+        v-if="query && query.length"
         tabindex="0"
         aria-label="button"
-        v-if="query && query.length"
+        class="close-icon"
         @click="clearInput"
         @keydown.enter.stop="clearInput"
-        class="close-icon"
       />
     </div>
 
     <AutocompleteDropdown
       v-if="showAutocompleteResults"
+      v-model:results="dropdownResults"
       :query="query"
       :index="dropdownIndex"
-      v-model:results="dropdownResults"
     />
   </div>
 </template>
@@ -44,14 +45,12 @@
 <script setup lang="ts">
   import { ref, computed } from "vue";
   import { useStore } from "vuex";
-  import { useRouter } from "vue-router";
-  import { useRoute } from "vue-router";
-  import SeasonedButton from "@/components/ui/SeasonedButton.vue";
+  import { useRouter, useRoute } from "vue-router";
   import AutocompleteDropdown from "@/components/header/AutocompleteDropdown.vue";
   import IconSearch from "@/icons/IconSearch.vue";
   import IconClose from "@/icons/IconClose.vue";
-  import config from "../../config";
   import type { Ref } from "vue";
+  import config from "../../config";
   import type { MediaTypes } from "../../interfaces/IList";
 
   interface ISearchResult {
@@ -70,8 +69,7 @@
   const dropdownIndex: Ref<number> = ref(-1);
   const dropdownResults: Ref<ISearchResult[]> = ref([]);
   const inputIsActive: Ref<boolean> = ref(false);
-  const showAutocomplete: Ref<boolean> = ref(false);
-  const inputElement: Ref<any> = ref(null);
+  const inputElement: Ref<HTMLInputElement> = ref(null);
 
   const isOpen = computed(() => store.getters["popup/isOpen"]);
   const showAutocompleteResults = computed(() => {
@@ -95,12 +93,12 @@
 
   function navigateDown() {
     if (dropdownIndex.value < dropdownResults.value.length - 1) {
-      dropdownIndex.value++;
+      dropdownIndex.value += 1;
     }
   }
 
   function navigateUp() {
-    if (dropdownIndex.value > -1) dropdownIndex.value--;
+    if (dropdownIndex.value > -1) dropdownIndex.value -= 1;
 
     const textLength = inputElement.value.value.length;
 
@@ -122,12 +120,31 @@
     });
   }
 
-  function handleInput(e) {
+  function handleInput() {
     dropdownIndex.value = -1;
   }
 
+  function focus() {
+    inputIsActive.value = true;
+  }
+
+  function reset() {
+    inputElement.value.blur();
+    dropdownIndex.value = -1;
+    inputIsActive.value = false;
+  }
+
+  function blur() {
+    return setTimeout(reset, 150);
+  }
+
+  function clearInput() {
+    query.value = "";
+    inputElement.value.focus();
+  }
+
   function handleSubmit() {
-    if (!query.value || query.value.length == 0) return;
+    if (!query.value || query.value.length === 0) return;
 
     if (dropdownIndex.value >= 0) {
       const resultItem = dropdownResults.value[dropdownIndex.value];
@@ -141,25 +158,6 @@
 
     search();
     reset();
-  }
-
-  function focus() {
-    inputIsActive.value = true;
-  }
-
-  function blur(event: MouseEvent = null) {
-    return setTimeout(reset, 150);
-  }
-
-  function reset() {
-    inputElement.value.blur();
-    dropdownIndex.value = -1;
-    inputIsActive.value = false;
-  }
-
-  function clearInput(event: MouseEvent) {
-    query.value = "";
-    inputElement.value.focus();
   }
 
   function handleEscape() {

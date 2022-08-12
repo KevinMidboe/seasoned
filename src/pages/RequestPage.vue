@@ -1,5 +1,5 @@
 <template>
-  <ResultsSection title="Requests" :apiFunction="getRequests" />
+  <ResultsSection title="Requests" :api-function="getRequests" />
 </template>
 
 <script setup lang="ts">

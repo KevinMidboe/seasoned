@@ -1,6 +1,8 @@
-import router from "../routes";
 import { MediaTypes } from "../interfaces/IList";
-import type { IStatePopup } from "../interfaces/IStatePopup";
+import type { IStatePopup, IPopupQuery } from "../interfaces/IStatePopup";
+
+/* eslint-disable-next-line import/no-cycle */
+import router from "../routes";
 
 const removeIncludedQueryParams = (params, key) => {
   if (params.has(key)) params.delete(key);
@@ -9,11 +11,9 @@ const removeIncludedQueryParams = (params, key) => {
 
 function paramsToObject(entries) {
   const result = {};
-  for (const [key, value] of entries) {
-    // each 'entry' is a [key, value] tupple
+  return entries.forEach((key, value) => {
     result[key] = value;
-  }
-  return result;
+  });
 }
 
 const updateQueryParams = (id: number = null, type: MediaTypes = null) => {
@@ -38,6 +38,7 @@ const state: IStatePopup = {
   open: false
 };
 
+/* eslint-disable @typescript-eslint/no-shadow */
 export default {
   namespaced: true,
   state,
@@ -60,7 +61,10 @@ export default {
   },
   actions: {
     open: ({ commit }, { id, type }: { id: number; type: MediaTypes }) => {
-      if (!isNaN(id)) id = Number(id);
+      if (!Number.isNaN(id)) {
+        id = Number(id); /* eslint-disable-line no-param-reassign */
+      }
+
       commit("SET_OPEN", { id, type });
       updateQueryParams(id, type);
     },
@@ -68,11 +72,11 @@ export default {
       commit("SET_CLOSE");
       updateQueryParams(); // reset
     },
-    resetStateFromUrlQuery: ({ commit }, query: any) => {
+    resetStateFromUrlQuery: ({ commit }, query: IPopupQuery) => {
       let { movie, show, person } = query;
-      movie = !isNaN(movie) ? Number(movie) : movie;
-      show = !isNaN(show) ? Number(show) : show;
-      person = !isNaN(person) ? Number(person) : person;
+      movie = !Number.isNaN(movie) ? Number(movie) : movie;
+      show = !Number.isNaN(show) ? Number(show) : show;
+      person = !Number.isNaN(person) ? Number(person) : person;
 
       if (movie) commit("SET_OPEN", { id: movie, type: "movie" });
       else if (show) commit("SET_OPEN", { id: show, type: "show" });

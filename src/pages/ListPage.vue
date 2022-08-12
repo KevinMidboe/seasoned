@@ -1,5 +1,5 @@
 <template>
-  <ResultsSection :title="listName" :apiFunction="_getTmdbMovieListByName" />
+  <ResultsSection :title="listName" :api-function="_getTmdbMovieListByName" />
 </template>
 
 <script setup lang="ts">
