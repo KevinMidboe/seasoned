@@ -23,6 +23,12 @@ steps:
       - yarn
       - yarn build
 
+  - name: run eslint on project files
+    image: node:18.2.0
+    commands:
+      - yarn lint
+    failure: ignore
+
   - name: deploy
     image: appleboy/drone-ssh
     pull: true
