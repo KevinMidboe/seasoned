@@ -23,7 +23,7 @@
         <img
           ref="poster-image"
           class="person-item__img is-loaded"
-          :alt="`Image of ${person.name}`"
+          alt="Image of person"
           :src="poster"
         />
       </figure>

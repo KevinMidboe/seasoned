@@ -295,9 +295,6 @@ const getRequestStatus = (id, type = undefined) => {
       const { status } = resp;
       if (status === 200) return true;
 
-      const errorMessage = `api error getting request status for id ${id} and type ${type}`;
-      // eslint-disable-next-line no-console
-      console.error(errorMessage);
       return false;
     })
     .catch(err => Promise.reject(err));

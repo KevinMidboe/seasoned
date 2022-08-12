@@ -11,9 +11,12 @@ const removeIncludedQueryParams = (params, key) => {
 
 function paramsToObject(entries) {
   const result = {};
-  return entries.forEach((key, value) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const [key, value] of entries) {
     result[key] = value;
-  });
+  }
+
+  return result;
 }
 
 const updateQueryParams = (id: number = null, type: MediaTypes = null) => {

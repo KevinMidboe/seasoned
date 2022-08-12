@@ -48,17 +48,15 @@
     const params = new URLSearchParams(window.location.search);
     params.forEach((value, key) => {
       if (
-        !(
-          key === MediaTypes.Movie ||
-          key === MediaTypes.Show ||
-          key === MediaTypes.Person
-        )
+        key !== MediaTypes.Movie &&
+        key !== MediaTypes.Show &&
+        key !== MediaTypes.Person
       ) {
         return;
       }
 
       _id = Number(params.get(key));
-      _type = MediaTypes[key];
+      _type = key;
     });
 
     return { id: _id, type: _type };
