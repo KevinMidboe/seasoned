@@ -32,7 +32,17 @@ steps:
   - name: Build and tag docker image
     image: plugins/docker
     settings:
-      repo: kevinmidboe/seasoned
+      dry_run: true
+      registry: ghcr.io
+      repo: ghcr.io/kevinmidboe/seasoned
+      dockerfile: Dockerfile
+      tags: [latest, "${DRONE_TAG}"]
+
+  - name: Publish docker image
+    image: plugins/docker
+    settings:
+      registry: ghcr.io
+      repo: ghcr.io/kevinmidboe/seasoned
       dockerfile: Dockerfile
       tags: [latest, "${DRONE_TAG}"]
 
