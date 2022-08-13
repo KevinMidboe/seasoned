@@ -1,4 +1,5 @@
 FROM node:18-alpine3.15
+LABEL org.opencontainers.image.source https://github.com/kevinmidboe/seasoned
 
 RUN apk update && apk add curl
 
