@@ -8,14 +8,14 @@ platform:
   arch: amd64
 
 steps:
-  - name: frontend install
+  - name: Frontend install
     image: node:18.2.0
     commands:
       - node -v
       - yarn --version
       - yarn
 
-  - name: frontend build
+  - name: Frontend build
     image: node:18.2.0
     commands:
       - node -v
@@ -23,10 +23,17 @@ steps:
       - yarn
       - yarn build
 
-  - name: run eslint on project files
+  - name: Lint project using eslint
     image: node:18.2.0
     commands:
       - yarn lint
+    failure: ignore
+
+  - name: Build and tag docker image
+    image: node:18.2.0
+    commands:
+      - docker build -t seasoned .
+      - docker tag seasoned kevinmidboe/seasoned
     failure: ignore
 
   - name: deploy
