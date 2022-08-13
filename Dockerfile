@@ -11,7 +11,7 @@ COPY yarn.lock /opt/seasoned
 COPY package.json /opt/seasoned
 COPY server.ts /opt/seasoned
 COPY webpack.config.js /opt/seasoned
-COPY tsconfig**.json /opt/seasoned
+COPY tsconfig**.json /opt/seasoned/
 
 RUN chown -R node:node /opt/seasoned
 
