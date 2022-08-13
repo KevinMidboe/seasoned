@@ -30,11 +30,11 @@ steps:
     failure: ignore
 
   - name: Build and tag docker image
-    image: node:18.2.0
-    commands:
-      - docker build -t seasoned .
-      - docker tag seasoned kevinmidboe/seasoned
-    failure: ignore
+    image: plugins/docker
+    settings:
+      repo: kevinmidboe/seasoned
+      dockerfile: Dockerfile
+      tags: [latest, "${DRONE_TAG}"]
 
   - name: deploy
     image: appleboy/drone-ssh
@@ -61,4 +61,4 @@ trigger:
   event:
     include:
       - push
-      - pull_request
+      # - pull_request
