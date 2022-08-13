@@ -1,31 +1,27 @@
-FROM node:18-alpine3.15
+FROM nginx:1.23.1
 LABEL org.opencontainers.image.source https://github.com/kevinmidboe/seasoned
 
-RUN apk update && apk add curl && apk add nginx && apk add openrc
+# RUN mkdir -p /opt/seasoned
+# WORKDIR /opt/seasoned
 
-RUN mkdir -p /opt/seasoned/node_modules
-WORKDIR /opt/seasoned
+# COPY src /opt/seasoned/src
+# COPY public /opt/seasoned/public
+COPY public /usr/share/nginx/html
+# COPY yarn.lock /opt/seasoned
+# COPY package.json /opt/seasoned
+# COPY server.ts /opt/seasoned
+# COPY webpack.config.js /opt/seasoned
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY tsconfig**.json /opt/seasoned/
 
-COPY src /opt/seasoned/src
-COPY public /opt/seasoned/public
-COPY yarn.lock /opt/seasoned
-COPY package.json /opt/seasoned
-COPY server.ts /opt/seasoned
-COPY webpack.config.js /opt/seasoned
-COPY nginx.conf /etc/nginx/http.d/default.conf
-COPY tsconfig**.json /opt/seasoned/
+# RUN chown -R node:node /opt/seasoned
 
-RUN chown -R node:node /opt/seasoned
+# USER node
 
-USER node
+# RUN yarn install
 
-RUN yarn install
-
-RUN yarn build
-
-RUN rc-update add nginx
-RUN rc-service nginx start
+# RUN yarn build
 
 EXPOSE 5000
 
-CMD ["yarn", "start"]
+# CMD ["yarn", "start"]
