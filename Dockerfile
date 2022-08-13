@@ -1,7 +1,7 @@
 FROM node:18-alpine3.15
 LABEL org.opencontainers.image.source https://github.com/kevinmidboe/seasoned
 
-RUN apk update && apk add curl && apk add nginx
+RUN apk update && apk add curl && apk add nginx && apk add openrc
 
 RUN mkdir -p /opt/seasoned/node_modules
 WORKDIR /opt/seasoned
@@ -22,6 +22,9 @@ USER node
 RUN yarn install
 
 RUN yarn build
+
+RUN rc-update add nginx
+RUN rc-service nginx start
 
 EXPOSE 5000
 
