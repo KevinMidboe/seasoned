@@ -5,21 +5,21 @@ const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { VueLoaderPlugin } = require("vue-loader");
 const TerserPlugin = require("terser-webpack-plugin");
 const dotenv = require("dotenv").config({ path: "./.env" });
+const dotenvExample = require("dotenv").config({ path: "./.env.example" });
 
 const sourcePath = path.resolve(__dirname, "src");
 const indexFile = path.join(sourcePath, "index.html");
 const javascriptEntry = path.join(sourcePath, "main.ts");
 const publicPath = path.resolve(__dirname, "public");
 const isProd = process.env.NODE_ENV === "production";
+const variables = dotenv.parsed || dotenvExample.parsed;
 
 // Merge inn all process.env values that match dotenv keys
-if (dotenv.parsed) {
-  Object.keys(process.env).forEach(key => {
-    if (key in dotenv.parsed) {
-      dotenv.parsed[key] = process.env[key];
-    }
-  });
-}
+Object.keys(process.env).forEach(key => {
+  if (key in variables) {
+    variables[key] = process.env[key];
+  }
+});
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -79,7 +79,7 @@ module.exports = {
       minify: isProd
     }),
     new webpack.DefinePlugin({
-      "process.env": JSON.stringify(dotenv.parsed)
+      "process.env": JSON.stringify(variables)
     })
   ],
   resolve: {
