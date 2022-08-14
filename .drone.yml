@@ -7,7 +7,23 @@ platform:
   os: linux
   arch: amd64
 
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache
+
 steps:
+  - name: Load cached frontend packages
+    image: sinlead/drone-cache:1.0.0
+    settings:
+      action: load
+      key: yarn.lock
+      mount: node_modules
+      prefix: yarn-modules-seasoned
+    volumes:
+      - name: cache
+        path: /cache
+
   - name: Frontend install
     image: node:18.2.0
     commands:
@@ -15,12 +31,20 @@ steps:
       - yarn --version
       - yarn
 
+  - name: Cache frontend packages
+    image: sinlead/drone-cache:1.0.0
+    settings:
+      action: save
+      key: yarn.lock
+      mount: node_modules
+      prefix: yarn-modules-seasoned
+    volumes:
+      - name: cache
+        path: /cache
+
   - name: Frontend build
     image: node:18.2.0
     commands:
-      - node -v
-      - yarn --version
-      - yarn
       - yarn build
     environment:
       ELASTIC:

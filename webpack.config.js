@@ -21,6 +21,8 @@ Object.keys(process.env).forEach(key => {
   }
 });
 
+console.log("WEBPACK variables:", variables, process.env);
+
 module.exports = {
   mode: process.env.NODE_ENV,
   context: publicPath,
