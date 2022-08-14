@@ -53,6 +53,8 @@ steps:
         from_secret: ELASTIC_INDEX
       SEASONED_API:
         from_secret: SEASONED_API
+      SEASONED_DOMAIN:
+        from_secret: SEASONED_DOMAIN
 
   - name: Lint project using eslint
     image: node:18.2.0
