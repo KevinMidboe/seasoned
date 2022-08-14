@@ -6,15 +6,13 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development webpack server",
-    "build": "yarn build:ts-server && yarn build:webpack",
-    "build:ts": "yarn build:ts-server && yarn build:ts-vue",
-    "build:ts-server": "tsc --project tsconfig.server.json",
-    "build:ts-vue": "tsc --project tsconfig.json",
+    "build": "yarn build:ts && yarn build:webpack",
+    "build:ts": "tsc --project tsconfig.json",
     "build:webpack": "NODE_ENV=production webpack-cli build --progress",
     "postbuild": "cp public/dist/index.html public/index.html",
     "clean": "rm -r public/dist 2> /dev/null; rm public/index.html 2> /dev/null; rm -r lib 2> /dev/null",
-    "start": "node lib/server.js",
-    "lint": "eslint src server.ts --ext .ts,.vue",
+    "start": "echo 'Start using docker, consult README'",
+    "lint": "eslint src --ext .ts,.vue",
     "docs": "documentation build src/api.ts -f html -o docs/api && documentation build src/api.ts -f md -o docs/api.md"
   },
   "dependencies": {
