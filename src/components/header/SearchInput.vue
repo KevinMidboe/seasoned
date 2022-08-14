@@ -50,7 +50,6 @@
   import IconSearch from "@/icons/IconSearch.vue";
   import IconClose from "@/icons/IconClose.vue";
   import type { Ref } from "vue";
-  import config from "../../config";
   import type { MediaTypes } from "../../interfaces/IList";
 
   interface ISearchResult {

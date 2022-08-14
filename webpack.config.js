@@ -13,11 +13,13 @@ const publicPath = path.resolve(__dirname, "public");
 const isProd = process.env.NODE_ENV === "production";
 
 // Merge inn all process.env values that match dotenv keys
-Object.keys(process.env).forEach(key => {
-  if (key in dotenv.parsed) {
-    dotenv.parsed[key] = process.env[key];
-  }
-});
+if (dotenv.parsed) {
+  Object.keys(process.env).forEach(key => {
+    if (key in dotenv.parsed) {
+      dotenv.parsed[key] = process.env[key];
+    }
+  });
+}
 
 module.exports = {
   mode: process.env.NODE_ENV,
