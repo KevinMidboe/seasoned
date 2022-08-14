@@ -1,5 +1,6 @@
 # config file - copy config.json.example
 src/config.json
+.env
 
 # Build directory
 dist/

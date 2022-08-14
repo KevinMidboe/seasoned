@@ -4,12 +4,20 @@ const sass = require("sass");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { VueLoaderPlugin } = require("vue-loader");
 const TerserPlugin = require("terser-webpack-plugin");
+const dotenv = require("dotenv").config({ path: "./.env" });
 
 const sourcePath = path.resolve(__dirname, "src");
 const indexFile = path.join(sourcePath, "index.html");
 const javascriptEntry = path.join(sourcePath, "main.ts");
 const publicPath = path.resolve(__dirname, "public");
 const isProd = process.env.NODE_ENV === "production";
+
+// Merge inn all process.env values that match dotenv keys
+Object.keys(process.env).forEach(key => {
+  if (key in dotenv.parsed) {
+    dotenv.parsed[key] = process.env[key];
+  }
+});
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -67,6 +75,9 @@ module.exports = {
       template: indexFile,
       filename: "index.html",
       minify: isProd
+    }),
+    new webpack.DefinePlugin({
+      "process.env": JSON.stringify(dotenv.parsed)
     })
   ],
   resolve: {
@@ -131,13 +142,13 @@ if (isProd) {
   module.exports.performance.hints = "warning";
 }
 
-// enable proxy by running command e.g.:
-// proxyhost=https://request.movie yarn dev
-const { proxyhost } = process.env;
-if (proxyhost) {
+// enable proxy for anything that hits /Api
+// View README or update src/config.ts:SEASONED_API_URL
+const { SEASONED_API } = process.env;
+if (SEASONED_API) {
   module.exports.devServer.proxy = {
     "/api": {
-      target: proxyhost,
+      target: SEASONED_API,
       changeOrigin: true
     }
   };

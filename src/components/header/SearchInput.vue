@@ -86,8 +86,8 @@
     query.value = decodeURIComponent(params.get("query"));
   }
 
-  const elasticUrl = config.ELASTIC_URL;
-  if (elasticUrl === undefined || elasticUrl === "") {
+  const { ELASTIC } = process.env;
+  if (ELASTIC === undefined || ELASTIC === "") {
     disabled.value = true;
   }
 
