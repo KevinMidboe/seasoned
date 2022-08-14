@@ -4,7 +4,10 @@
     :key="route?.title"
     :to="{ path: route?.route }"
   >
-    <li class="navigation-link" :class="{ active: route.route == active }">
+    <li
+      class="navigation-link"
+      :class="{ active: matchesActiveRoute(), 'nofill-stroke': useStroke }"
+    >
       <component :is="route.icon" class="navigation-icon"></component>
       <span>{{ route.title }}</span>
     </li>
@@ -19,12 +22,18 @@
   interface Props {
     route: INavigationIcon;
     active?: string;
+    useStroke?: boolean;
   }
 
-  defineProps<Props>();
+  const props = defineProps<Props>();
 
   const store = useStore();
   const loggedIn = computed(() => store.getters["user/loggedIn"]);
+
+  function matchesActiveRoute() {
+    const currentRoute = props.route.title.toLowerCase();
+    return props?.active?.includes(currentRoute);
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -61,6 +70,18 @@
       font-size: 11px;
       margin-top: 0.25rem;
       color: var(--text-color-70);
+    }
+
+    &.nofill-stroke {
+      .navigation-icon {
+        stroke: var(--text-color-70);
+        fill: none !important;
+      }
+
+      &:hover .navigation-icon,
+      &.active .navigation-icon {
+        stroke: var(--text-color);
+      }
     }
   }
 

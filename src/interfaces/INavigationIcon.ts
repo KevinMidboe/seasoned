@@ -3,4 +3,5 @@ export default interface INavigationIcon {
   route: string;
   icon: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   requiresAuth?: boolean;
+  useStroke?: boolean;
 }

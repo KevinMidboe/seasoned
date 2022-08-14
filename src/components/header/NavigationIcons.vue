@@ -5,6 +5,7 @@
       :key="_route.route"
       :route="_route"
       :active="activeRoute"
+      :useStroke="_route?.useStroke"
     />
     <slot></slot>
   </ul>
@@ -50,6 +51,7 @@
       title: "Activity",
       route: "/activity",
       requiresAuth: true,
+      useStroke: true,
       icon: IconActivity
     },
     {
@@ -60,8 +62,9 @@
     },
     {
       title: "Settings",
-      route: "/profile?settings=true",
+      route: "/settings",
       requiresAuth: true,
+      useStroke: true,
       icon: IconSettings
     }
   ];
