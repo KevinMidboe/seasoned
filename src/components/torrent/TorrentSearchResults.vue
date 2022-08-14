@@ -61,8 +61,9 @@
   }
 
   function fetchTorrents() {
-    loading.value = true;
+    if (!props.query?.length) return;
 
+    loading.value = true;
     searchTorrents(props.query)
       .then(torrentResponse => setTorrents(torrentResponse?.results))
       .then(() => updateResultCountDisplay())

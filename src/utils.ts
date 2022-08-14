@@ -82,9 +82,9 @@ export function humanMinutes(minutes) {
   return `${hours}h ${minutesLeft}m`;
 }
 
-export function getValueFromUrlQuery(queryParameter: string): string | null {
+export function getValueFromUrlQuery(queryParameter: string): string {
   const params = new URLSearchParams(window.location.search);
-  return params.get(queryParameter) || null;
+  return params.get(queryParameter) || "";
 }
 
 export function setUrlQueryParameter(parameter: string, value: string): void {
