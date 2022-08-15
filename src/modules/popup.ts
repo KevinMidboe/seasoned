@@ -1,31 +1,38 @@
-import { PopupTypes } from "../interfaces/IStatePopup";
-import type { IStatePopup } from "../interfaces/IStatePopup";
+import { MediaTypes } from "../interfaces/IList";
+import type { IStatePopup, IPopupQuery } from "../interfaces/IStatePopup";
+
+/* eslint-disable-next-line import/no-cycle */
+import router from "../routes";
 
 const removeIncludedQueryParams = (params, key) => {
   if (params.has(key)) params.delete(key);
   return params;
 };
 
-const updateQueryParams = (id: number | null = null, type: string = "") => {
+function paramsToObject(entries) {
+  const result = {};
+  // eslint-disable-next-line no-restricted-syntax
+  for (const [key, value] of entries) {
+    result[key] = value;
+  }
+
+  return result;
+}
+
+const updateQueryParams = (id: number = null, type: MediaTypes = null) => {
   let params = new URLSearchParams(window.location.search);
   params = removeIncludedQueryParams(params, "movie");
   params = removeIncludedQueryParams(params, "show");
   params = removeIncludedQueryParams(params, "person");
 
-  if (id && type in PopupTypes) {
+  if (id && type) {
     params.append(type, id.toString());
   }
 
-  let url = `${window.location.protocol}//${window.location.hostname}${
-    window.location.port ? `:${window.location.port}` : ""
-  }${window.location.pathname}${params.toString().length ? `?${params}` : ""}`;
-
-  if (window.preventPushState) {
-    window.history.replaceState({}, "search", url);
-    window.preventPushState = false;
-  } else {
-    window.history.pushState({}, "search", url);
-  }
+  router.push({
+    path: window.location.pathname,
+    query: paramsToObject(params.entries())
+  });
 };
 
 const state: IStatePopup = {
@@ -34,6 +41,7 @@ const state: IStatePopup = {
   open: false
 };
 
+/* eslint-disable @typescript-eslint/no-shadow */
 export default {
   namespaced: true,
   state,
@@ -55,14 +63,28 @@ export default {
     }
   },
   actions: {
-    open: ({ commit }, { id, type = "movie" }) => {
-      if (!isNaN(id)) id = Number(id);
+    open: ({ commit }, { id, type }: { id: number; type: MediaTypes }) => {
+      if (!Number.isNaN(id)) {
+        id = Number(id); /* eslint-disable-line no-param-reassign */
+      }
+
       commit("SET_OPEN", { id, type });
       updateQueryParams(id, type);
     },
     close: ({ commit }) => {
       commit("SET_CLOSE");
       updateQueryParams(); // reset
+    },
+    resetStateFromUrlQuery: ({ commit }, query: IPopupQuery) => {
+      let { movie, show, person } = query;
+      movie = !Number.isNaN(movie) ? Number(movie) : movie;
+      show = !Number.isNaN(show) ? Number(show) : show;
+      person = !Number.isNaN(person) ? Number(person) : person;
+
+      if (movie) commit("SET_OPEN", { id: movie, type: "movie" });
+      else if (show) commit("SET_OPEN", { id: show, type: "show" });
+      else if (person) commit("SET_OPEN", { id: person, type: "person" });
+      else commit("SET_CLOSE");
     }
   }
 };

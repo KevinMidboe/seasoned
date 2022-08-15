@@ -1,281 +1,290 @@
 <template>
   <div>
-    <div class="search" :class="{ active: focusingInput }">
+    <div class="search" :class="{ active: inputIsActive }">
       <IconSearch class="search-icon" tabindex="-1" />
 
+      <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
       <input
-        ref="input"
+        ref="inputElement"
+        v-model="query"
         type="text"
         placeholder="Search for movie or show"
         aria-label="Search input for finding a movie or show"
         autocorrect="off"
         autocapitalize="off"
         tabindex="0"
-        v-model="query"
         @input="handleInput"
-        @click="focusingInput = true"
+        @click="focus"
         @keydown.escape="handleEscape"
         @keyup.enter="handleSubmit"
         @keydown.up="navigateUp"
         @keydown.down="navigateDown"
-        @focus="focusingInput = true"
-        @blur="focusingInput = false"
+        @focus="focus"
+        @blur="blur"
       />
 
       <IconClose
+        v-if="query && query.length"
         tabindex="0"
         aria-label="button"
-        v-if="query && query.length"
-        @click="resetQuery"
-        @keydown.enter.stop="resetQuery"
         class="close-icon"
+        @click="clearInput"
+        @keydown.enter.stop="clearInput"
       />
     </div>
 
     <AutocompleteDropdown
       v-if="showAutocompleteResults"
+      v-model:results="dropdownResults"
       :query="query"
       :index="dropdownIndex"
-      :results.sync="dropdownResults"
     />
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
-import SeasonedButton from "@/components/ui/SeasonedButton";
-import AutocompleteDropdown from "@/components/header/AutocompleteDropdown";
+<script setup lang="ts">
+  import { ref, computed } from "vue";
+  import { useStore } from "vuex";
+  import { useRouter, useRoute } from "vue-router";
+  import AutocompleteDropdown from "@/components/header/AutocompleteDropdown.vue";
+  import IconSearch from "@/icons/IconSearch.vue";
+  import IconClose from "@/icons/IconClose.vue";
+  import type { Ref } from "vue";
+  import type { MediaTypes } from "../../interfaces/IList";
 
-import IconSearch from "src/icons/IconSearch";
-import IconClose from "src/icons/IconClose";
-import config from "@/config";
+  interface ISearchResult {
+    title: string;
+    id: number;
+    adult: boolean;
+    type: MediaTypes;
+  }
 
-export default {
-  name: "SearchInput",
-  components: {
-    SeasonedButton,
-    AutocompleteDropdown,
-    IconClose,
-    IconSearch
-  },
-  data() {
-    return {
-      query: null,
-      disabled: false,
-      dropdownIndex: -1,
-      dropdownResults: [],
-      focusingInput: false,
-      showAutocomplete: false
-    };
-  },
-  computed: {
-    ...mapGetters("popup", ["isOpen"]),
-    showAutocompleteResults() {
-      return (
-        !this.disabled &&
-        this.focusingInput &&
-        this.query &&
-        this.query.length > 0
-      );
-    }
-  },
-  created() {
-    const params = new URLSearchParams(window.location.search);
-    if (params && params.has("query")) {
-      this.query = decodeURIComponent(params.get("query"));
-    }
+  const store = useStore();
+  const router = useRouter();
+  const route = useRoute();
 
-    const elasticUrl = config.ELASTIC_URL;
-    if (elasticUrl === undefined || elasticUrl === false || elasticUrl === "") {
-      this.disabled = true;
-    }
-  },
-  methods: {
-    ...mapActions("popup", ["open"]),
-    navigateDown() {
-      if (this.dropdownIndex < this.dropdownResults.length - 1) {
-        this.dropdownIndex++;
-      }
-    },
-    navigateUp() {
-      if (this.dropdownIndex > -1) this.dropdownIndex--;
+  const query: Ref<string> = ref(null);
+  const disabled: Ref<boolean> = ref(false);
+  const dropdownIndex: Ref<number> = ref(-1);
+  const dropdownResults: Ref<ISearchResult[]> = ref([]);
+  const inputIsActive: Ref<boolean> = ref(false);
+  const inputElement: Ref<HTMLInputElement> = ref(null);
 
-      const input = this.$refs.input;
-      const textLength = input.value.length;
+  const isOpen = computed(() => store.getters["popup/isOpen"]);
+  const showAutocompleteResults = computed(() => {
+    return (
+      !disabled.value &&
+      inputIsActive.value &&
+      query.value &&
+      query.value.length > 0
+    );
+  });
 
-      setTimeout(() => {
-        input.focus();
-        input.setSelectionRange(textLength, textLength + 1);
-      }, 1);
-    },
-    search() {
-      const encodedQuery = encodeURI(this.query.replace('/ /g, "+"'));
+  const params = new URLSearchParams(window.location.search);
+  if (params && params.has("query")) {
+    query.value = decodeURIComponent(params.get("query"));
+  }
 
-      this.$router.push({
-        name: "search",
-        query: {
-          ...this.$route.query,
-          query: encodedQuery
-        }
-      });
-    },
-    resetQuery(event) {
-      this.query = "";
-      this.$refs.input.focus();
-    },
-    handleInput(e) {
-      this.$emit("input", this.query);
-      this.dropdownIndex = -1;
-    },
-    handleSubmit() {
-      if (!this.query || this.query.length == 0) return;
+  const { ELASTIC } = process.env;
+  if (ELASTIC === undefined || ELASTIC === "") {
+    disabled.value = true;
+  }
 
-      if (this.dropdownIndex >= 0) {
-        const resultItem = this.dropdownResults[this.dropdownIndex];
-
-        console.log("resultItem:", resultItem);
-        this.open({
-          id: resultItem.id,
-          type: resultItem.type
-        });
-        return;
-      }
-
-      this.search();
-      this.$refs.input.blur();
-      this.dropdownIndex = -1;
-    },
-    handleEscape() {
-      if (!this.isOpen) {
-        this.$refs.input.blur();
-        this.dropdownIndex = -1;
-      }
+  function navigateDown() {
+    if (dropdownIndex.value < dropdownResults.value.length - 1) {
+      dropdownIndex.value += 1;
     }
   }
-};
+
+  function navigateUp() {
+    if (dropdownIndex.value > -1) dropdownIndex.value -= 1;
+
+    const textLength = inputElement.value.value.length;
+
+    setTimeout(() => {
+      inputElement.value.focus();
+      inputElement.value.setSelectionRange(textLength, textLength + 1);
+    }, 1);
+  }
+
+  function search() {
+    const encodedQuery = encodeURI(query.value.replace("/ /g", "+"));
+
+    router.push({
+      name: "search",
+      query: {
+        ...route.query,
+        query: encodedQuery
+      }
+    });
+  }
+
+  function handleInput() {
+    dropdownIndex.value = -1;
+  }
+
+  function focus() {
+    inputIsActive.value = true;
+  }
+
+  function reset() {
+    inputElement.value.blur();
+    dropdownIndex.value = -1;
+    inputIsActive.value = false;
+  }
+
+  function blur() {
+    return setTimeout(reset, 150);
+  }
+
+  function clearInput() {
+    query.value = "";
+    inputElement.value.focus();
+  }
+
+  function handleSubmit() {
+    if (!query.value || query.value.length === 0) return;
+
+    if (dropdownIndex.value >= 0) {
+      const resultItem = dropdownResults.value[dropdownIndex.value];
+
+      store.dispatch("popup/open", {
+        id: resultItem?.id,
+        type: resultItem?.type
+      });
+      return;
+    }
+
+    search();
+    reset();
+  }
+
+  function handleEscape() {
+    if (!isOpen.value) reset();
+  }
 </script>
 
 <style lang="scss" scoped>
-@import "src/scss/variables";
-@import "src/scss/media-queries";
-@import "src/scss/main";
+  @import "src/scss/variables";
+  @import "src/scss/media-queries";
+  @import "src/scss/main";
 
-.close-icon {
-  position: absolute;
-  top: calc(50% - 12px);
-  right: 0;
-  cursor: pointer;
-  fill: var(--text-color);
-  height: 24px;
-  width: 24px;
+  .close-icon {
+    position: absolute;
+    top: calc(50% - 12px);
+    right: 0;
+    cursor: pointer;
+    fill: var(--text-color);
+    height: 24px;
+    width: 24px;
 
-  @include tablet-min {
-    right: 6px;
-  }
-}
-
-.filter {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin: 1rem 2rem;
-
-  h2 {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    font-weight: 400;
-  }
-
-  &-items {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    > :not(:first-child) {
-      margin-left: 1rem;
+    @include tablet-min {
+      right: 6px;
     }
   }
-}
 
-hr {
-  display: block;
-  height: 1px;
-  border: 0;
-  border-bottom: 1px solid $text-color-50;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 90%;
-}
-
-.search.active {
-  input {
-    border-color: var(--color-green);
-  }
-
-  .search-icon {
-    fill: var(--color-green);
-  }
-}
-
-.search {
-  height: $header-size;
-  display: flex;
-  position: fixed;
-  flex-wrap: wrap;
-  z-index: 5;
-  border: 0;
-  background-color: $background-color-secondary;
-
-  // TODO check if this is for mobile
-  width: calc(100% - 110px);
-  top: 0;
-  right: 55px;
-
-  @include tablet-min {
-    position: relative;
+  .filter {
     width: 100%;
-    right: 0px;
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 2rem;
+
+    h2 {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 400;
+    }
+
+    &-items {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      > :not(:first-child) {
+        margin-left: 1rem;
+      }
+    }
   }
 
-  input {
+  hr {
     display: block;
-    width: 100%;
-    padding: 13px 28px 13px 45px;
-    outline: none;
-    margin: 0;
+    height: 1px;
     border: 0;
-    background-color: $background-color-secondary;
-    font-weight: 300;
-    font-size: 18px;
-    color: $text-color;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid $text-color-50;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 90%;
+  }
 
-    &:focus {
-      // border-bottom: 1px solid var(--color-green);
+  .search.active {
+    input {
       border-color: var(--color-green);
     }
 
-    @include tablet-min {
-      font-size: 24px;
-      padding: 13px 40px 13px 60px;
+    .search-icon {
+      fill: var(--color-green);
     }
   }
 
-  &-icon {
-    width: 20px;
-    height: 20px;
-    fill: var(--text-color-50);
-    pointer-events: none;
-    position: absolute;
-    left: 15px;
-    top: calc(50% - 10px);
+  .search {
+    height: $header-size;
+    display: flex;
+    position: fixed;
+    flex-wrap: wrap;
+    z-index: 5;
+    border: 0;
+    background-color: $background-color-secondary;
+
+    // TODO check if this is for mobile
+    width: calc(100% - 110px);
+    top: 0;
+    right: 55px;
 
     @include tablet-min {
-      width: 24px;
-      height: 24px;
-      top: calc(50% - 12px);
-      left: 22px;
+      position: relative;
+      width: 100%;
+      right: 0px;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 13px 28px 13px 45px;
+      outline: none;
+      margin: 0;
+      border: 0;
+      background-color: $background-color-secondary;
+      font-weight: 300;
+      font-size: 18px;
+      color: $text-color;
+      border-bottom: 1px solid transparent;
+
+      &:focus {
+        // border-bottom: 1px solid var(--color-green);
+        border-color: var(--color-green);
+      }
+
+      @include tablet-min {
+        font-size: 24px;
+        padding: 13px 40px 13px 60px;
+      }
+    }
+
+    &-icon {
+      width: 20px;
+      height: 20px;
+      fill: var(--text-color-50);
+      pointer-events: none;
+      position: absolute;
+      left: 15px;
+      top: calc(50% - 10px);
+
+      @include tablet-min {
+        width: 24px;
+        height: 24px;
+        top: calc(50% - 12px);
+        left: 22px;
+      }
     }
   }
-}
 </style>

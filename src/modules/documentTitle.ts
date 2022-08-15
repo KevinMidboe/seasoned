@@ -3,6 +3,7 @@ import type IStateDocumentTitle from "../interfaces/IStateDocumentTitle";
 const capitalize = (string: string) => {
   if (!string) return;
 
+  /* eslint-disable-next-line consistent-return */
   return string.includes(" ")
     ? string
         .split(" ")
@@ -25,6 +26,7 @@ const state: IStateDocumentTitle = {
   title: undefined
 };
 
+/* eslint-disable @typescript-eslint/no-shadow, no-return-assign */
 export default {
   namespaced: true,
   state,
@@ -42,10 +44,10 @@ export default {
     }
   },
   actions: {
-    updateEmoji({ commit }, emoji: String) {
+    updateEmoji({ commit }, emoji: string) {
       commit("SET_EMOJI", emoji);
     },
-    updateTitle({ commit }, title: String) {
+    updateTitle({ commit }, title: string) {
       commit("SET_TITLE", title);
     }
   }

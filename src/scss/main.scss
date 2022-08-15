@@ -24,6 +24,7 @@ body {
   background: var(--background-color);
   color: var(--text-color);
 
+  // TODO probably explicitly define
   * {
     transition: 0.5s ease;
   }
@@ -69,6 +70,18 @@ img {
 
   > div:not(:first-child) {
     margin-left: 1rem;
+  }
+}
+
+.form {
+  > div,
+  > input,
+  > button {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0px;
+    }
   }
 }
 

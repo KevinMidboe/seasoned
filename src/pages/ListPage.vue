@@ -1,32 +1,30 @@
 <template>
-  <ResultsSection :title="listName" :apiFunction="getTmdbMovieListByName" />
+  <ResultsSection :title="listName" :api-function="_getTmdbMovieListByName" />
 </template>
 
-<script>
-import ResultsSection from "@/components/ResultsSection";
-import { getTmdbMovieListByName } from "@/api";
+<script setup lang="ts">
+  import { ref } from "vue";
+  import type { Ref } from "vue";
+  import { useRoute } from "vue-router";
+  import ResultsSection from "@/components/ResultsSection.vue";
+  import { getTmdbMovieListByName } from "../api";
 
-export default {
-  components: { ResultsSection },
-  computed: {
-    listName() {
-      return this.$route.params.name;
-    }
-  },
-  methods: {
-    getTmdbMovieListByName(page) {
-      return getTmdbMovieListByName(this.listName, page);
-    }
+  const route = useRoute();
+  const listName: Ref<string | string[]> = ref(
+    route?.params?.name || "List page"
+  );
+
+  function _getTmdbMovieListByName(page: number) {
+    return getTmdbMovieListByName(listName.value?.toString(), page);
   }
-};
 </script>
 
 <style lang="scss" scoped>
-.fullwidth-button {
-  width: 100%;
-  margin: 1rem 0;
-  padding-bottom: 2rem;
-  display: flex;
-  justify-content: center;
-}
+  .fullwidth-button {
+    width: 100%;
+    margin: 1rem 0;
+    padding-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+  }
 </style>

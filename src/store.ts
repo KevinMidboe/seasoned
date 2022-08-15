@@ -1,16 +1,15 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from "vuex";
 
 import darkmodeModule from "./modules/darkmodeModule";
 import documentTitle from "./modules/documentTitle";
 import torrentModule from "./modules/torrentModule";
 import user from "./modules/user";
-import popup from "./modules/popup";
 import hamburger from "./modules/hamburger";
 
-Vue.use(Vuex);
+/* eslint-disable-next-line import/no-cycle */
+import popup from "./modules/popup";
 
-const store = new Vuex.Store({
+const store = createStore({
   modules: {
     darkmodeModule,
     documentTitle,

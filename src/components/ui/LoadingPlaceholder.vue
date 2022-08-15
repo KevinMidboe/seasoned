@@ -1,34 +1,26 @@
 <template>
-  <div class="text-input__loading" :style="`margin-top: ${top}rem`">
+  <div class="text-input__loading" :style="`margin-top: ${top || 0}rem`">
     <div
-      class="text-input__loading--line"
-      :class="lineClass"
-      v-for="l in Array(count)"
+      v-for="l in Array(count || 1)"
       :key="l"
+      class="text-input__loading--line"
+      :class="lineClass || ''"
     ></div>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    count: {
-      type: Number,
-      default: 1,
-      require: false
-    },
-    lineClass: {
-      type: String,
-      default: ""
-    },
-    top: {
-      type: Number,
-      default: 0
-    }
+<script setup lang="ts">
+  import { defineProps } from "vue";
+
+  interface Props {
+    count?: number;
+    lineClass?: string;
+    top?: number;
   }
-};
+
+  defineProps<Props>();
 </script>
 
 <style lang="scss" scoped>
-@import "src/scss/loading-placeholder";
+  @import "src/scss/loading-placeholder";
 </style>

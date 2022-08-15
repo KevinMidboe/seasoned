@@ -4,12 +4,22 @@ const sass = require("sass");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { VueLoaderPlugin } = require("vue-loader");
 const TerserPlugin = require("terser-webpack-plugin");
+const dotenv = require("dotenv").config({ path: "./.env" });
+const dotenvExample = require("dotenv").config({ path: "./.env.example" });
 
 const sourcePath = path.resolve(__dirname, "src");
 const indexFile = path.join(sourcePath, "index.html");
-const javascriptEntry = path.join(sourcePath, "main.js");
+const javascriptEntry = path.join(sourcePath, "main.ts");
 const publicPath = path.resolve(__dirname, "public");
 const isProd = process.env.NODE_ENV === "production";
+const variables = dotenv.parsed || dotenvExample.parsed;
+
+// Merge inn all process.env values that match dotenv keys
+Object.keys(process.env).forEach(key => {
+  if (key in variables) {
+    variables[key] = process.env[key];
+  }
+});
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -36,9 +46,12 @@ module.exports = {
         use: ["vue-loader"]
       },
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         loader: "ts-loader",
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        options: {
+          appendTsSuffixTo: [/\.vue$/]
+        }
       },
       {
         test: /\.scss$/,
@@ -64,12 +77,15 @@ module.exports = {
       template: indexFile,
       filename: "index.html",
       minify: isProd
+    }),
+    new webpack.DefinePlugin({
+      "process.env": JSON.stringify(variables)
     })
   ],
   resolve: {
     extensions: [".js", ".ts", ".vue", ".json", ".scss"],
     alias: {
-      vue$: "vue/dist/vue.common.js",
+      vue: "@vue/runtime-dom",
       "@": path.resolve(__dirname, "src"),
       src: path.resolve(__dirname, "src"),
       assets: `${publicPath}/assets`,
@@ -128,13 +144,13 @@ if (isProd) {
   module.exports.performance.hints = "warning";
 }
 
-// enable proxy by running command e.g.:
-// proxyhost=https://request.movie yarn dev
-const { proxyhost } = process.env;
-if (proxyhost) {
+// enable proxy for anything that hits /Api
+// View README or update src/config.ts:SEASONED_API_URL
+const { SEASONED_API } = process.env;
+if (SEASONED_API) {
   module.exports.devServer.proxy = {
     "/api": {
-      target: proxyhost,
+      target: SEASONED_API,
       changeOrigin: true
     }
   };

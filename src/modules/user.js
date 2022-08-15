@@ -2,18 +2,14 @@ import { refreshToken } from "@/api";
 import { parseJwt } from "@/utils";
 
 function getCookie(name) {
-  console.debug("getting cookie with name:", name);
-
   var arrayb = document.cookie.split(";");
   for (const item of arrayb) {
     const query = `${name}=`;
 
     if (!item.startsWith(query)) continue;
-    console.debug("found from cookies:", item);
     return item.substr(query.length);
   }
 
-  console.debug("no token found");
   return null;
 }
 
@@ -60,6 +56,7 @@ export default {
     username: state => state.username,
     settings: state => state.settings,
     token: state => state.token,
+    // loggedIn: state => true,
     loggedIn: state => state && state.username !== null,
     admin: state => state.admin,
     plexId: state => {
@@ -87,7 +84,6 @@ export default {
       if (!jwtToken) return null;
 
       const token = parseJwt(jwtToken);
-      console.debug("has token: ", token);
       return await dispatch("setupStateFromToken", token);
     },
     setupStateFromToken: ({ commit }, token) => {
@@ -97,13 +93,6 @@ export default {
         if (!username) {
           return false;
         }
-
-        console.debug("setting:", {
-          username,
-          admin: admin != undefined,
-          settings,
-          token
-        });
 
         commit("SET_TOKEN", token);
         commit("SET_USERNAME", username);
