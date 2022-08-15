@@ -245,6 +245,18 @@
     requested.value = status;
   }
 
+  function setBackdrop(): void {
+    if (
+      !media.value?.backdrop ||
+      !backdropElement.value?.style ||
+      backdropElement.value?.style?.backgroundImage !== ""
+    )
+      return;
+
+    const backdropURL = `${ASSET_URL}${ASSET_SIZES[1]}${media.value.backdrop}`;
+    backdropElement.value.style.backgroundImage = `url(${backdropURL})`;
+  }
+
   function getCredits(
     type: MediaTypes.Movie | MediaTypes.Show
   ): Promise<IMediaCredits> {
@@ -291,18 +303,6 @@
       .then(() => getRequestStatus(props.id, props.type))
       .then(requestStatus => setRequested(requestStatus || false))
       .then(setBackdrop);
-  }
-
-  function setBackdrop(): void {
-    if (
-      !media.value?.backdrop ||
-      !backdropElement.value?.style ||
-      backdropElement.value?.style?.backgroundImage !== ""
-    )
-      return;
-
-    const backdropURL = `${ASSET_URL}${ASSET_SIZES[1]}${media.value.backdrop}`;
-    backdropElement.value.style.backgroundImage = `url(${backdropURL})`;
   }
 
   function sendRequest() {
