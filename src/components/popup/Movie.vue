@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps } from "vue";
+  import { ref, computed, defineProps, onMounted } from "vue";
   import { useStore } from "vuex";
 
   // import img from "@/directives/v-image";
@@ -245,6 +245,18 @@
     requested.value = status;
   }
 
+  function setBackdrop(): void {
+    if (
+      !media.value?.backdrop ||
+      !backdropElement.value?.style ||
+      backdropElement.value?.style?.backgroundImage !== ""
+    )
+      return;
+
+    const backdropURL = `${ASSET_URL}${ASSET_SIZES[1]}${media.value.backdrop}`;
+    backdropElement.value.style.backgroundImage = `url(${backdropURL})`;
+  }
+
   function getCredits(
     type: MediaTypes.Movie | MediaTypes.Show
   ): Promise<IMediaCredits> {
@@ -289,14 +301,8 @@
       .then(() => getCredits(props.type))
       .then(credits => setCast(credits?.cast || []))
       .then(() => getRequestStatus(props.id, props.type))
-      .then(requestStatus => setRequested(requestStatus || false));
-  }
-
-  function setBackdrop(): void {
-    if (!media.value?.backdrop || !backdropElement.value?.style) return;
-
-    const backdropURL = `${ASSET_URL}${ASSET_SIZES[1]}${media.value.backdrop}`;
-    backdropElement.value.style.backgroundImage = `url(${backdropURL})`;
+      .then(requestStatus => setRequested(requestStatus || false))
+      .then(setBackdrop);
   }
 
   function sendRequest() {
@@ -318,9 +324,10 @@
 
   // On created functions
   fetchMedia();
-  setBackdrop();
   store.dispatch("torrentModule/setResultCount", null);
   // End on create functions
+
+  onMounted(setBackdrop);
 </script>
 
 <style lang="scss" scoped>

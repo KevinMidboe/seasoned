@@ -5,7 +5,7 @@
       :key="_route.route"
       :route="_route"
       :active="activeRoute"
-      :useStroke="_route?.useStroke"
+      :use-stroke="_route?.useStroke"
     />
     <slot></slot>
   </ul>
