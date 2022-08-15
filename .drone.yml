@@ -87,7 +87,7 @@ steps:
         - drone-test
       status: success
     settings:
-      host: 10.0.0.114
+      host: 10.0.0.54
       username: root
       key:
         from_secret: ssh_key
