@@ -47,7 +47,7 @@
           </action-button>
 
           <action-button
-            v-if="plexId && media?.exists_in_plex"
+            v-if="plexUserId && media?.exists_in_plex"
             @click="openInPlex"
           >
             <IconPlay />
@@ -224,7 +224,7 @@
   const store = useStore();
 
   const admin = computed(() => store.getters["user/admin"]);
-  const plexId = computed(() => store.getters["user/plexId"]);
+  const plexUserId = computed(() => store.getters["user/plexUserId"]);
 
   const poster = computed(() => {
     if (!media.value) return "/assets/placeholder.png";

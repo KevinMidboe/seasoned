@@ -96,7 +96,7 @@ const router = createRouter({
 });
 
 const loggedIn = () => store.getters["user/loggedIn"];
-const hasPlexAccount = () => store.getters["user/plexId"] !== null;
+const hasPlexAccount = () => store.getters["user/plexUserId"] !== null;
 const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

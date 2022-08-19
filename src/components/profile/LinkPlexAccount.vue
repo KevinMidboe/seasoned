@@ -2,7 +2,7 @@
   <div>
     <h3 class="settings__header">Plex account</h3>
 
-    <div v-if="!plexId">
+    <div v-if="!plexUserId">
       <span class="info"
         >Sign in to your plex account to get information about recently added
         movies and to see your watch history</span
@@ -64,8 +64,8 @@
   const store = useStore();
   const emit = defineEmits<Emit>();
 
-  const plexId: ComputedRef<boolean> = computed(
-    () => store.getters["user/plexId"]
+  const plexUserId: ComputedRef<boolean> = computed(
+    () => store.getters["user/plexUserId"]
   );
 
   async function authenticatePlex() {

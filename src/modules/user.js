@@ -59,9 +59,9 @@ export default {
     // loggedIn: state => true,
     loggedIn: state => state && state.username !== null,
     admin: state => state.admin,
-    plexId: state => {
-      if (state && state.settings && state.settings.plex_userid)
-        return state.settings.plex_userid;
+    plexUserId: state => {
+      if (state && state.settings && state.settings.plexUserId)
+        return state.settings.plexUserId;
       return null;
     }
   },

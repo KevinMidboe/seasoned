@@ -1,5 +1,5 @@
 <template>
-  <div v-if="plexId" class="wrapper">
+  <div v-if="plexUserId" class="wrapper">
     <h1>Your watch activity</h1>
 
     <div style="display: flex; flex-direction: row">
@@ -78,7 +78,7 @@
 
   const days: Ref<number> = ref(30);
   const graphViewMode: Ref<GraphTypes> = ref(GraphTypes.Plays);
-  const plexId = computed(() => store.getters["user/plexId"]);
+  const plexUserId = computed(() => store.getters["user/plexUserId"]);
 
   const graphValueViewMode = [
     {
