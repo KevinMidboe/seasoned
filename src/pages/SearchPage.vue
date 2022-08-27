@@ -12,7 +12,12 @@
       </div>
     </div>
 
-    <ResultsSection v-if="query" :title="title" :api-function="search" />
+    <ResultsSection
+      :key="query"
+      v-if="query"
+      :title="title"
+      :api-function="search"
+    />
     <h1 v-else class="no-results">No query found, please search above</h1>
   </div>
 </template>
