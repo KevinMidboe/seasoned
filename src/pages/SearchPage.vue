@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from "vue";
+  import { ref, computed, watch } from "vue";
   import { useRoute, useRouter } from "vue-router";
 
   import ResultsSection from "@/components/ResultsSection.vue";
@@ -45,12 +45,14 @@
 
   const title = computed(() => `Search results: ${query.value}`);
 
-  const urlQuery = route.query;
-  if (urlQuery && urlQuery?.query) {
-    query.value = decodeURIComponent(urlQuery?.query?.toString());
-    page.value = Number(urlQuery?.page) || 1;
-    adult.value = Boolean(urlQuery?.adult) || adult.value;
-    mediaType.value = (urlQuery?.media_type as MediaTypes) || mediaType.value;
+  function readQueryParams() {
+    const urlQuery = route.query;
+    if (urlQuery && urlQuery?.query) {
+      query.value = decodeURIComponent(urlQuery?.query?.toString());
+      page.value = Number(urlQuery?.page) || 1;
+      adult.value = Boolean(urlQuery?.adult) || adult.value;
+      mediaType.value = (urlQuery?.media_type as MediaTypes) || mediaType.value;
+    }
   }
 
   const search = (
@@ -73,6 +75,12 @@
   function toggleChanged() {
     updateQueryParams();
   }
+
+  readQueryParams();
+  watch(
+    () => route.fullPath,
+    () => readQueryParams()
+  );
 </script>
 
 <style lang="scss" scoped>
