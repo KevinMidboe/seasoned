@@ -13,8 +13,8 @@
     </div>
 
     <ResultsSection
-      :key="query"
       v-if="query"
+      :key="query"
       :title="title"
       :api-function="search"
     />
