@@ -190,6 +190,10 @@
     IMediaCredits,
     ICast
   } from "../../interfaces/IList";
+  import type {
+    IRequestStatusResponse,
+    IRequestSubmitResponse
+  } from "../../interfaces/IRequestResponse";
   import { MediaTypes } from "../../interfaces/IList";
 
   import { humanMinutes } from "../../utils";
@@ -241,8 +245,15 @@
   function setCast(_cast: ICast[]) {
     cast.value = _cast;
   }
-  function setRequested(status: boolean) {
-    requested.value = status;
+  function setRequested(
+    requestResponse: IRequestStatusResponse | IRequestSubmitResponse
+  ) {
+    if (requestResponse?.success) {
+      requested.value = requestResponse?.success;
+      return;
+    }
+
+    requested.value = false;
   }
 
   function setBackdrop(): void {
@@ -301,13 +312,13 @@
       .then(() => getCredits(props.type))
       .then(credits => setCast(credits?.cast || []))
       .then(() => getRequestStatus(props.id, props.type))
-      .then(requestStatus => setRequested(requestStatus || false))
+      .then(requestResponse => setRequested(requestResponse))
       .then(setBackdrop);
   }
 
   function sendRequest() {
-    request(props.id, props.type).then(resp =>
-      setRequested(resp?.success || false)
+    request(props.id, props.type).then(requestResponse =>
+      setRequested(requestResponse)
     );
   }
 

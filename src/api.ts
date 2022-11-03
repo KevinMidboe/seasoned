@@ -1,4 +1,8 @@
 import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
+import type {
+  IRequestStatusResponse,
+  IRequestSubmitResponse
+} from "./interfaces/IRequestResponse";
 
 const { ELASTIC, ELASTIC_INDEX } = process.env;
 const API_HOSTNAME = window.location.origin;
@@ -259,7 +263,7 @@ const addMagnet = (magnet: string, name: string, tmdbId: number | null) => {
  * @param {string} type Movie or show type
  * @returns {object} Success/Failure response
  */
-const request = (id, type) => {
+const request = (id, type): Promise<IRequestSubmitResponse> => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
 
   const options = {
@@ -282,18 +286,13 @@ const request = (id, type) => {
  * @param {string} type
  * @returns {object} Success/Failure response
  */
-const getRequestStatus = (id, type = undefined) => {
+const getRequestStatus = (id, type = null): Promise<IRequestStatusResponse> => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}`;
   url.searchParams.append("type", type);
 
   return fetch(url.href)
-    .then(resp => {
-      const { status } = resp;
-      if (status === 200) return true;
-
-      return false;
-    })
+    .then(resp => resp.json())
     .catch(err => Promise.reject(err));
 };
 
