@@ -4,8 +4,8 @@ export const sortableSize = (string: string): number => {
 
   if (UNITS.indexOf(unit) === -1) return null;
 
-  const exponent = (UNITS.indexOf(unit) * 3) + 4;
-  return Math.floor(Number(numStr) * (10 ** exponent))
+  const exponent = UNITS.indexOf(unit) * 3 + 4;
+  return Math.floor(Number(numStr) * 10 ** exponent);
 };
 
 export const parseJwt = (token: string) => {

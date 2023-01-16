@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, defineProps } from "vue";
+  import { ref, watch, inject, defineProps } from "vue";
   import { useStore } from "vuex";
   import Loader from "@/components/ui/Loader.vue";
   import TorrentTable from "@/components/torrent/TorrentTable.vue";
@@ -95,6 +95,8 @@
         });
       });
   }
+
+  watch(props, newValue => newValue?.query?.length && fetchTorrents());
 
   fetchTorrents();
 </script>
