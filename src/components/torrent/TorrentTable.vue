@@ -132,11 +132,11 @@
     const torrentsCopy = [...torrents.value];
     if (direction.value) {
       torrents.value = torrentsCopy.sort(
-        (a, b) => sortableSize(a.size) - sortableSize(b.size)
+        (a, b) => sortableSize(a.size) > sortableSize(b.size) ? 1 : -1
       );
     } else {
       torrents.value = torrentsCopy.sort(
-        (a, b) => sortableSize(b.size) - sortableSize(a.size)
+        (a, b) => sortableSize(a.size) < sortableSize(b.size) ? 1 : -1
       );
     }
   }

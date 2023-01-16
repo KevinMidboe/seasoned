@@ -1,11 +1,11 @@
 export const sortableSize = (string: string): number => {
-  const UNITS = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const UNITS = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const [numStr, unit] = string.split(" ");
 
   if (UNITS.indexOf(unit) === -1) return null;
 
-  const exponent = UNITS.indexOf(unit) * 3;
-  return Number(numStr) * exponent ** 10;
+  const exponent = (UNITS.indexOf(unit) * 3) + 4;
+  return Math.floor(Number(numStr) * (10 ** exponent))
 };
 
 export const parseJwt = (token: string) => {
