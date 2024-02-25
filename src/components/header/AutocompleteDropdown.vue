@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch, defineProps } from "vue";
+  import { ref, watch } from "vue";
   import { useStore } from "vuex";
   import IconMovie from "@/icons/IconMovie.vue";
   import IconShow from "@/icons/IconShow.vue";

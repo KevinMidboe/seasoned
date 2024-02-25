@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, onMounted } from "vue";
+  import { ref, onMounted } from "vue";
   import type { Ref } from "vue";
   import IconArrowDown from "../../icons/IconArrowDown.vue";
 

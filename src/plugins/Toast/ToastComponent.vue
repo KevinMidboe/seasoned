@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, onMounted } from "vue";
+  import { ref, onMounted } from "vue";
   import { useRouter } from "vue-router";
   import type { Ref } from "vue";
 

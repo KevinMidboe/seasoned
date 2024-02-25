@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps } from "vue";
+  import { ref, computed } from "vue";
   import CastList from "@/components/CastList.vue";
   import Detail from "@/components/popup/Detail.vue";
   import Description from "@/components/popup/Description.vue";

@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
   import { useStore } from "vuex";
-  import { computed, defineProps } from "vue";
+  import { computed } from "vue";
   import type INavigationIcon from "../../interfaces/INavigationIcon";
 
   interface Props {

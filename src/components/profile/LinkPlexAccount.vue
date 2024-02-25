@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineEmits } from "vue";
+  import { ref, computed } from "vue";
   import { useStore } from "vuex";
   import seasonedInput from "@/components/ui/SeasonedInput.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";

@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps, onMounted } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import { useStore } from "vuex";
 
   // import img from "@/directives/v-image";

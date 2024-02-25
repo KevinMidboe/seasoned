@@ -11,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps } from "vue";
   import CastListItem from "src/components/CastListItem.vue";
   import type {
     IMovie,
