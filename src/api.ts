@@ -4,7 +4,7 @@ import type {
   IRequestSubmitResponse
 } from "./interfaces/IRequestResponse";
 
-const { ELASTIC, ELASTIC_INDEX } = process.env;
+const { ELASTIC, ELASTIC_INDEX, ELASTIC_APIKEY } = process.env;
 const API_HOSTNAME = window.location.origin;
 
 // - - - TMDB - - -
@@ -430,9 +430,13 @@ const unlinkPlexAccount = () => {
 
 // - - - User graphs - - -
 
-const fetchGraphData = (urlPath, days, chartType) => {
+const fetchGraphData = async (
+  urlPath: string,
+  days: number,
+  chartType: string
+) => {
   const url = new URL(`/api/v1/user/${urlPath}`, API_HOSTNAME);
-  url.searchParams.append("days", days);
+  url.searchParams.append("days", String(days));
   url.searchParams.append("y_axis", chartType);
 
   return fetch(url.href).then(resp => {
@@ -447,7 +451,7 @@ const fetchGraphData = (urlPath, days, chartType) => {
 
 // - - - Random emoji - - -
 
-const getEmoji = () => {
+const getEmoji = async () => {
   const url = new URL("/api/v1/emoji", API_HOSTNAME);
 
   return fetch(url.href)
@@ -468,33 +472,58 @@ const getEmoji = () => {
  * @param {string} query
  * @returns {object} List of movies and shows matching query
  */
-const elasticSearchMoviesAndShows = (query, count = 22) => {
+const elasticSearchMoviesAndShows = (query: string, count = 22) => {
   const url = new URL(`${ELASTIC_INDEX}/_search`, ELASTIC);
 
   const body = {
     sort: [{ popularity: { order: "desc" } }, "_score"],
+    size: count,
     query: {
-      bool: {
-        should: [
-          {
-            match_phrase_prefix: {
-              original_name: query
-            }
-          },
-          {
-            match_phrase_prefix: {
-              original_title: query
-            }
-          }
-        ]
+      multi_match: {
+        query,
+        fields: ["name", "original_title", "original_name"],
+        type: "phrase_prefix",
+        tie_breaker: 0.3
       }
     },
-    size: count
+    suggest: {
+      text: query,
+      "person-suggest": {
+        prefix: query,
+        completion: {
+          field: "name.completion",
+          fuzzy: {
+            fuzziness: "AUTO"
+          }
+        }
+      },
+      "movie-suggest": {
+        prefix: query,
+        completion: {
+          field: "original_title.completion",
+          fuzzy: {
+            fuzziness: "AUTO"
+          }
+        }
+      },
+      "show-suggest": {
+        prefix: query,
+        completion: {
+          field: "original_name.completion",
+          fuzzy: {
+            fuzziness: "AUTO"
+          }
+        }
+      }
+    }
   };
 
   const options = {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      Authorization: `ApiKey ${ELASTIC_APIKEY}`,
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(body)
   };
 
