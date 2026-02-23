@@ -1,0 +1,31 @@
+{
+	# Disable automatic HTTPS
+	auto_https off
+}
+
+:8080 {
+    root * {$DIST_PATH:/usr/share/caddy}
+
+    file_server
+
+    encode gzip zstd
+
+    try_files {path} {path}/ /index.html
+
+    # Cache favicons aggressively
+    @favicons path /favicons/*
+    header @favicons Cache-Control "public, max-age=31536000, immutable"
+
+    # Cache static assets based on MIME type
+    @static {
+        header Content-Type application/javascript*
+        header Content-Type text/css*
+        header Content-Type image/*
+        header Content-Type font/*
+        header Content-Type application/font-*
+        header Content-Type application/woff*
+        header Content-Type application/json*
+    }
+
+    header @static Cache-Control "public, max-age=2592000, immutable"
+}
