@@ -85,8 +85,9 @@
     query.value = decodeURIComponent(params.get("query"));
   }
 
-  const { ELASTIC } = process.env;
-  if (ELASTIC === undefined || ELASTIC === "") {
+  const ELASTIC_URL = import.meta.env.VITE_ELASTIC_URL;
+  const ELASTIC_API_KEY = import.meta.env.VITE_ELASTIC_API_KEY;
+  if (!ELASTIC_URL || !ELASTIC_API_KEY) {
     disabled.value = true;
   }
 

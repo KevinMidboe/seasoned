@@ -1,8 +1,8 @@
 import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
 
-const ELASTIC = import.meta.env.VITE_ELASTIC;
-const ELASTIC_INDEX = import.meta.env.VITE_ELASTIC_INDEX;
 const API_HOSTNAME = import.meta.env.VITE_SEASONED_API;
+const ELASTIC_URL = import.meta.env.VITE_ELASTIC_URL;
+const ELASTIC_API_KEY = import.meta.env.VITE_ELASTIC_API_KEY;
 
 // - - - TMDB - - -
 
@@ -471,7 +471,7 @@ const getEmoji = () => {
  * @returns {object} List of movies and shows matching query
  */
 const elasticSearchMoviesAndShows = (query, count = 22) => {
-  const url = new URL(`${ELASTIC_INDEX}/_search`, ELASTIC);
+  const url = new URL(`${ELASTIC_URL}/_search`);
 
   const body = {
     sort: [{ popularity: { order: "desc" } }, "_score"],
@@ -496,7 +496,10 @@ const elasticSearchMoviesAndShows = (query, count = 22) => {
 
   const options = {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `ApiKey ${ELASTIC_API_KEY}`
+    },
     body: JSON.stringify(body)
   };
 
