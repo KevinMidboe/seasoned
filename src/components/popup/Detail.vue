@@ -8,8 +8,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps } from "vue";
-
   interface Props {
     title: string;
     detail?: string | number;
@@ -19,7 +17,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   .movie-detail {
     margin-bottom: 20px;

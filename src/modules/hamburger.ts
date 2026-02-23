@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import type IStateHamburger from "../interfaces/IStateHamburger";
 
 const state: IStateHamburger = {

@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps, onMounted } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import { useStore } from "vuex";
   import type { Ref } from "vue";
   import type { IMovie, IShow, IPerson } from "../interfaces/IList";
@@ -111,9 +111,9 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   .movie-item {
     padding: 15px;

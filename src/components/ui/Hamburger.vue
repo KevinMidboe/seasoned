@@ -23,7 +23,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   .nav__hamburger {
     display: block;

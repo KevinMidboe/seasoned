@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, ref, computed, onMounted } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import PageHeader from "@/components/PageHeader.vue";
   import ResultsList from "@/components/ResultsList.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
@@ -172,7 +172,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   .resultSection {
     background-color: var(--background-color);

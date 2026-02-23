@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import type IStateDocumentTitle from "../interfaces/IStateDocumentTitle";
 
 const capitalize = (string: string) => {
@@ -26,7 +27,7 @@ const state: IStateDocumentTitle = {
   title: undefined
 };
 
-/* eslint-disable @typescript-eslint/no-shadow, no-return-assign */
+/* eslint-disable @typescript-eslint/no-shadow */
 export default {
   namespaced: true,
   state,

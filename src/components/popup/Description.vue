@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, onMounted } from "vue";
+  import { ref, onMounted } from "vue";
   import type { Ref } from "vue";
   import IconArrowDown from "../../icons/IconArrowDown.vue";
 
@@ -27,7 +27,6 @@
   const overflow: Ref<boolean> = ref(false);
   const descriptionElement: Ref<HTMLElement> = ref(null);
 
-  // eslint-disable-next-line no-undef
   function removeElements(elems: NodeListOf<Element>) {
     elems.forEach(el => el.remove());
   }
@@ -67,7 +66,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   .movie-description {
     font-weight: 300;

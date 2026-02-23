@@ -165,31 +165,34 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps, onMounted } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import { useStore } from "vuex";
 
   // import img from "@/directives/v-image";
-  import IconProfile from "@/icons/IconProfile.vue";
-  import IconThumbsUp from "@/icons/IconThumbsUp.vue";
-  import IconThumbsDown from "@/icons/IconThumbsDown.vue";
-  import IconInfo from "@/icons/IconInfo.vue";
-  import IconRequest from "@/icons/IconRequest.vue";
-  import IconRequested from "@/icons/IconRequested.vue";
-  import IconBinoculars from "@/icons/IconBinoculars.vue";
-  import IconPlay from "@/icons/IconPlay.vue";
-  import TorrentList from "@/components/torrent/TruncatedTorrentResults.vue";
-  import CastList from "@/components/CastList.vue";
-  import Detail from "@/components/popup/Detail.vue";
-  import ActionButton from "@/components/popup/ActionButton.vue";
-  import Description from "@/components/popup/Description.vue";
-  import LoadingPlaceholder from "@/components/ui/LoadingPlaceholder.vue";
-  import type { Ref } from "vue";
+  import IconProfile from "../../icons/IconProfile.vue";
+  import IconThumbsUp from "../../icons/IconThumbsUp.vue";
+  import IconThumbsDown from "../../icons/IconThumbsDown.vue";
+  import IconInfo from "../../icons/IconInfo.vue";
+  import IconRequest from "../../icons/IconRequest.vue";
+  import IconRequested from "../../icons/IconRequested.vue";
+  import IconBinoculars from "../../icons/IconBinoculars.vue";
+  import IconPlay from "../../icons/IconPlay.vue";
+  import TorrentList from "../torrent/TruncatedTorrentResults.vue";
+  import CastList from "../CastList.vue";
+  import Detail from "./Detail.vue";
+  import ActionButton from "./ActionButton.vue";
+  import Description from "./Description.vue";
+  import LoadingPlaceholder from "../ui/LoadingPlaceholder.vue";
   import type {
     IMovie,
     IShow,
     IMediaCredits,
     ICast
   } from "../../interfaces/IList";
+  import type {
+    IRequestStatusResponse,
+    IRequestSubmitResponse
+  } from "../../interfaces/IRequestResponse";
   import { MediaTypes } from "../../interfaces/IList";
 
   import { humanMinutes } from "../../utils";
@@ -241,8 +244,15 @@
   function setCast(_cast: ICast[]) {
     cast.value = _cast;
   }
-  function setRequested(status: boolean) {
-    requested.value = status;
+  function setRequested(
+    requestResponse: IRequestStatusResponse | IRequestSubmitResponse
+  ) {
+    if (requestResponse?.success) {
+      requested.value = requestResponse?.success;
+      return;
+    }
+
+    requested.value = false;
   }
 
   function setBackdrop(): void {
@@ -301,13 +311,13 @@
       .then(() => getCredits(props.type))
       .then(credits => setCast(credits?.cast || []))
       .then(() => getRequestStatus(props.id, props.type))
-      .then(requestStatus => setRequested(requestStatus || false))
+      .then(requestResponse => setRequested(requestResponse))
       .then(setBackdrop);
   }
 
   function sendRequest() {
-    request(props.id, props.type).then(resp =>
-      setRequested(resp?.success || false)
+    request(props.id, props.type).then(requestResponse =>
+      setRequested(requestResponse)
     );
   }
 
@@ -331,10 +341,10 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/loading-placeholder";
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/loading-placeholder";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   header {
     $duration: 0.2s;

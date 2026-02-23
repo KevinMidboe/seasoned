@@ -4,6 +4,7 @@ src/config.json
 
 # Build directory
 dist/
+lib/
 
 # Node packages
 node_modules/

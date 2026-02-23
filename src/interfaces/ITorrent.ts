@@ -7,5 +7,5 @@ export default interface ITorrent {
   seed: string;
   leech: string;
   url: string | null;
-  release_type: Array<string>;
+  release_type: string[];
 }

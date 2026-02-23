@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps } from "vue";
   import ResultsListItem from "@/components/ResultsListItem.vue";
   import type { ListResults } from "../interfaces/IList";
 
@@ -35,8 +34,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   .no-results {
     width: 100%;

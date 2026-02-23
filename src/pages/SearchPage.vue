@@ -13,8 +13,8 @@
     </div>
 
     <ResultsSection
-      :key="query"
       v-if="query"
+      :key="query"
       :title="title"
       :api-function="search"
     />
@@ -89,7 +89,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   .filter {
     margin-top: 0.5rem;

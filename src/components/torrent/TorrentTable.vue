@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, defineEmits } from "vue";
+  import { ref } from "vue";
   import IconMagnet from "@/icons/IconMagnet.vue";
   import type { Ref } from "vue";
   import { sortableSize } from "../../utils";
@@ -131,12 +131,12 @@
   function sortSize() {
     const torrentsCopy = [...torrents.value];
     if (direction.value) {
-      torrents.value = torrentsCopy.sort(
-        (a, b) => sortableSize(a.size) - sortableSize(b.size)
+      torrents.value = torrentsCopy.sort((a, b) =>
+        sortableSize(a.size) > sortableSize(b.size) ? 1 : -1
       );
     } else {
-      torrents.value = torrentsCopy.sort(
-        (a, b) => sortableSize(b.size) - sortableSize(a.size)
+      torrents.value = torrentsCopy.sort((a, b) =>
+        sortableSize(a.size) < sortableSize(b.size) ? 1 : -1
       );
     }
   }
@@ -155,9 +155,9 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/elements";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/elements";
 
   table {
     border-spacing: 0;

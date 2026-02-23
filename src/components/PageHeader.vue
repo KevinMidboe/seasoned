@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, computed } from "vue";
+  import { computed } from "vue";
 
   interface Props {
     title: string;
@@ -47,9 +47,9 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   header {
     width: 100%;

@@ -1,5 +1,3 @@
-/* eslint-disable no-use-before-define */
-
 export enum GraphTypes {
   Plays = "plays",
   Duration = "duration"
@@ -12,12 +10,12 @@ export enum GraphValueTypes {
 
 export interface IGraphDataset {
   name: string;
-  data: Array<number>;
+  data: number[];
 }
 
 export interface IGraphData {
-  labels: Array<string>;
-  series: Array<IGraphDataset>;
+  labels: string[];
+  series: IGraphDataset[];
 }
 
 export interface IGraphResponse {

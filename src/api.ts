@@ -1,7 +1,13 @@
+/* eslint-disable n/no-unsupported-features/node-builtins */
 import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
+import type {
+  IRequestStatusResponse,
+  IRequestSubmitResponse
+} from "./interfaces/IRequestResponse";
 
-const { ELASTIC, ELASTIC_INDEX } = process.env;
-const API_HOSTNAME = window.location.origin;
+const API_HOSTNAME = import.meta.env.VITE_SEASONED_API;
+const ELASTIC_URL = import.meta.env.VITE_ELASTIC_URL;
+const ELASTIC_API_KEY = import.meta.env.VITE_ELASTIC_API_KEY;
 
 // - - - TMDB - - -
 
@@ -259,7 +265,7 @@ const addMagnet = (magnet: string, name: string, tmdbId: number | null) => {
  * @param {string} type Movie or show type
  * @returns {object} Success/Failure response
  */
-const request = (id, type) => {
+const request = (id, type): Promise<IRequestSubmitResponse> => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
 
   const options = {
@@ -282,18 +288,13 @@ const request = (id, type) => {
  * @param {string} type
  * @returns {object} Success/Failure response
  */
-const getRequestStatus = (id, type = undefined) => {
+const getRequestStatus = (id, type = null): Promise<IRequestStatusResponse> => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}`;
   url.searchParams.append("type", type);
 
   return fetch(url.href)
-    .then(resp => {
-      const { status } = resp;
-      if (status === 200) return true;
-
-      return false;
-    })
+    .then(resp => resp.json())
     .catch(err => Promise.reject(err));
 };
 
@@ -335,7 +336,11 @@ const register = (username, password) => {
     });
 };
 
-const login = (username, password, throwError = false) => {
+const login = async (
+  username: string,
+  password: string,
+  throwError = false
+) => {
   const url = new URL("/api/v1/user/login", API_HOSTNAME);
   const options = {
     method: "POST",
@@ -352,7 +357,7 @@ const login = (username, password, throwError = false) => {
   });
 };
 
-const logout = (throwError = false) => {
+const logout = async (throwError = false) => {
   const url = new URL("/api/v1/user/logout", API_HOSTNAME);
   const options = { method: "POST" };
 
@@ -431,9 +436,13 @@ const unlinkPlexAccount = () => {
 
 // - - - User graphs - - -
 
-const fetchGraphData = (urlPath, days, chartType) => {
+const fetchGraphData = async (
+  urlPath: string,
+  days: number,
+  chartType: string
+) => {
   const url = new URL(`/api/v1/user/${urlPath}`, API_HOSTNAME);
-  url.searchParams.append("days", days);
+  url.searchParams.append("days", String(days));
   url.searchParams.append("y_axis", chartType);
 
   return fetch(url.href).then(resp => {
@@ -448,7 +457,7 @@ const fetchGraphData = (urlPath, days, chartType) => {
 
 // - - - Random emoji - - -
 
-const getEmoji = () => {
+const getEmoji = async () => {
   const url = new URL("/api/v1/emoji", API_HOSTNAME);
 
   return fetch(url.href)
@@ -469,33 +478,59 @@ const getEmoji = () => {
  * @param {string} query
  * @returns {object} List of movies and shows matching query
  */
+
 const elasticSearchMoviesAndShows = (query, count = 22) => {
-  const url = new URL(`${ELASTIC_INDEX}/_search`, ELASTIC);
+  const url = new URL(`${ELASTIC_URL}/_search`);
 
   const body = {
     sort: [{ popularity: { order: "desc" } }, "_score"],
+    size: count,
     query: {
-      bool: {
-        should: [
-          {
-            match_phrase_prefix: {
-              original_name: query
-            }
-          },
-          {
-            match_phrase_prefix: {
-              original_title: query
-            }
-          }
-        ]
+      multi_match: {
+        query,
+        fields: ["name", "original_title", "original_name"],
+        type: "phrase_prefix",
+        tie_breaker: 0.3
       }
     },
-    size: count
+    suggest: {
+      text: query,
+      "person-suggest": {
+        prefix: query,
+        completion: {
+          field: "name.completion",
+          fuzzy: {
+            fuzziness: "AUTO"
+          }
+        }
+      },
+      "movie-suggest": {
+        prefix: query,
+        completion: {
+          field: "original_title.completion",
+          fuzzy: {
+            fuzziness: "AUTO"
+          }
+        }
+      },
+      "show-suggest": {
+        prefix: query,
+        completion: {
+          field: "original_name.completion",
+          fuzzy: {
+            fuzziness: "AUTO"
+          }
+        }
+      }
+    }
   };
 
   const options = {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `ApiKey ${ELASTIC_API_KEY}`
+    },
     body: JSON.stringify(body)
   };
 

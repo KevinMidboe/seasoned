@@ -25,8 +25,8 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps } from "vue";
   import { useRouter } from "vue-router";
+  import { ref, defineProps, computed } from "vue";
   import TorrentSearchResults from "@/components/torrent/TorrentSearchResults.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import IconArrowDown from "@/icons/IconArrowDown.vue";

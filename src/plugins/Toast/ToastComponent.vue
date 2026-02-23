@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, onMounted } from "vue";
+  import { ref, onMounted } from "vue";
   import { useRouter } from "vue-router";
   import type { Ref } from "vue";
 
@@ -94,7 +94,9 @@
 
     background-color: white;
     border-radius: 3px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.17), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 4px 8px 0 rgba(0, 0, 0, 0.17),
+      0 2px 4px 0 rgba(0, 0, 0, 0.08);
     padding: 0.5rem;
     margin: 1rem 2rem 1rem 0.71rem;
     // max-width: calc(100% - 3rem);

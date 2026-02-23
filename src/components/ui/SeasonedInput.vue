@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps, defineEmits } from "vue";
+  import { ref, computed } from "vue";
   import IconKey from "@/icons/IconKey.vue";
   import IconEmail from "@/icons/IconEmail.vue";
   import IconBinoculars from "@/icons/IconBinoculars.vue";
@@ -74,8 +74,8 @@
   }
 </script>
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
+  @import "scss/variables";
+  @import "scss/media-queries";
 
   .group {
     display: flex;

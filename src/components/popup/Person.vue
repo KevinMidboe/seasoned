@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps } from "vue";
+  import { ref, computed } from "vue";
   import CastList from "@/components/CastList.vue";
   import Detail from "@/components/popup/Detail.vue";
   import Description from "@/components/popup/Description.vue";
@@ -165,10 +165,10 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/loading-placeholder";
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/loading-placeholder";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   section.person {
     overflow: hidden;

@@ -85,7 +85,7 @@
     try {
       validate();
     } catch (error) {
-      console.log("not valid!"); // eslint-disable-line no-console
+      console.log("not valid! error:", error); // eslint-disable-line no-console
     }
 
     // const body: ResetPasswordPayload = {

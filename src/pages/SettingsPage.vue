@@ -48,8 +48,8 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
+  @import "scss/variables";
+  @import "scss/media-queries";
 
   .settings {
     padding: 3rem;

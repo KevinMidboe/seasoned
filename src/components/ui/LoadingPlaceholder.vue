@@ -10,8 +10,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps } from "vue";
-
   interface Props {
     count?: number;
     lineClass?: string;
@@ -22,5 +20,5 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/loading-placeholder";
+  @import "scss/loading-placeholder";
 </style>

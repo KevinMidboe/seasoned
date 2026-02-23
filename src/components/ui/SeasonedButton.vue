@@ -9,8 +9,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, defineEmits } from "vue";
-
   interface Props {
     active?: boolean;
     fullWidth?: boolean;
@@ -25,8 +23,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
+  @import "scss/variables";
+  @import "scss/media-queries";
 
   button {
     display: inline-block;
@@ -44,7 +42,10 @@
     background: $background-color-secondary;
     cursor: pointer;
     outline: none;
-    transition: background 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+    transition:
+      background 0.5s ease,
+      color 0.5s ease,
+      border-color 0.5s ease;
 
     @include desktop {
       font-size: 0.8rem;

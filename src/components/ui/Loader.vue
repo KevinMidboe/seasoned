@@ -12,7 +12,6 @@
 --></template>
 
 <script setup lang="ts">
-  import { defineProps } from "vue";
   import LoaderHeightType from "../../interfaces/ILoader";
 
   interface Props {
@@ -23,7 +22,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
+  @import "scss/variables";
 
   .loader {
     display: flex;

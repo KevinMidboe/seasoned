@@ -22,7 +22,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, defineEmits } from "vue";
   import type {
     ErrorMessageTypes,
     IErrorMessage
@@ -65,8 +64,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
+  @import "scss/variables";
+  @import "scss/media-queries";
 
   .fade-active {
     transition: opacity 0.4s;

@@ -10,8 +10,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, defineEmits } from "vue";
-
   interface Props {
     active?: boolean;
     disabled?: boolean;
@@ -26,7 +24,7 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   li.sidebar-list-element {
     display: flex;

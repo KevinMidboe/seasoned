@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, defineProps } from "vue";
+  import { ref, watch, inject } from "vue";
   import { useStore } from "vuex";
   import Loader from "@/components/ui/Loader.vue";
   import TorrentTable from "@/components/torrent/TorrentTable.vue";
@@ -96,13 +96,15 @@
       });
   }
 
+  watch(props, newValue => newValue?.query?.length && fetchTorrents());
+
   fetchTorrents();
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/elements";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/elements";
 
   h2 {
     font-size: 20px;
@@ -113,13 +115,8 @@
     margin: 1rem 0;
   }
 
-  .container {
-    background-color: $background-color;
-  }
-
   .no-results {
     display: flex;
-    padding-bottom: 2rem;
     justify-content: center;
     flex-direction: column;
     width: 100%;
