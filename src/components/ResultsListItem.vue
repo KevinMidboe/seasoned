@@ -22,7 +22,11 @@
       </div>
     </figure>
 
-    <div class="movie-item__info">
+    <div
+      class="movie-item__info"
+      @click="openMoviePopup"
+      @keydown.enter="openMoviePopup"
+    >
       <p v-if="listItem.title || listItem.name" class="movie-item__title">
         {{ listItem.title || listItem.name }}
       </p>
