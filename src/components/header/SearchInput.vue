@@ -42,6 +42,18 @@
   </div>
 </template>
 
+<!-- Handles constructing markup and state for dropdown.
+
+Markup:
+Consist of: search icon, input & close button.
+
+State:
+State is passing input variable `query` to dropdown and carrying state
+of selected dropdown element as variable `index`. This is because
+index is manipulated based on arrow key events from same input as
+the `query`.
+-->
+
 <script setup lang="ts">
   import type { Ref } from "vue";
   import { ref, computed } from "vue";
@@ -51,6 +63,7 @@
   import IconSearch from "../../icons/IconSearch.vue";
   import IconClose from "../../icons/IconClose.vue";
   import type { MediaTypes } from "../../interfaces/IList";
+import { IAutocompleteResult } from "../../interfaces/IAutocompleteSearch";
 
   interface ISearchResult {
     title: string;
@@ -66,7 +79,7 @@
   const query: Ref<string> = ref(null);
   const disabled: Ref<boolean> = ref(false);
   const dropdownIndex: Ref<number> = ref(-1);
-  const dropdownResults: Ref<ISearchResult[]> = ref([]);
+  const dropdownResults: Ref<IAutocompleteResult[]> = ref([]);
   const inputIsActive: Ref<boolean> = ref(false);
   const inputElement: Ref<HTMLInputElement> = ref(null);
 
@@ -146,6 +159,7 @@
   function handleSubmit() {
     if (!query.value || query.value.length === 0) return;
 
+    // if index is set, navigation has happened. Open popup else search
     if (dropdownIndex.value >= 0) {
       const resultItem = dropdownResults.value[dropdownIndex.value];
 

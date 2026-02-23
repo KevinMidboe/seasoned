@@ -12,6 +12,7 @@ export interface IAutocompleteSearchResults {
   timed_out: boolean;
   _shards: Shards;
   hits: Hits;
+  suggest: Suggest;
 }
 
 export interface Shards {
@@ -36,6 +37,27 @@ export interface Hit {
   sort: number[];
 }
 
+export interface Suggest {
+  "movie-suggest": SuggestOptions[];
+  "person-suggest": SuggestOptions[];
+  "show-suggest": SuggestOptions[];
+}
+
+export interface SuggestOptions {
+  text: string;
+  offset: number;
+  length: number;
+  options: Option[];
+}
+
+export interface Option {
+  text: string;
+  _index: string;
+  _id: string;
+  _score: number;
+  _source: Source;
+}
+
 export enum Index {
   Movies = "movies",
   Shows = "shows"
@@ -56,6 +78,8 @@ export interface Source {
   agent: Agent;
   original_title: string;
   original_name?: string;
+  name?: string;
+  type?: MediaTypes;
 }
 
 export interface Agent {

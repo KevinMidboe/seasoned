@@ -13,8 +13,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, defineEmits } from "vue";
-
   interface Props {
     options: string[];
     selected?: string;
