@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="content">
     <!-- Header and hamburger navigation -->
     <NavigationHeader class="header" />
 

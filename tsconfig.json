@@ -12,7 +12,8 @@
     "outDir": "lib",
     "baseUrl": "/",
     "paths": {
-      "@": ["src"]
+      "@/*": ["./src/*"],
+      "scss/*": ["./src/scss/*"]
     }
   },
   "include": [

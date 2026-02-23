@@ -1,7 +1,8 @@
 import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
 
-const { ELASTIC, ELASTIC_INDEX } = process.env;
-const API_HOSTNAME = window.location.origin;
+const ELASTIC = import.meta.env.VITE_ELASTIC;
+const ELASTIC_INDEX = import.meta.env.VITE_ELASTIC_INDEX;
+const API_HOSTNAME = import.meta.env.VITE_SEASONED_API;
 
 // - - - TMDB - - -
 
