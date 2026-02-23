@@ -214,7 +214,9 @@
     cursor: pointer;
     white-space: nowrap;
 
-    transition: color 0.1s ease, fill 0.4s ease;
+    transition:
+      color 0.1s ease,
+      fill 0.4s ease;
 
     span {
       overflow-x: hidden;

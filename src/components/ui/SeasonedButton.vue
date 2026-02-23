@@ -44,7 +44,10 @@
     background: $background-color-secondary;
     cursor: pointer;
     outline: none;
-    transition: background 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+    transition:
+      background 0.5s ease,
+      color 0.5s ease,
+      border-color 0.5s ease;
 
     @include desktop {
       font-size: 0.8rem;

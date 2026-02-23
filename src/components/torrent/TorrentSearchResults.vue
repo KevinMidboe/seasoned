@@ -113,13 +113,8 @@
     margin: 1rem 0;
   }
 
-  .container {
-    background-color: $background-color;
-  }
-
   .no-results {
     display: flex;
-    padding-bottom: 2rem;
     justify-content: center;
     flex-direction: column;
     width: 100%;
