@@ -10,7 +10,6 @@
       >
         <IconMovie v-if="result.type == 'movie'" class="type-icon" />
         <IconShow v-if="result.type == 'show'" class="type-icon" />
-        <IconPerson v-if="result.type == 'person'" class="type-icon" />
         <span class="title">{{ result.title }}</span>
       </li>
 
@@ -24,10 +23,6 @@
   </transition>
 </template>
 
-<!--
-Searches Elasticsearch for results based on changes to `query`.
--->
-
 <script setup lang="ts">
   import type { Ref } from "vue";
   import { ref, watch, defineProps } from "vue";
@@ -38,10 +33,7 @@ Searches Elasticsearch for results based on changes to `query`.
   import { MediaTypes } from "../../interfaces/IList";
   import type {
     IAutocompleteResult,
-    IAutocompleteSearchResults,
-    Hit,
-    Option,
-    Source
+    IAutocompleteSearchResults
   } from "../../interfaces/IAutocompleteSearch";
 
   interface Props {
@@ -55,7 +47,6 @@ Searches Elasticsearch for results based on changes to `query`.
   }
 
   const numberOfResults = 10;
-  let timeoutId = null;
   const props = defineProps<Props>();
   const emit = defineEmits<Emit>();
   const store = useStore();
@@ -63,9 +54,25 @@ Searches Elasticsearch for results based on changes to `query`.
   const searchResults: Ref<Array<IAutocompleteResult>> = ref([]);
   const keyboardNavigationIndex: Ref<number> = ref(0);
 
+  let disableOnFailure = false;
+
+  watch(
+    () => props.query,
+    newQuery => {
+      if (newQuery?.length > 0 && !disableOnFailure)
+        fetchAutocompleteResults(); /* eslint-disable-line no-use-before-define */
+    }
+  );
+
+  function openPopup(result: IAutocompleteResult) {
+    if (!result.id || !result.type) return;
+
+    store.dispatch("popup/open", { ...result });
+  }
+
   function removeDuplicates(_searchResults: Array<IAutocompleteResult>) {
     const filteredResults = [];
-    _searchResults.forEach((result: IAutocompleteResult) => {
+    _searchResults.forEach(result => {
       if (result === undefined) return;
       const numberOfDuplicates = filteredResults.filter(
         filterItem => filterItem.id === result.id
@@ -80,83 +87,58 @@ Searches Elasticsearch for results based on changes to `query`.
     return filteredResults;
   }
 
-  function convertMediaType(type: string | null): MediaTypes | null {
+  function elasticTypeToMediaType(type: string): MediaTypes {
     if (type === "movie") return MediaTypes.Movie;
-
     if (type === "tv_series") return MediaTypes.Show;
-
-    if (type === "person") return MediaTypes.Person;
 
     return null;
   }
 
   function parseElasticResponse(elasticResponse: IAutocompleteSearchResults) {
-    const elasticResults = elasticResponse.hits.hits;
-    const suggestResults = elasticResponse.suggest["movie-suggest"][0].options;
-
-    let data: Array<Source> = elasticResults.map((el: Hit) => el._source);
-    data = data.concat(suggestResults.map((el: Option) => el._source));
-
-    //    data = data.concat(elasticResponse['suggest']['person-suggest'][0]['options'])
-    //    data = data.concat(elasticResponse['suggest']['show-suggest'][0]['options'])
-    data = data.sort((a, b) => (a.popularity < b.popularity ? 1 : -1));
+    const data = elasticResponse.hits.hits;
 
     const results: Array<IAutocompleteResult> = [];
 
     data.forEach(item => {
+      if (!item._index) return;
+
       results.push({
-        title: item?.original_name || item?.original_title || item?.name,
-        id: item.id,
-        adult: item.adult,
-        type: convertMediaType(item?.type)
+        title: item._source?.original_name || item._source.original_title,
+        id: item._source.id,
+        adult: item._source.adult,
+        type: elasticTypeToMediaType(item._source.type)
       });
     });
 
-    return removeDuplicates(results)
-      .map((el, index) => {
-        return { ...el, index };
-      })
-      .slice(0, 10);
+    return removeDuplicates(results).map((el, index) => {
+      return { ...el, index };
+    });
   }
 
-  function fetchAutocompleteResults() {
+  async function fetchAutocompleteResults() {
     keyboardNavigationIndex.value = 0;
     searchResults.value = [];
 
-    elasticSearchMoviesAndShows(props.query, numberOfResults)
+    return elasticSearchMoviesAndShows(props.query, numberOfResults)
+      .catch(error => {
+        // TODO display error
+        disableOnFailure = true;
+        throw error;
+      })
       .then(elasticResponse => parseElasticResponse(elasticResponse))
       .then(_searchResults => {
-        console.log(_searchResults);
         emit("update:results", _searchResults);
         searchResults.value = _searchResults;
+      })
+      .catch(error => {
+        // TODO display error
+        disableOnFailure = true;
+        throw error;
       });
-  }
-
-  const debounce = (callback: () => void, wait: number) => {
-    window.clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => {
-      callback();
-    }, wait);
-  };
-
-  watch(
-    () => props.query,
-    newQuery => {
-      if (newQuery?.length > 0) {
-        debounce(fetchAutocompleteResults, 150);
-      }
-    }
-  );
-
-  function openPopup(result: IAutocompleteResult) {
-    if (!result.id || !result.type) return;
-
-    store.dispatch("popup/open", { ...result });
   }
 
   // on load functions
   fetchAutocompleteResults();
-  // end on load functions
 </script>
 
 <style lang="scss" scoped>
