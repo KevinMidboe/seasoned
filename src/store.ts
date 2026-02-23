@@ -6,7 +6,7 @@ import torrentModule from "./modules/torrentModule";
 import user from "./modules/user";
 import hamburger from "./modules/hamburger";
 
-/* eslint-disable-next-line import/no-cycle */
+/* eslint-disable-next-line import-x/no-cycle */
 import popup from "./modules/popup";
 
 const store = createStore({

@@ -3,7 +3,6 @@ import router from "./routes";
 import store from "./store";
 import Toast from "./plugins/Toast";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 import App from "./App.vue";
 
 store.dispatch("darkmodeModule/findAndSetDarkmodeSupported");

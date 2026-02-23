@@ -1,3 +1,4 @@
+/* eslint-disable n/no-unsupported-features/node-builtins */
 import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
 
 const API_HOSTNAME = import.meta.env.VITE_SEASONED_API;
@@ -336,7 +337,11 @@ const register = (username, password) => {
     });
 };
 
-const login = (username, password, throwError = false) => {
+const login = async (
+  username: string,
+  password: string,
+  throwError = false
+) => {
   const url = new URL("/api/v1/user/login", API_HOSTNAME);
   const options = {
     method: "POST",
@@ -353,7 +358,7 @@ const login = (username, password, throwError = false) => {
   });
 };
 
-const logout = (throwError = false) => {
+const logout = async (throwError = false) => {
   const url = new URL("/api/v1/user/logout", API_HOSTNAME);
   const options = { method: "POST" };
 

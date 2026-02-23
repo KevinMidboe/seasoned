@@ -46,7 +46,7 @@
     let _type: MediaTypes;
 
     const params = new URLSearchParams(window.location.search);
-    params.forEach((value, key) => {
+    params.forEach((_, key) => {
       if (
         key !== MediaTypes.Movie &&
         key !== MediaTypes.Show &&

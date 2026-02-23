@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "NODE_ENV=development vite",
     "build": "yarn vite build",
-    "postbuild": "cp public/dist/index.html public/index.html",
-    "clean": "rm -r public/dist 2> /dev/null; rm public/index.html 2> /dev/null; rm -r lib 2> /dev/null",
+    "clean": "rm -r dist 2> /dev/null; rm public/index.html 2> /dev/null; rm -r lib 2> /dev/null",
     "start": "echo 'Start using docker, consult README'",
     "lint": "eslint src --ext .ts,.vue",
     "docs": "documentation build src/api.ts -f html -o docs/api && documentation build src/api.ts -f md -o docs/api.md"
@@ -20,10 +19,17 @@
     "vuex": "4.1.0"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.0.2",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.3.0",
     "@vitejs/plugin-vue": "^5.2.1",
-    "prettier": "2.7.1",
+    "eslint": "^10.0.1",
+    "eslint-config-airbnb-extended": "^3.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "prettier": "^3.8.1",
     "sass": "1.54.3",
-    "typescript": "4.7.4",
+    "typescript": "5.9.3",
     "vite": "^6.0.3"
   }
 }

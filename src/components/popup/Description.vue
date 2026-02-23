@@ -27,7 +27,6 @@
   const overflow: Ref<boolean> = ref(false);
   const descriptionElement: Ref<HTMLElement> = ref(null);
 
-  // eslint-disable-next-line no-undef
   function removeElements(elems: NodeListOf<Element>) {
     elems.forEach(el => el.remove());
   }

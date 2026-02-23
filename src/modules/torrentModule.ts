@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import type ITorrent from "../interfaces/ITorrent";
 import type IStateTorrent from "../interfaces/IStateTorrent";
 
@@ -11,16 +12,12 @@ export default {
   namespaced: true,
   state,
   getters: {
-    results: (state: IStateTorrent) => {
-      return state.results;
-    },
-    resultCount: (state: IStateTorrent) => {
-      return state.resultCount;
-    }
+    results: (state: IStateTorrent) => state.results,
+    resultCount: (state: IStateTorrent) => state.resultCount
   },
 
   mutations: {
-    SET_RESULTS: (state: IStateTorrent, results: Array<ITorrent>) => {
+    SET_RESULTS: (state: IStateTorrent, results: ITorrent[]) => {
       state.results = results;
     },
     SET_RESULT_COUNT: (state: IStateTorrent, count: number) => {
@@ -32,7 +29,7 @@ export default {
     }
   },
   actions: {
-    setResults({ commit }, results: Array<ITorrent>) {
+    setResults({ commit }, results: ITorrent[]) {
       commit("SET_RESULTS", results);
     },
     setResultCount({ commit }, count: number) {
