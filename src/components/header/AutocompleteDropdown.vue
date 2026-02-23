@@ -29,12 +29,11 @@ Searches Elasticsearch for results based on changes to `query`.
 -->
 
 <script setup lang="ts">
-  import { ref, watch } from "vue";
-  import { useStore } from "vuex";
-  import IconMovie from "@/icons/IconMovie.vue";
-  import IconShow from "@/icons/IconShow.vue";
-  import IconPerson from "@/icons/IconPerson.vue";
   import type { Ref } from "vue";
+  import { ref, watch, defineProps } from "vue";
+  import { useStore } from "vuex";
+  import IconMovie from "../../icons/IconMovie.vue";
+  import IconShow from "../../icons/IconShow.vue";
   import { elasticSearchMoviesAndShows } from "../../api";
   import { MediaTypes } from "../../interfaces/IList";
   import type {
@@ -161,9 +160,9 @@ Searches Elasticsearch for results based on changes to `query`.
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
   $sizes: 22;
 
   @for $i from 0 through $sizes {
@@ -241,7 +240,9 @@ Searches Elasticsearch for results based on changes to `query`.
     cursor: pointer;
     white-space: nowrap;
 
-    transition: color 0.1s ease, fill 0.4s ease;
+    transition:
+      color 0.1s ease,
+      fill 0.4s ease;
 
     span {
       overflow-x: hidden;

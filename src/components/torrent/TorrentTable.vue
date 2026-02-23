@@ -155,9 +155,9 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/elements";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/elements";
 
   table {
     border-spacing: 0;

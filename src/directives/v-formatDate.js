@@ -1,3 +1,4 @@
+/*
 let setValue = function(el, binding) {
   let value = binding.value;
   let dateArray = value.split('-');
@@ -13,3 +14,4 @@ module.exports = {
     setValue(el, binding);
   }
 }
+*/

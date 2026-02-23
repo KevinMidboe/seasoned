@@ -55,13 +55,13 @@ the `query`.
 -->
 
 <script setup lang="ts">
+  import type { Ref } from "vue";
   import { ref, computed } from "vue";
   import { useStore } from "vuex";
   import { useRouter, useRoute } from "vue-router";
-  import AutocompleteDropdown from "@/components/header/AutocompleteDropdown.vue";
-  import IconSearch from "@/icons/IconSearch.vue";
-  import IconClose from "@/icons/IconClose.vue";
-  import type { Ref } from "vue";
+  import AutocompleteDropdown from "./AutocompleteDropdown.vue";
+  import IconSearch from "../../icons/IconSearch.vue";
+  import IconClose from "../../icons/IconClose.vue";
   import type { MediaTypes } from "../../interfaces/IList";
 import { IAutocompleteResult } from "../../interfaces/IAutocompleteSearch";
 
@@ -98,13 +98,9 @@ import { IAutocompleteResult } from "../../interfaces/IAutocompleteSearch";
     query.value = decodeURIComponent(params.get("query"));
   }
 
-  const { ELASTIC, ELASTIC_APIKEY } = process.env;
-  if (
-    ELASTIC === undefined ||
-    ELASTIC === "" ||
-    ELASTIC_APIKEY === undefined ||
-    ELASTIC_APIKEY === ""
-  ) {
+  const ELASTIC_URL = import.meta.env.VITE_ELASTIC_URL;
+  const ELASTIC_API_KEY = import.meta.env.VITE_ELASTIC_API_KEY;
+  if (!ELASTIC_URL || !ELASTIC_API_KEY) {
     disabled.value = true;
   }
 
@@ -184,9 +180,9 @@ import { IAutocompleteResult } from "../../interfaces/IAutocompleteSearch";
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   .close-icon {
     position: absolute;

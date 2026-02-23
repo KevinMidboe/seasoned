@@ -131,7 +131,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
+  @import "scss/variables";
 
   section {
     padding: 1.3rem;

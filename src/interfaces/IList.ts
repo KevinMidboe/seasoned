@@ -67,7 +67,7 @@ export interface IMovie {
   backdrop: string;
   release_date: string | Date;
   rating: number;
-  genres: Array<MovieGenres>;
+  genres: MovieGenres[];
   production_status: MovieProductionStatus;
   tagline: string;
   runtime: number;
@@ -88,9 +88,9 @@ export interface IShow {
   seasons?: number;
   episodes?: number;
   popularity?: number;
-  genres?: Array<ShowGenres>;
+  genres?: ShowGenres[];
   production_status?: string;
-  runtime?: Array<number>;
+  runtime?: number[];
   exists_in_plex?: boolean;
   type: MediaTypes.Show;
 }
@@ -135,19 +135,19 @@ export interface ICrew {
 }
 
 export interface IMediaCredits {
-  cast: Array<ICast>;
-  crew: Array<ICrew>;
+  cast: ICast[];
+  crew: ICrew[];
   id: number;
 }
 
 export interface IPersonCredits {
-  cast: Array<IMovie | IShow>;
-  crew: Array<ICrew>;
+  cast: (IMovie | IShow)[];
+  crew: ICrew[];
   id: number;
   type?: string;
 }
 
-export type ListResults = Array<IMovie | IShow | IPerson | IRequest>;
+export type ListResults = (IMovie | IShow | IPerson | IRequest)[];
 
 export interface IList {
   results: ListResults;

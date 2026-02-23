@@ -14,9 +14,7 @@ export const parseJwt = (token: string) => {
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split("")
-      .map(c => {
-        return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
-      })
+      .map(c => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
       .join("")
   );
 
@@ -62,10 +60,10 @@ export function focusOnNextElement(elementEvent: KeyboardEvent): void {
   }
 }
 
-export function humanMinutes(minutes) {
+export function humanMinutes(minutes: number[] | number) {
   if (minutes instanceof Array) {
-    /* eslint-disable-next-line prefer-destructuring, no-param-reassign */
-    minutes = minutes[0];
+    /* eslint-disable-next-line no-param-reassign */
+    [minutes] = minutes;
   }
 
   const hours = Math.floor(minutes / 60);
@@ -93,7 +91,7 @@ export function setUrlQueryParameter(parameter: string, value: string): void {
 
   const url = `${window.location.protocol}//${window.location.hostname}${
     window.location.port ? `:${window.location.port}` : ""
-  }${window.location.pathname}${params.toString().length ? `?${params}` : ""}`;
+  }${ndow.location.pathname}${params.toString().length ? `?${params}` : ""}`;
 
   window.history.pushState({}, "search", url);
 }

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw, RouteLocationNormalized } from "vue-router";
 
-/* eslint-disable-next-line import/no-cycle */
+/* eslint-disable-next-line import-x/no-cycle */
 import store from "./store";
 
 declare global {
@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
   {
     name: "home",
     path: "/",
@@ -99,7 +99,6 @@ const loggedIn = () => store.getters["user/loggedIn"];
 const hasPlexAccount = () => store.getters["user/plexUserId"] !== null;
 const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 router.beforeEach(
   (to: RouteLocationNormalized, from: RouteLocationNormalized, next: any) => {
     store.dispatch("documentTitle/updateTitle", to.name);

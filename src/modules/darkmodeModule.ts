@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import IStateDarkmode from "../interfaces/IStateDarkmode";
 
 const state: IStateDarkmode = {
@@ -10,9 +11,7 @@ export default {
   namespaced: true,
   state,
   getters: {
-    darkmodeSupported: (state: IStateDarkmode) => {
-      return state.darkmodeSupported;
-    }
+    darkmodeSupported: (state: IStateDarkmode) => state.darkmodeSupported
   },
   mutations: {
     SET_DARKMODE_SUPPORT: (

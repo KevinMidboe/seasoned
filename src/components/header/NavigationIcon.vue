@@ -37,7 +37,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   .navigation-link {
     display: grid;
@@ -47,8 +47,13 @@
     padding: 1rem 0.15rem;
     text-align: center;
     background-color: var(--background-color-secondary);
-    transition: transform 0.3s ease, color 0.3s ease, stoke 0.3s ease,
-      fill 0.3s ease, background-color 0.5s ease;
+    transition:
+      transform 0.3s ease,
+      color 0.3s ease,
+      stoke 0.3s ease,
+      fill 0.3s ease,
+      background-color 0.5s ease;
+    transition: all 0.3s ease;
 
     &:hover {
       transform: scale(1.05);

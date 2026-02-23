@@ -165,10 +165,10 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/loading-placeholder";
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/loading-placeholder";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   section.person {
     overflow: hidden;

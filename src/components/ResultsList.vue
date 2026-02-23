@@ -34,8 +34,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   .no-results {
     width: 100%;

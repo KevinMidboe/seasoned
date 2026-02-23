@@ -1,5 +1,6 @@
-let setValue = function(el, binding) {
-  let img = new Image();
+/*
+const setValue = function(el, binding) {
+  const img = new Image();
   img.src = binding.value;
 
   img.onload = function() {
@@ -10,10 +11,11 @@ let setValue = function(el, binding) {
 
 module.exports = {
   isLiteral: true,
-  bind(el, binding){
+  bind(el, binding) {
     setValue(el, binding);
   },
-  update(el, binding){
+  update(el, binding) {
     setValue(el, binding);
   }
-}
+};
+*/

@@ -1,15 +1,16 @@
+/* eslint-disable no-param-reassign */
 import { MediaTypes } from "../interfaces/IList";
 import type { IStatePopup, IPopupQuery } from "../interfaces/IStatePopup";
 
-/* eslint-disable-next-line import/no-cycle */
+/* eslint-disable-next-line import-x/no-cycle */
 import router from "../routes";
 
-const removeIncludedQueryParams = (params, key) => {
+const removeIncludedQueryParams = (params: URLSearchParams, key: string) => {
   if (params.has(key)) params.delete(key);
   return params;
 };
 
-function paramsToObject(entries) {
+function paramsToObject(entries: Iterator<[string, string]>) {
   const result = {};
   // eslint-disable-next-line no-restricted-syntax
   for (const [key, value] of entries) {
@@ -65,7 +66,7 @@ export default {
   actions: {
     open: ({ commit }, { id, type }: { id: number; type: MediaTypes }) => {
       if (!Number.isNaN(id)) {
-        id = Number(id); /* eslint-disable-line no-param-reassign */
+        id = Number(id);
       }
 
       commit("SET_OPEN", { id, type });

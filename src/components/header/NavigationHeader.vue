@@ -61,8 +61,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
+  @import "scss/variables";
+  @import "scss/media-queries";
 
   .spacer {
     @include mobile-only {

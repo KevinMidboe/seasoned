@@ -1,11 +1,13 @@
+/* eslint-disable n/no-unsupported-features/node-builtins */
 import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
 import type {
   IRequestStatusResponse,
   IRequestSubmitResponse
 } from "./interfaces/IRequestResponse";
 
-const { ELASTIC, ELASTIC_INDEX, ELASTIC_APIKEY } = process.env;
-const API_HOSTNAME = window.location.origin;
+const API_HOSTNAME = import.meta.env.VITE_SEASONED_API;
+const ELASTIC_URL = import.meta.env.VITE_ELASTIC_URL;
+const ELASTIC_API_KEY = import.meta.env.VITE_ELASTIC_API_KEY;
 
 // - - - TMDB - - -
 
@@ -334,7 +336,11 @@ const register = (username, password) => {
     });
 };
 
-const login = (username, password, throwError = false) => {
+const login = async (
+  username: string,
+  password: string,
+  throwError = false
+) => {
   const url = new URL("/api/v1/user/login", API_HOSTNAME);
   const options = {
     method: "POST",
@@ -351,7 +357,7 @@ const login = (username, password, throwError = false) => {
   });
 };
 
-const logout = (throwError = false) => {
+const logout = async (throwError = false) => {
   const url = new URL("/api/v1/user/logout", API_HOSTNAME);
   const options = { method: "POST" };
 
@@ -472,8 +478,9 @@ const getEmoji = async () => {
  * @param {string} query
  * @returns {object} List of movies and shows matching query
  */
-const elasticSearchMoviesAndShows = (query: string, count = 22) => {
-  const url = new URL(`${ELASTIC_INDEX}/_search`, ELASTIC);
+
+const elasticSearchMoviesAndShows = (query, count = 22) => {
+  const url = new URL(`${ELASTIC_URL}/_search`);
 
   const body = {
     sort: [{ popularity: { order: "desc" } }, "_score"],
@@ -521,8 +528,8 @@ const elasticSearchMoviesAndShows = (query: string, count = 22) => {
   const options = {
     method: "POST",
     headers: {
-      Authorization: `ApiKey ${ELASTIC_APIKEY}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: `ApiKey ${ELASTIC_API_KEY}`
     },
     body: JSON.stringify(body)
   };
