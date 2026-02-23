@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, onMounted, watch } from "vue";
+  import { ref, onMounted, watch } from "vue";
   import {
     Chart,
     LineElement,

@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps } from "vue";
   import ResultsListItem from "@/components/ResultsListItem.vue";
   import type { ListResults } from "../interfaces/IList";
 

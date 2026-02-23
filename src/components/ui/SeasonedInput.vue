@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps, defineEmits } from "vue";
+  import { ref, computed } from "vue";
   import IconKey from "@/icons/IconKey.vue";
   import IconEmail from "@/icons/IconEmail.vue";
   import IconBinoculars from "@/icons/IconBinoculars.vue";

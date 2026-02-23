@@ -25,7 +25,7 @@ steps:
         path: /cache
 
   - name: Frontend install
-    image: node:18.2.0
+    image: node:24.13.1
     commands:
       - node -v
       - yarn --version
@@ -42,8 +42,14 @@ steps:
       - name: cache
         path: /cache
 
+  - name: Lint project using eslint
+    image: node:24.13.1
+    commands:
+      - yarn lint
+    failure: ignore
+
   - name: Frontend build
-    image: node:18.2.0
+    image: node:24.13.1
     commands:
       - yarn build
     environment:
@@ -55,12 +61,6 @@ steps:
         from_secret: SEASONED_API
       SEASONED_DOMAIN:
         from_secret: SEASONED_DOMAIN
-
-  - name: Lint project using eslint
-    image: node:18.2.0
-    commands:
-      - yarn lint
-    failure: ignore
 
   - name: Build and publish docker image
     image: plugins/docker
@@ -107,6 +107,6 @@ trigger:
       # - pull_request
 ---
 kind: signature
-hmac: 8f76d7d8af65a215a4abafe7db270f93a4ae76d116db5ce6f1895af25354ff2d
+hmac: 6f10b2871d2bd6b5cd26ddf72796325991ba211ba1eb62b657baf993e9d549c8
 
 ...
