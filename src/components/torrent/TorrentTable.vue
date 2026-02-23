@@ -185,6 +185,7 @@
     text-transform: uppercase;
     cursor: pointer;
     background-color: var(--table-background-color);
+    background-color: var(--highlight-color);
     // background-color: black;
     // color: var(--color-green);
     letter-spacing: 0.8px;
@@ -232,6 +233,9 @@
     }
 
     // alternate background color per row
+    tr {
+      background-color: var(--background-color);
+    }
     tr:nth-child(even) {
       background-color: var(--background-70);
     }

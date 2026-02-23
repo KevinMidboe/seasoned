@@ -35,7 +35,7 @@
       font-weight: 400;
       text-transform: uppercase;
       font-size: 1.2rem;
-      color: var(--color-green);
+      color: var(--highlight-color);
 
       @include mobile {
         font-size: 1.1rem;

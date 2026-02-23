@@ -165,7 +165,8 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted } from "vue";
+  import { ref, computed, defineProps, onMounted } from "vue";
+  import type { Ref } from "vue";
   import { useStore } from "vuex";
 
   // import img from "@/directives/v-image";
@@ -183,6 +184,7 @@
   import ActionButton from "./ActionButton.vue";
   import Description from "./Description.vue";
   import LoadingPlaceholder from "../ui/LoadingPlaceholder.vue";
+  import type { IColors } from "../../interfaces/IColors.ts";
   import type {
     IMovie,
     IShow,
@@ -213,6 +215,7 @@
 
   const props = defineProps<Props>();
   const ASSET_URL = "https://image.tmdb.org/t/p/";
+  const COLORS_URL = "https://colors.schleppe.cloud/colors";
   const ASSET_SIZES = ["w500", "w780", "original"];
 
   const media: Ref<IMovie | IShow> = ref();
@@ -233,6 +236,8 @@
     if (!media.value) return "/assets/placeholder.png";
     if (!media.value?.poster) return "/assets/no-image.svg";
 
+    // compute & update highlight colors from poster image
+    colorsFromPoster(media.value.poster); // eslint-disable-line
     return `${ASSET_URL}${ASSET_SIZES[0]}${media.value.poster}`;
   });
 
@@ -331,6 +336,34 @@
     const tmdbURL = `https://www.themoviedb.org/${tmdbType}/${props.id}`;
     window.location.href = tmdbURL;
   }
+  function colorMain(colors: IColors) {
+    const parent = document.getElementsByClassName(
+      "movie-popup"
+    )[0] as HTMLElement;
+    parent.style.setProperty("--highlight-color", colors.s ?? colors.p);
+    parent.style.setProperty("--highlight-bg", colors.bg);
+    parent.style.setProperty("--highlight-secondary", colors.p);
+    parent.style.setProperty("--text-color", "#ffffff");
+    parent.style.setProperty("--text-color-90", "rgba(255, 255, 255, 0.9)");
+    parent.style.setProperty("--text-color-70", "rgba(255, 255, 255, 0.7)");
+    parent.style.setProperty("--text-color-50", "rgba(255, 255, 255, 0.5)");
+    parent.style.setProperty("--text-color-10", "rgba(255, 255, 255, 0.1)");
+    parent.style.setProperty("--text-color-5", "rgba(255, 255, 255, 0.05)");
+  }
+
+  async function colorsFromPoster(posterPath: string) {
+    const url = new URL(COLORS_URL);
+    url.searchParams.append("id", posterPath.replace("/", ""));
+    url.searchParams.append("size", "w342");
+
+    fetch(url.href)
+      .then(resp => {
+        if (resp.ok) return resp.json();
+        throw new Error(`invalid status: '${resp.status}' from server.`);
+      })
+      .then(colorMain)
+      .catch(error => console.log("unable to get colors, error:", error)); // eslint-disable-line no-console
+  }
 
   // On created functions
   fetchMedia();
@@ -391,6 +424,7 @@
 
   .movie__poster {
     display: none;
+    border-radius: 1.6rem;
 
     @include desktop {
       background: var(--background-color);
@@ -401,7 +435,7 @@
 
       > img {
         width: 100%;
-        border-radius: 10px;
+        border-radius: inherit;
       }
     }
   }
@@ -420,8 +454,8 @@
           flex-direction: row;
         }
 
-        background-color: $background-color;
-        color: $text-color;
+        background-color: var(--highlight-bg, var(--background-color));
+        color: var(--text-color);
       }
     }
 
@@ -430,7 +464,9 @@
       width: 100%;
       opacity: 0;
       transform: scale(0.97) translateZ(0);
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transition:
+        opacity 0.5s ease,
+        transform 0.5s ease;
 
       &.is-loaded {
         opacity: 1;
@@ -449,21 +485,26 @@
         text-align: left;
         padding: 140px 30px 0 40px;
       }
+
       h1 {
-        color: var(--color-green);
+        color: var(--highlight-color);
         font-weight: 500;
-        line-height: 1.4;
-        font-size: 24px;
+        line-height: 1.2;
+        font-size: 2.2rem;
+        font-weight: 600;
+        letter-spacing: 1px;
         margin-bottom: 0;
 
         @include tablet-min {
           font-size: 30px;
+          font-size: 2.2rem;
         }
       }
 
       i {
         display: block;
         color: rgba(255, 255, 255, 0.8);
+        color: var(--highlight-secondary);
         margin-top: 1rem;
       }
     }
@@ -473,7 +514,7 @@
       width: 100%;
       order: 2;
       padding: 20px;
-      border-top: 1px solid $text-color-5;
+      border-top: 1px solid var(--text-color-50);
       @include tablet-min {
         order: 1;
         width: 45%;
@@ -532,7 +573,7 @@
     }
 
     .torrents {
-      background-color: var(--background-color);
+      background-color: var(--highlight-bg, var(--background-color));
       padding: 0 1rem;
 
       @include mobile {

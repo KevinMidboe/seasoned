@@ -65,7 +65,7 @@
 
     &.active > div > svg,
     &.active > svg {
-      fill: var(--color-green);
+      fill: var(--highlight-color);
     }
 
     &.disabled {
