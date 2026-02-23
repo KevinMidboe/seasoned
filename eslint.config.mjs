@@ -33,6 +33,7 @@ const nodeConfig = defineConfig([plugins.node, ...configs.node.recommended]);
 const typescriptConfig = defineConfig([
   plugins.typescriptEslint,
   ...configs.base.typescript
+  // rules.typescript.typescriptEslintStrict
 ]);
 
 // Prettier config

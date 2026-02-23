@@ -62,15 +62,7 @@ the `query`.
   import AutocompleteDropdown from "./AutocompleteDropdown.vue";
   import IconSearch from "../../icons/IconSearch.vue";
   import IconClose from "../../icons/IconClose.vue";
-  import type { MediaTypes } from "../../interfaces/IList";
-import { IAutocompleteResult } from "../../interfaces/IAutocompleteSearch";
-
-  interface ISearchResult {
-    title: string;
-    id: number;
-    adult: boolean;
-    type: MediaTypes;
-  }
+  import { IAutocompleteResult } from "../../interfaces/IAutocompleteSearch";
 
   const store = useStore();
   const router = useRouter();

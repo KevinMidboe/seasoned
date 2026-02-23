@@ -7,9 +7,8 @@
   "scripts": {
     "dev": "NODE_ENV=development vite",
     "build": "yarn vite build",
-    "clean": "rm -r dist 2> /dev/null; rm public/index.html 2> /dev/null; rm -r lib 2> /dev/null",
-    "start": "echo 'Start using docker, consult README'",
-    "lint": "eslint src",
+    "lint": "eslint src; prettier -c src",
+    "clean": "rm -rf dist/ yarn-*.log 2>/dev/null",
     "docs": "documentation build src/api.ts -f html -o docs/api && documentation build src/api.ts -f md -o docs/api.md"
   },
   "dependencies": {
