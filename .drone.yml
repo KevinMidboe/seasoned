@@ -105,3 +105,8 @@ trigger:
     include:
       - push
       # - pull_request
+---
+kind: signature
+hmac: 8f76d7d8af65a215a4abafe7db270f93a4ae76d116db5ce6f1895af25354ff2d
+
+...
