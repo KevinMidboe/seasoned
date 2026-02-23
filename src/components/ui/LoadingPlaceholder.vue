@@ -22,5 +22,5 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/loading-placeholder";
+  @import "scss/loading-placeholder";
 </style>

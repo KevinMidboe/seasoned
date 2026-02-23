@@ -24,11 +24,11 @@
 </template>
 
 <script setup lang="ts">
+  import type { Ref } from "vue";
   import { ref, watch, defineProps } from "vue";
   import { useStore } from "vuex";
-  import IconMovie from "@/icons/IconMovie.vue";
-  import IconShow from "@/icons/IconShow.vue";
-  import type { Ref } from "vue";
+  import IconMovie from "../../icons/IconMovie.vue";
+  import IconShow from "../../icons/IconShow.vue";
   import { elasticSearchMoviesAndShows } from "../../api";
   import { MediaTypes } from "../../interfaces/IList";
   import { Index } from "../../interfaces/IAutocompleteSearch";
@@ -134,9 +134,9 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
   $sizes: 22;
 
   @for $i from 0 through $sizes {

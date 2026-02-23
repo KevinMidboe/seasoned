@@ -28,8 +28,8 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
+  @import "scss/variables.scss";
+  @import "scss/media-queries";
 
   .button {
     font-size: 1.2rem;

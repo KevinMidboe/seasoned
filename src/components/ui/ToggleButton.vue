@@ -35,7 +35,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
+  @import "scss/variables";
 
   $background: $background-ui;
   $background-selected: $background-color-secondary;

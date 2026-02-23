@@ -141,7 +141,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
+  @import "scss/variables";
 
   .wrapper {
     padding: 2rem;

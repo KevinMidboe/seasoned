@@ -26,7 +26,7 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   li.sidebar-list-element {
     display: flex;

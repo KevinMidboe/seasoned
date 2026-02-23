@@ -43,13 +43,13 @@
 </template>
 
 <script setup lang="ts">
+  import type { Ref } from "vue";
   import { ref, computed } from "vue";
   import { useStore } from "vuex";
   import { useRouter, useRoute } from "vue-router";
-  import AutocompleteDropdown from "@/components/header/AutocompleteDropdown.vue";
-  import IconSearch from "@/icons/IconSearch.vue";
-  import IconClose from "@/icons/IconClose.vue";
-  import type { Ref } from "vue";
+  import AutocompleteDropdown from "./AutocompleteDropdown.vue";
+  import IconSearch from "../../icons/IconSearch.vue";
+  import IconClose from "../../icons/IconClose.vue";
   import type { MediaTypes } from "../../interfaces/IList";
 
   interface ISearchResult {
@@ -165,9 +165,9 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/variables";
-  @import "src/scss/media-queries";
-  @import "src/scss/main";
+  @import "scss/variables";
+  @import "scss/media-queries";
+  @import "scss/main";
 
   .close-icon {
     position: absolute;

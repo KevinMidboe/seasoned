@@ -28,8 +28,8 @@
 </script>
 
 <style lang="scss">
-  @import "src/scss/main";
-  @import "src/scss/media-queries";
+  @import "scss/main";
+  @import "scss/media-queries";
 
   #app {
     display: grid;

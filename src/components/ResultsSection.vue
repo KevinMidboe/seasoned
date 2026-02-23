@@ -172,7 +172,7 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "src/scss/media-queries";
+  @import "scss/media-queries";
 
   .resultSection {
     background-color: var(--background-color);
