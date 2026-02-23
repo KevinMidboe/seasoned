@@ -31,10 +31,10 @@
   @import "scss/main";
   @import "scss/media-queries";
 
-  #app {
+  #content {
     display: grid;
     grid-template-rows: var(--header-size);
-    grid-template-columns: var(--header-size) 1fr;
+    grid-template-columns: var(--header-size) 100%;
 
     @include mobile {
       grid-template-columns: 1fr;
@@ -58,6 +58,7 @@
 
     .content {
       display: grid;
+      width: calc(100% - var(--header-size));
       grid-column: 2 / 3;
       grid-row: 2;
       z-index: 5;
