@@ -1,36 +1,40 @@
 <template>
   <div>
-    <torrent-search-results
-      :query="query"
-      :tmdb-id="tmdbId"
-      :class="{ truncated: truncated }"
-      ><div
-        v-if="truncated"
-        class="load-more"
-        tabindex="0"
-        role="button"
-        @click="truncated = false"
-        @keydown.enter="truncated = false"
-      >
-        <icon-arrow-down />
-      </div>
-    </torrent-search-results>
+    <div class="search-results">
+      <torrent-search-results
+        :query="query"
+        :tmdb-id="tmdbId"
+        :class="{ truncated: _truncated }"
+        ><div
+          v-if="_truncated"
+          class="load-more"
+          tabindex="0"
+          role="button"
+          @click="truncated = false"
+          @keydown.enter="truncated = false"
+        >
+          <icon-arrow-down />
+        </div>
+      </torrent-search-results>
+    </div>
 
     <div class="edit-query-btn-container">
-      <seasonedButton @click="openInTorrentPage"
-        >View on torrent page</seasonedButton
-      >
+      <a :href="`/torrents?query=${encodeURIComponent(props.query)}`">
+        <button>
+          <span class="text">View on torrent page</span
+          ><span class="icon"><icon-arrow-down /></span>
+        </button>
+      </a>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { useRouter } from "vue-router";
   import { ref, defineProps, computed } from "vue";
   import TorrentSearchResults from "@/components/torrent/TorrentSearchResults.vue";
-  import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import IconArrowDown from "@/icons/IconArrowDown.vue";
   import type { Ref } from "vue";
+  import store from "../../store";
 
   interface Props {
     query: string;
@@ -38,18 +42,13 @@
   }
 
   const props = defineProps<Props>();
-  const router = useRouter();
-
   const truncated: Ref<boolean> = ref(true);
 
-  function openInTorrentPage() {
-    if (!props.query?.length) {
-      router.push("/torrents");
-      return;
-    }
-
-    router.push({ path: "/torrents", query: { query: props.query } });
-  }
+  const _truncated = computed(() => {
+    const val = store.getters["torrentModule/resultCount"];
+    if (val > 10 && truncated.value) return true;
+    return false;
+  });
 </script>
 
 <style lang="scss" scoped>
@@ -75,14 +74,68 @@
     );
   }
 
-  svg {
-    height: 30px;
-    fill: var(--text-color);
+  .search-results {
+    svg {
+      height: 30px;
+      fill: var(--text-color);
+    }
   }
 
   .edit-query-btn-container {
     display: flex;
     justify-content: center;
     padding: 1rem;
+    padding-bottom: 2rem;
+
+    a button {
+      --height: 45px;
+      transition: all 0.8s ease !important;
+      position: relative;
+      font-size: 1rem;
+      line-height: 1.5;
+      letter-spacing: 0.2px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 600;
+      color: var(--highlight-bg, var(--background-color));
+      background-color: var(--text-color);
+      min-height: var(--height);
+      padding: 0rem 1.5rem;
+      margin: 0;
+      border: 2px solid var(--text-color);
+      border-radius: calc(var(--height) / 2);
+      cursor: pointer;
+      outline: none;
+      overflow-x: hidden;
+
+      &:hover {
+        background-color: var(--highlight-bg, var(--background-color));
+        color: var(--text-color);
+        padding: 0 2rem;
+
+        span.text {
+          margin-left: -0.5rem;
+          margin-right: 0.5rem;
+        }
+
+        span.icon {
+          right: 1rem;
+        }
+      }
+
+      span.icon {
+        --size: 1rem;
+        display: block;
+        transform: rotate(-90deg);
+        transform-origin: top left;
+        stroke: var(--text-color);
+        fill: var(--text-color);
+        height: var(--size);
+        width: var(--size);
+        margin-top: -4px;
+        position: absolute;
+        right: 1rem;
+        right: -1rem;
+      }
+    }
   }
 </style>
