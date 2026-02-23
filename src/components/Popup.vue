@@ -136,7 +136,7 @@
         left: 10px;
         width: 20px;
         height: 2px;
-        background: $white;
+        background-color: white;
       }
       &:before {
         transform: rotate(45deg);
@@ -145,7 +145,7 @@
         transform: rotate(-45deg);
       }
       &:hover {
-        background: $green;
+        background-color: var(--highlight-color);
       }
     }
   }

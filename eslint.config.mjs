@@ -10,9 +10,7 @@ import prettierPlugin from "eslint-plugin-prettier";
 const CUSTOM_RULES = {
   "vue/no-v-model-argument": "off",
   "no-underscore-dangle": "off",
-  "vue/multi-word-component-names": "off",
-  "no-shadow": "off",
-  "@typescript-eslint/no-shadow": ["error"]
+  "vue/multi-word-component-names": "off"
 };
 
 const gitignorePath = path.resolve(".", ".gitignore");
@@ -35,6 +33,7 @@ const nodeConfig = defineConfig([plugins.node, ...configs.node.recommended]);
 const typescriptConfig = defineConfig([
   plugins.typescriptEslint,
   ...configs.base.typescript
+  // rules.typescript.typescriptEslintStrict
 ]);
 
 // Prettier config

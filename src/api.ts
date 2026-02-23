@@ -11,12 +11,7 @@ const ELASTIC_API_KEY = import.meta.env.VITE_ELASTIC_API_KEY;
 
 // - - - TMDB - - -
 
-/**
- * Fetches tmdb movie by id. Can optionally include cast credits in result object.
- * @param {number} id
- * @returns {object} Tmdb response
- */
-const getMovie = (
+const getMovie = async (
   id,
   {
     checkExistance,
@@ -50,7 +45,7 @@ const getMovie = (
  * @param {boolean} [credits=false] Include credits
  * @returns {object} Tmdb response
  */
-const getShow = (
+const getShow = async (
   id,
   {
     checkExistance,
@@ -84,7 +79,7 @@ const getShow = (
  * @param {boolean} [credits=false] Include credits
  * @returns {object} Tmdb response
  */
-const getPerson = (id, credits = false) => {
+const getPerson = async (id, credits = false) => {
   const url = new URL("/api/v2/person", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (credits) {
@@ -104,7 +99,7 @@ const getPerson = (id, credits = false) => {
  * @param {number} id
  * @returns {object} Tmdb response
  */
-const getMovieCredits = (id: number): Promise<IMediaCredits> => {
+const getMovieCredits = async (id: number): Promise<IMediaCredits> => {
   const url = new URL("/api/v2/movie", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
@@ -121,7 +116,7 @@ const getMovieCredits = (id: number): Promise<IMediaCredits> => {
  * @param {number} id
  * @returns {object} Tmdb response
  */
-const getShowCredits = (id: number): Promise<IMediaCredits> => {
+const getShowCredits = async (id: number): Promise<IMediaCredits> => {
   const url = new URL("/api/v2/show", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
@@ -138,7 +133,7 @@ const getShowCredits = (id: number): Promise<IMediaCredits> => {
  * @param {number} id
  * @returns {object} Tmdb response
  */
-const getPersonCredits = (id: number): Promise<IPersonCredits> => {
+const getPersonCredits = async (id: number): Promise<IPersonCredits> => {
   const url = new URL("/api/v2/person", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
 
@@ -156,7 +151,10 @@ const getPersonCredits = (id: number): Promise<IPersonCredits> => {
  * @param {number} [page=1]
  * @returns {object} Tmdb list response
  */
-const getTmdbMovieListByName = (name: string, page = 1): Promise<IList> => {
+const getTmdbMovieListByName = async (
+  name: string,
+  page = 1
+): Promise<IList> => {
   const url = new URL(`/api/v2/movie/${name}`, API_HOSTNAME);
   url.searchParams.append("page", page.toString());
 
@@ -169,7 +167,7 @@ const getTmdbMovieListByName = (name: string, page = 1): Promise<IList> => {
  * @param {number} [page=1]
  * @returns {object} Request response
  */
-const getRequests = (page = 1) => {
+const getRequests = async (page = 1) => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
   url.searchParams.append("page", page.toString());
 
@@ -177,7 +175,7 @@ const getRequests = (page = 1) => {
   // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error }) // eslint-disable-line no-console
 };
 
-const getUserRequests = (page = 1) => {
+const getUserRequests = async (page = 1) => {
   const url = new URL("/api/v1/user/requests", API_HOSTNAME);
   url.searchParams.append("page", page.toString());
 
@@ -190,7 +188,7 @@ const getUserRequests = (page = 1) => {
  * @param {number} [page=1]
  * @returns {object} Tmdb response
  */
-const searchTmdb = (query, page = 1, adult = false, mediaType = null) => {
+const searchTmdb = async (query, page = 1, adult = false, mediaType = null) => {
   const url = new URL("/api/v2/search", API_HOSTNAME);
   if (mediaType != null && ["movie", "show", "person"].includes(mediaType)) {
     url.pathname += `/${mediaType}`;
@@ -235,7 +233,11 @@ const searchTorrents = query => {
  * @param {boolean} tmdbId
  * @returns {object} Success/Failure response
  */
-const addMagnet = (magnet: string, name: string, tmdbId: number | null) => {
+const addMagnet = async (
+  magnet: string,
+  name: string,
+  tmdbId: number | null
+) => {
   const url = new URL("/api/v1/pirate/add", API_HOSTNAME);
 
   const options = {
@@ -265,7 +267,7 @@ const addMagnet = (magnet: string, name: string, tmdbId: number | null) => {
  * @param {string} type Movie or show type
  * @returns {object} Success/Failure response
  */
-const request = (id, type): Promise<IRequestSubmitResponse> => {
+const request = async (id, type): Promise<IRequestSubmitResponse> => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
 
   const options = {
@@ -288,7 +290,10 @@ const request = (id, type): Promise<IRequestSubmitResponse> => {
  * @param {string} type
  * @returns {object} Success/Failure response
  */
-const getRequestStatus = (id, type = null): Promise<IRequestStatusResponse> => {
+const getRequestStatus = async (
+  id,
+  type = null
+): Promise<IRequestStatusResponse> => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}`;
   url.searchParams.append("type", type);
@@ -298,7 +303,7 @@ const getRequestStatus = (id, type = null): Promise<IRequestStatusResponse> => {
     .catch(err => Promise.reject(err));
 };
 
-const watchLink = (title, year) => {
+const watchLink = async (title, year) => {
   const url = new URL("/api/v1/plex/watch-link", API_HOSTNAME);
   url.searchParams.append("title", title);
   url.searchParams.append("year", year);
@@ -316,7 +321,7 @@ const movieImages = id => {
 
 // - - - Seasoned user endpoints - - -
 
-const register = (username, password) => {
+const register = async (username, password) => {
   const url = new URL("/api/v1/user", API_HOSTNAME);
   const options = {
     method: "POST",
@@ -351,7 +356,7 @@ const login = async (
   return fetch(url.href, options).then(resp => {
     if (resp.status === 200) return resp.json();
 
-    if (throwError) throw resp;
+    if (throwError) return Promise.reject(resp.text().then(t => new Error(t)));
     console.error("Error occured when trying to sign in.\nError:", resp); // eslint-disable-line no-console
     return Promise.reject(resp);
   });
@@ -364,13 +369,13 @@ const logout = async (throwError = false) => {
   return fetch(url.href, options).then(resp => {
     if (resp.status === 200) return resp.json();
 
-    if (throwError) throw resp;
+    if (throwError) return Promise.reject(resp.text().then(t => new Error(t)));
     console.error("Error occured when trying to log out.\nError:", resp); // eslint-disable-line no-console
     return Promise.reject(resp);
   });
 };
 
-const getSettings = () => {
+const getSettings = async () => {
   const url = new URL("/api/v1/user/settings", API_HOSTNAME);
 
   return fetch(url.href)
@@ -381,7 +386,7 @@ const getSettings = () => {
     });
 };
 
-const updateSettings = settings => {
+const updateSettings = async (settings: any) => {
   const url = new URL("/api/v1/user/settings", API_HOSTNAME);
 
   const options = {
@@ -400,7 +405,7 @@ const updateSettings = settings => {
 
 // - - - Authenticate with plex - - -
 
-const linkPlexAccount = (username, password) => {
+const linkPlexAccount = async (username: string, password: string) => {
   const url = new URL("/api/v1/user/link_plex", API_HOSTNAME);
   const body = { username, password };
 
@@ -418,7 +423,7 @@ const linkPlexAccount = (username, password) => {
     });
 };
 
-const unlinkPlexAccount = () => {
+const unlinkPlexAccount = async () => {
   const url = new URL("/api/v1/user/unlink_plex", API_HOSTNAME);
 
   const options = {
@@ -471,15 +476,30 @@ const getEmoji = async () => {
 // - - - ELASTIC SEARCH - - -
 // This elastic index contains titles mapped to ids. Lightning search
 // used for autocomplete
+interface TimeoutRequestInit extends RequestInit {
+  timeout: number;
+}
+
+async function fetchWithTimeout(url: string, options: TimeoutRequestInit) {
+  const { timeout = 2000 } = options;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  const response = await fetch(url, {
+    ...options,
+    signal: controller.signal
+  });
+  clearTimeout(timer);
+
+  return response;
+}
 
 /**
  * Search elastic indexes movies and shows by query. Doc includes Tmdb daily export of Movies and
  * Tv Shows. See tmdb docs for more info: https://developers.themoviedb.org/3/getting-started/daily-file-exports
- * @param {string} query
- * @returns {object} List of movies and shows matching query
  */
-
-const elasticSearchMoviesAndShows = (query, count = 22) => {
+const elasticSearchMoviesAndShows = async (query: string, count = 22) => {
   const url = new URL(`${ELASTIC_URL}/_search`);
 
   const body = {
@@ -531,10 +551,11 @@ const elasticSearchMoviesAndShows = (query, count = 22) => {
       "Content-Type": "application/json",
       Authorization: `ApiKey ${ELASTIC_API_KEY}`
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    timeout: 1000
   };
 
-  return fetch(url.href, options)
+  return fetchWithTimeout(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.log(`api error searching elasticsearch: ${query}`); // eslint-disable-line no-console

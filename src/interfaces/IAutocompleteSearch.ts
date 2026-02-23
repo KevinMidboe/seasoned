@@ -29,7 +29,7 @@ export interface Hits {
 }
 
 export interface Hit {
-  _index: Index;
+  _index: string;
   _type: Type;
   _id: string;
   _score: number;
@@ -58,11 +58,6 @@ export interface Option {
   _source: Source;
 }
 
-export enum Index {
-  Movies = "movies",
-  Shows = "shows"
-}
-
 export interface Source {
   tags: Tag[];
   ecs: Ecs;
@@ -79,7 +74,7 @@ export interface Source {
   original_title: string;
   original_name?: string;
   name?: string;
-  type?: MediaTypes;
+  type: string;
 }
 
 export interface Agent {
