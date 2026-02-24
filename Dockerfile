@@ -4,14 +4,14 @@ FROM node:24.13.1 AS build
 WORKDIR /app
 
 # Install dependencies
-COPY package.json yarn.lock .
+COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 # Copy source files that the build depends on
 COPY index.html .
 COPY public/ public/
 COPY src/ src/
-COPY tsconfig.json vite.config.ts .
+COPY tsconfig.json vite.config.ts ./
 
 ARG SEASONED_API=http://localhost:31459
 ENV VITE_SEASONED_API=$SEASONED_API
