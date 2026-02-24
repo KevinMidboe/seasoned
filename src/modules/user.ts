@@ -125,7 +125,7 @@ const userModule: Module<UserState, RootState> = {
       state.username = null;
       state.settings = null;
       state.admin = false;
-      // deleteCookie('authorization');
+      deleteCookie("authorization");
     }
   },
 

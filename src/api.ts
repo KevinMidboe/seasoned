@@ -1,5 +1,10 @@
 /* eslint-disable n/no-unsupported-features/node-builtins */
-import { IList, IMediaCredits, IPersonCredits } from "./interfaces/IList";
+import {
+  IList,
+  IMediaCredits,
+  IPersonCredits,
+  MediaTypes
+} from "./interfaces/IList";
 import type {
   IRequestStatusResponse,
   IRequestSubmitResponse
@@ -10,17 +15,17 @@ const ELASTIC_URL = import.meta.env.VITE_ELASTIC_URL;
 const ELASTIC_API_KEY = import.meta.env.VITE_ELASTIC_API_KEY;
 
 // - - - TMDB - - -
+interface GetMediaOpts {
+  checkExistance: boolean;
+  credits: boolean;
+  releaseDates?: boolean;
+}
 
-const getMovie = async (
-  id,
-  {
-    checkExistance,
-    credits,
-    releaseDates
-  }: { checkExistance: boolean; credits: boolean; releaseDates?: boolean }
-) => {
+const getMovie = async (id: number, opts: GetMediaOpts) => {
   const url = new URL("/api/v2/movie", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}`;
+
+  const { checkExistance, credits, releaseDates } = opts;
   if (checkExistance) {
     url.searchParams.append("check_existance", "true");
   }
@@ -39,22 +44,12 @@ const getMovie = async (
     });
 };
 
-/**
- * Fetches tmdb show by id. Can optionally include cast credits in result object.
- * @param {number} id
- * @param {boolean} [credits=false] Include credits
- * @returns {object} Tmdb response
- */
-const getShow = async (
-  id,
-  {
-    checkExistance,
-    credits,
-    releaseDates
-  }: { checkExistance: boolean; credits: boolean; releaseDates?: boolean }
-) => {
+// Fetches tmdb show by id. Can optionally include cast credits in result object.
+const getShow = async (id: number, opts: GetMediaOpts) => {
   const url = new URL("/api/v2/show", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}`;
+
+  const { checkExistance, credits, releaseDates } = opts;
   if (checkExistance) {
     url.searchParams.append("check_existance", "true");
   }
@@ -73,13 +68,8 @@ const getShow = async (
     });
 };
 
-/**
- * Fetches tmdb person by id. Can optionally include cast credits in result object.
- * @param {number} id
- * @param {boolean} [credits=false] Include credits
- * @returns {object} Tmdb response
- */
-const getPerson = async (id, credits = false) => {
+// Fetches tmdb person by id. Can optionally include cast credits in result object.
+const getPerson = async (id: number, credits = false) => {
   const url = new URL("/api/v2/person", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}`;
   if (credits) {
@@ -94,11 +84,7 @@ const getPerson = async (id, credits = false) => {
     });
 };
 
-/**
- * Fetches tmdb movie credits by id.
- * @param {number} id
- * @returns {object} Tmdb response
- */
+// Fetches tmdb movie credits by id.
 const getMovieCredits = async (id: number): Promise<IMediaCredits> => {
   const url = new URL("/api/v2/movie", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
@@ -111,11 +97,7 @@ const getMovieCredits = async (id: number): Promise<IMediaCredits> => {
     });
 };
 
-/**
- * Fetches tmdb show credits by id.
- * @param {number} id
- * @returns {object} Tmdb response
- */
+// Fetches tmdb show credits by id.
 const getShowCredits = async (id: number): Promise<IMediaCredits> => {
   const url = new URL("/api/v2/show", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
@@ -128,11 +110,7 @@ const getShowCredits = async (id: number): Promise<IMediaCredits> => {
     });
 };
 
-/**
- * Fetches tmdb person credits by id.
- * @param {number} id
- * @returns {object} Tmdb response
- */
+// Fetches tmdb person credits by id.
 const getPersonCredits = async (id: number): Promise<IPersonCredits> => {
   const url = new URL("/api/v2/person", API_HOSTNAME);
   url.pathname = `${url.pathname}/${id.toString()}/credits`;
@@ -145,12 +123,7 @@ const getPersonCredits = async (id: number): Promise<IPersonCredits> => {
     });
 };
 
-/**
- * Fetches tmdb list by name.
- * @param {string} name List the fetch
- * @param {number} [page=1]
- * @returns {object} Tmdb list response
- */
+// Fetches tmdb list by name.
 const getTmdbMovieListByName = async (
   name: string,
   page = 1
@@ -162,11 +135,7 @@ const getTmdbMovieListByName = async (
   // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error }) // eslint-disable-line no-console
 };
 
-/**
- * Fetches requested items.
- * @param {number} [page=1]
- * @returns {object} Request response
- */
+// Fetches requested items.
 const getRequests = async (page = 1) => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
   url.searchParams.append("page", page.toString());
@@ -179,16 +148,21 @@ const getUserRequests = async (page = 1) => {
   const url = new URL("/api/v1/user/requests", API_HOSTNAME);
   url.searchParams.append("page", page.toString());
 
-  return fetch(url.href).then(resp => resp.json());
+  const options: RequestInit = {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
+  };
+
+  return fetch(url.href, options).then(resp => resp.json());
 };
 
-/**
- * Fetches tmdb movies and shows by query.
- * @param {string} query
- * @param {number} [page=1]
- * @returns {object} Tmdb response
- */
-const searchTmdb = async (query, page = 1, adult = false, mediaType = null) => {
+// Fetches tmdb movies and shows by query.
+const searchTmdb = async (
+  query: string,
+  page = 1,
+  adult = false,
+  mediaType = null
+) => {
   const url = new URL("/api/v2/search", API_HOSTNAME);
   if (mediaType != null && ["movie", "show", "person"].includes(mediaType)) {
     url.pathname += `/${mediaType}`;
@@ -208,17 +182,15 @@ const searchTmdb = async (query, page = 1, adult = false, mediaType = null) => {
 
 // - - - Torrents - - -
 
-/**
- * Search for torrents by query
- * @param {string} query
- * @param {boolean} credits Include credits
- * @returns {object} Torrent response
- */
-const searchTorrents = query => {
+// Search for torrents by query
+const searchTorrents = async (query: string) => {
   const url = new URL("/api/v1/pirate/search", API_HOSTNAME);
   url.searchParams.append("query", query);
+  const options: RequestInit = {
+    credentials: "include"
+  };
 
-  return fetch(url.href)
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error searching torrents: ${query}`); // eslint-disable-line no-console
@@ -226,13 +198,7 @@ const searchTorrents = query => {
     });
 };
 
-/**
- * Add magnet to download queue.
- * @param {string} magnet Magnet link
- * @param {boolean} name Name of torrent
- * @param {boolean} tmdbId
- * @returns {object} Success/Failure response
- */
+// Add magnet to download queue.
 const addMagnet = async (
   magnet: string,
   name: string,
@@ -240,9 +206,10 @@ const addMagnet = async (
 ) => {
   const url = new URL("/api/v1/pirate/add", API_HOSTNAME);
 
-  const options = {
+  const options: RequestInit = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({
       magnet,
       name,
@@ -260,14 +227,11 @@ const addMagnet = async (
 
 // - - - Plex/Request - - -
 
-/**
- * Request a movie or show from id. If authorization token is included the user will be linked
- * to the requested item.
- * @param {number} id Movie or show id
- * @param {string} type Movie or show type
- * @returns {object} Success/Failure response
- */
-const request = async (id, type): Promise<IRequestSubmitResponse> => {
+// Request a movie or show from id. If authorization token is included the user will be linked
+const request = async (
+  id: number,
+  type: MediaTypes.Movie | MediaTypes.Show
+): Promise<IRequestSubmitResponse> => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
 
   const options = {
@@ -284,14 +248,9 @@ const request = async (id, type): Promise<IRequestSubmitResponse> => {
     });
 };
 
-/**
- * Check request status by tmdb id and type
- * @param {number} tmdb id
- * @param {string} type
- * @returns {object} Success/Failure response
- */
+// Check request status by tmdb id and type
 const getRequestStatus = async (
-  id,
+  id: number,
   type = null
 ): Promise<IRequestStatusResponse> => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
@@ -303,6 +262,7 @@ const getRequestStatus = async (
     .catch(err => Promise.reject(err));
 };
 
+/*
 const watchLink = async (title, year) => {
   const url = new URL("/api/v1/plex/watch-link", API_HOSTNAME);
   url.searchParams.append("title", title);
@@ -318,14 +278,16 @@ const movieImages = id => {
 
   return fetch(url.href).then(resp => resp.json());
 };
+*/
 
 // - - - Seasoned user endpoints - - -
 
-const register = async (username, password) => {
+const register = async (username: string, password: string) => {
   const url = new URL("/api/v1/user", API_HOSTNAME);
-  const options = {
+  const options: RequestInit = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ username, password })
   };
 
@@ -347,9 +309,10 @@ const login = async (
   throwError = false
 ) => {
   const url = new URL("/api/v1/user/login", API_HOSTNAME);
-  const options = {
+  const options: RequestInit = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ username, password })
   };
 
@@ -364,7 +327,7 @@ const login = async (
 
 const logout = async (throwError = false) => {
   const url = new URL("/api/v1/user/logout", API_HOSTNAME);
-  const options = { method: "POST" };
+  const options: RequestInit = { method: "POST", credentials: "include" };
 
   return fetch(url.href, options).then(resp => {
     if (resp.status === 200) return resp.json();
@@ -377,8 +340,12 @@ const logout = async (throwError = false) => {
 
 const getSettings = async () => {
   const url = new URL("/api/v1/user/settings", API_HOSTNAME);
+  const options: RequestInit = {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
+  };
 
-  return fetch(url.href)
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
       console.log("api error getting user settings"); // eslint-disable-line no-console
@@ -389,9 +356,10 @@ const getSettings = async () => {
 const updateSettings = async (settings: any) => {
   const url = new URL("/api/v1/user/settings", API_HOSTNAME);
 
-  const options = {
+  const options: RequestInit = {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(settings)
   };
 
@@ -409,9 +377,10 @@ const linkPlexAccount = async (username: string, password: string) => {
   const url = new URL("/api/v1/user/link_plex", API_HOSTNAME);
   const body = { username, password };
 
-  const options = {
+  const options: RequestInit = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(body)
   };
 
@@ -425,10 +394,10 @@ const linkPlexAccount = async (username: string, password: string) => {
 
 const unlinkPlexAccount = async () => {
   const url = new URL("/api/v1/user/unlink_plex", API_HOSTNAME);
-
-  const options = {
+  const options: RequestInit = {
     method: "POST",
-    headers: { "Content-Type": "application/json" }
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
   };
 
   return fetch(url.href, options)
@@ -450,7 +419,12 @@ const fetchGraphData = async (
   url.searchParams.append("days", String(days));
   url.searchParams.append("y_axis", chartType);
 
-  return fetch(url.href).then(resp => {
+  const options: RequestInit = {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
+  };
+
+  return fetch(url.href, options).then(resp => {
     if (!resp.ok) {
       console.log("DAMN WE FAILED!", resp); // eslint-disable-line no-console
       throw Error(resp.statusText);
@@ -577,8 +551,6 @@ export {
   searchTorrents,
   addMagnet,
   request,
-  watchLink,
-  movieImages,
   getRequestStatus,
   linkPlexAccount,
   unlinkPlexAccount,

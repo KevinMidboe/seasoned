@@ -89,9 +89,9 @@ export function setUrlQueryParameter(parameter: string, value: string): void {
   const params = new URLSearchParams();
   params.append(parameter, value);
 
-  const url = `${window.location.protocol}//${window.location.hostname}${
-    window.location.port ? `:${window.location.port}` : ""
-  }${ndow.location.pathname}${params.toString().length ? `?${params}` : ""}`;
+  // prettier-ignore
+  const url = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ""
+    }${window.location.pathname}${params.toString().length ? `?${params}` : ""}`;
 
   window.history.pushState({}, "search", url);
 }
