@@ -137,7 +137,7 @@
     }
 
     @include mobile {
-      text-align: left;
+      padding: 0 0.8rem;
     }
   }
 

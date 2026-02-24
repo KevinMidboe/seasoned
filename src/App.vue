@@ -58,13 +58,14 @@
 
     .content {
       display: grid;
-      width: calc(100% - var(--header-size));
       grid-column: 2 / 3;
+      width: calc(100% - var(--header-size));
       grid-row: 2;
       z-index: 5;
 
       @include mobile {
         grid-column: 1 / 3;
+        width: 100%;
       }
     }
   }
