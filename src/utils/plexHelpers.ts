@@ -56,7 +56,8 @@ export function processLibraryItem(
   item: any,
   libraryType: string,
   authToken: string,
-  serverUrl: string
+  serverUrl: string,
+  machineIdentifier: string
 ) {
   // Get poster/thumbnail URL
   let posterUrl = null;
@@ -67,13 +68,12 @@ export function processLibraryItem(
   }
 
   // Build Plex Web App URL
-  // Format: https://app.plex.tv/desktop/#!/server/{machineId}/details?key=/library/metadata/{ratingKey}
+  // Format: https://app.plex.tv/desktop/#!/server/{machineId}/details?key=%2Flibrary%2Fmetadata%2F{ratingKey}
   const ratingKey = item.ratingKey || item.key;
   let plexUrl = null;
-  if (ratingKey) {
-    // Extract machine ID from serverUrl or use a placeholder
-    // For now, we'll create a direct link to the library metadata
-    plexUrl = `${serverUrl}/web/index.html#!/server/library/metadata/${ratingKey}`;
+  if (ratingKey && machineIdentifier) {
+    const encodedKey = encodeURIComponent(`/library/metadata/${ratingKey}`);
+    plexUrl = `https://app.plex.tv/desktop/#!/server/${machineIdentifier}/details?key=${encodedKey}`;
   }
 
   const baseItem = {

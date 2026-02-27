@@ -9,6 +9,7 @@ export function usePlexLibraries() {
     sections: any[],
     authToken: string,
     serverUrl: string,
+    machineIdentifier: string,
     username: string,
     fetchLibraryDetailsFn: any
   ) {
@@ -40,6 +41,7 @@ export function usePlexLibraries() {
           await processLibrarySection(
             authToken,
             serverUrl,
+            machineIdentifier,
             key,
             "movies",
             stats,
@@ -50,6 +52,7 @@ export function usePlexLibraries() {
           await processLibrarySection(
             authToken,
             serverUrl,
+            machineIdentifier,
             key,
             "shows",
             stats,
@@ -60,6 +63,7 @@ export function usePlexLibraries() {
           await processLibrarySection(
             authToken,
             serverUrl,
+            machineIdentifier,
             key,
             "music",
             stats,
@@ -102,6 +106,7 @@ export function usePlexLibraries() {
   async function processLibrarySection(
     authToken: string,
     serverUrl: string,
+    machineIdentifier: string,
     sectionKey: string,
     libraryType: string,
     stats: any,
@@ -129,7 +134,13 @@ export function usePlexLibraries() {
 
       // Process recently added items
       const recentItems = data.recentMetadata.map((item: any) =>
-        processLibraryItem(item, libraryType, authToken, serverUrl)
+        processLibraryItem(
+          item,
+          libraryType,
+          authToken,
+          serverUrl,
+          machineIdentifier
+        )
       );
 
       // Calculate stats

@@ -86,6 +86,7 @@
 
   const plexServer = ref("");
   const plexServerUrl = ref("");
+  const plexMachineId = ref("");
   const lastSync = ref("");
   const libraryStats = ref({
     movies: 0,
@@ -153,6 +154,7 @@
 
       plexServer.value = server.name;
       plexServerUrl.value = server.url;
+      plexMachineId.value = server.machineIdentifier;
       lastSync.value = new Date().toLocaleString();
 
       const sections = await fetchLibrarySections(authToken, server.url);
@@ -165,6 +167,7 @@
         sections,
         authToken,
         server.url,
+        server.machineIdentifier,
         plexUsername.value,
         fetchLibraryDetails
       );

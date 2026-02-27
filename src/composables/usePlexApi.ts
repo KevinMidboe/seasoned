@@ -100,7 +100,11 @@ export function usePlexApi() {
         if (connection) {
           plexServerUrl.value = connection.uri;
         }
-        return { name: ownedServer.name, url: plexServerUrl.value };
+        return {
+          name: ownedServer.name,
+          url: plexServerUrl.value,
+          machineIdentifier: ownedServer.clientIdentifier
+        };
       }
 
       return null;
