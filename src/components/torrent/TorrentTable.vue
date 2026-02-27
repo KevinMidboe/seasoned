@@ -3,7 +3,7 @@
     <thead class="table__header noselect">
       <tr>
         <th
-          v-for="column in columns"
+          v-for="column in visibleColumns"
           :key="column"
           :class="column === selectedColumn ? 'active' : null"
           @click="sortTable(column)"
@@ -27,21 +27,23 @@
           @keydown.enter="expand($event, torrent.name)"
         >
           <div class="torrent-title">{{ torrent.name }}</div>
-          <div class="torrent-meta">
+          <div v-if="isMobile" class="torrent-meta">
             <span class="meta-item">{{ torrent.size }}</span>
             <span class="meta-separator">•</span>
             <span class="meta-item">{{ torrent.seed }} seeders</span>
           </div>
         </td>
         <td
-          class="torrent-seed desktop-only"
+          v-if="!isMobile"
+          class="torrent-seed"
           @click="expand($event, torrent.name)"
           @keydown.enter="expand($event, torrent.name)"
         >
           {{ torrent.seed }}
         </td>
         <td
-          class="torrent-size desktop-only"
+          v-if="!isMobile"
+          class="torrent-size"
           @click="expand($event, torrent.name)"
           @keydown.enter="expand($event, torrent.name)"
         >
@@ -60,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from "vue";
+  import { ref, computed, onMounted, onUnmounted } from "vue";
   import IconMagnet from "@/icons/IconMagnet.vue";
   import type { Ref } from "vue";
   import { sortableSize } from "../../utils";
@@ -78,11 +80,28 @@
   const emit = defineEmits<Emit>();
 
   const columns: string[] = ["name", "seed", "size", "add"];
+  const windowWidth = ref(window.innerWidth);
+  const isMobile = computed(() => windowWidth.value <= 768);
+  const visibleColumns = computed(() =>
+    isMobile.value ? ["name", "add"] : columns
+  );
 
   const torrents: Ref<ITorrent[]> = ref(props.torrents);
   const direction: Ref<boolean> = ref(false);
   const selectedColumn: Ref<string> = ref(columns[0]);
   const prevCol: Ref<string> = ref("");
+
+  function handleResize() {
+    windowWidth.value = window.innerWidth;
+  }
+
+  onMounted(() => {
+    window.addEventListener("resize", handleResize);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("resize", handleResize);
+  });
 
   function expand(event: MouseEvent, text: string) {
     const elementClicked = event.target as HTMLElement;
@@ -110,8 +129,7 @@
     expandedCol.innerText = text;
 
     // Colspan: 2 on mobile (name + add), 4 on desktop (name + seed + size + add)
-    const isMobile = window.innerWidth <= 768;
-    expandedCol.colSpan = isMobile ? 2 : 4;
+    expandedCol.colSpan = isMobile.value ? 2 : 4;
 
     expandedRow.appendChild(expandedCol);
     tableRow.insertAdjacentElement("afterend", expandedRow);
@@ -188,13 +206,6 @@
     }
   }
 
-  // Hide seed and size columns on mobile
-  .desktop-only {
-    @include mobile {
-      display: none;
-    }
-  }
-
   thead {
     position: relative;
     user-select: none;
@@ -204,21 +215,11 @@
     cursor: pointer;
     background-color: var(--table-background-color);
     background-color: var(--highlight-color);
-    // background-color: black;
-    // color: var(--color-green);
     letter-spacing: 0.8px;
     font-size: 1rem;
 
     th:last-of-type {
       padding-right: 0.4rem;
-    }
-
-    // Hide seed and size headers on mobile
-    @include mobile {
-      th:nth-child(2),
-      th:nth-child(3) {
-        display: none;
-      }
     }
   }
 
@@ -253,11 +254,7 @@
         align-items: center;
         gap: 0.5rem;
         flex-wrap: wrap;
-
-        // Hide on desktop
-        @include desktop {
-          display: none !important;
-        }
+        margin-top: 0.25rem;
 
         .meta-item {
           white-space: nowrap;
