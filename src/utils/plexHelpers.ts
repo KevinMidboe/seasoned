@@ -61,10 +61,28 @@ export function processLibraryItem(
 ) {
   // Get poster/thumbnail URL
   let posterUrl = null;
-  if (item.thumb) {
-    posterUrl = `${serverUrl}${item.thumb}?X-Plex-Token=${authToken}`;
-  } else if (item.grandparentThumb) {
-    posterUrl = `${serverUrl}${item.grandparentThumb}?X-Plex-Token=${authToken}`;
+
+  // For TV shows, prefer grandparentThumb (show poster) over thumb (episode thumbnail)
+  if (libraryType === "shows") {
+    if (item.grandparentThumb) {
+      posterUrl = `${serverUrl}${item.grandparentThumb}?X-Plex-Token=${authToken}`;
+    } else if (item.thumb) {
+      posterUrl = `${serverUrl}${item.thumb}?X-Plex-Token=${authToken}`;
+    }
+  }
+  // For music, prefer grandparentThumb (artist/album) over thumb
+  else if (libraryType === "music") {
+    if (item.grandparentThumb) {
+      posterUrl = `${serverUrl}${item.grandparentThumb}?X-Plex-Token=${authToken}`;
+    } else if (item.thumb) {
+      posterUrl = `${serverUrl}${item.thumb}?X-Plex-Token=${authToken}`;
+    }
+  }
+  // For movies and other types, use thumb
+  else {
+    if (item.thumb) {
+      posterUrl = `${serverUrl}${item.thumb}?X-Plex-Token=${authToken}`;
+    }
   }
 
   // Build Plex Web App URL
@@ -76,9 +94,20 @@ export function processLibraryItem(
     plexUrl = `https://app.plex.tv/desktop/#!/server/${machineIdentifier}/details?key=${encodedKey}`;
   }
 
+  // For shows, use grandparent data (show info) instead of episode info
+  const title =
+    libraryType === "shows" && item.grandparentTitle
+      ? item.grandparentTitle
+      : item.title;
+
+  const year =
+    libraryType === "shows" && item.grandparentYear
+      ? item.grandparentYear
+      : item.year || item.parentYear || new Date().getFullYear();
+
   const baseItem = {
-    title: item.title,
-    year: item.year || item.parentYear || new Date().getFullYear(),
+    title,
+    year,
     poster: posterUrl,
     fallbackIcon: getLibraryIcon(libraryType),
     rating: item.rating ? Math.round(item.rating * 10) / 10 : null,
