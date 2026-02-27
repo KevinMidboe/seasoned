@@ -56,8 +56,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     name: "signin",
-    path: "/signin",
-    alias: "/login",
+    path: "/login",
     component: () => import("./pages/SigninPage.vue")
   },
   {
@@ -83,6 +82,11 @@ const routes: RouteRecordRaw[] = [
     path: "/admin",
     meta: { requiresAuth: true },
     component: () => import("./pages/AdminPage.vue")
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import("./pages/404Page.vue")
   }
   // {
   //   path: "*",

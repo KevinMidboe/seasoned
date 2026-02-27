@@ -14,6 +14,9 @@
     <popup />
 
     <darkmode-toggle />
+
+    <!-- Command Palette -->
+    <command-palette />
   </div>
 </template>
 
@@ -23,6 +26,7 @@
   import NavigationIcons from "@/components/header/NavigationIcons.vue";
   import Popup from "@/components/Popup.vue";
   import DarkmodeToggle from "@/components/ui/DarkmodeToggle.vue";
+  import CommandPalette from "@/components/ui/CommandPalette.vue";
 
   const router = useRouter();
 </script>
@@ -61,7 +65,6 @@
       grid-column: 2 / 3;
       width: calc(100% - var(--header-size));
       grid-row: 2;
-      z-index: 5;
 
       @include mobile {
         grid-column: 1 / 3;
