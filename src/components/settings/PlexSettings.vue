@@ -16,7 +16,10 @@
       />
 
       <PlexLibraryStats
-        :stats="libraryStats"
+        :movies="libraryStats.movies"
+        :shows="libraryStats.shows"
+        :music="libraryStats.music"
+        :watchtime="libraryStats.watchtime"
         :loading="loadingLibraries"
         @open-library="showLibraryDetails"
       />
