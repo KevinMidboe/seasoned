@@ -40,51 +40,13 @@
         <!-- Recently Added -->
         <div class="library-section">
           <h4 class="section-title">Recently Added</h4>
-          <div class="recent-items">
-            <div
+          <div class="recent-items-grid">
+            <PlexLibraryItem
               v-for="(item, index) in details.recentlyAdded"
               :key="index"
-              class="recent-item"
-            >
-              <div class="item-poster-container">
-                <img
-                  v-if="item.poster"
-                  :src="item.poster"
-                  :alt="item.title"
-                  class="item-poster-image"
-                  @error="handleImageError"
-                />
-                <span v-if="!item.poster" class="item-poster-fallback">
-                  {{ item.fallbackIcon }}
-                </span>
-              </div>
-              <div class="item-info">
-                <div class="item-title">{{ item.title }}</div>
-                <div class="item-meta">
-                  <span v-if="libraryType === 'music'">
-                    {{ item.artist }} •
-                  </span>
-                  <span>{{ item.year }}</span>
-                  <span v-if="item.episodes">
-                    • {{ item.episodes }} episodes
-                  </span>
-                  <span v-if="item.tracks"> • {{ item.tracks }} tracks </span>
-                </div>
-              </div>
-              <div class="item-rating" v-if="item.rating">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <polygon
-                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                  />
-                </svg>
-                {{ item.rating }}
-              </div>
-            </div>
+              :item="item"
+              :show-extras="libraryType === 'music' || libraryType === 'shows'"
+            />
           </div>
         </div>
 
@@ -117,6 +79,7 @@
 
 <script setup lang="ts">
   import IconClose from "@/icons/IconClose.vue";
+  import PlexLibraryItem from "@/components/plex/PlexLibraryItem.vue";
   import { getLibraryIcon, getLibraryTitle } from "@/utils/plexHelpers";
 
   interface LibraryDetails {
@@ -138,11 +101,6 @@
   const emit = defineEmits<{
     (e: "close"): void;
   }>();
-
-  function handleImageError(event: Event) {
-    const target = event.target as HTMLElement;
-    target.style.display = "none";
-  }
 </script>
 
 <style scoped>
@@ -167,6 +125,7 @@
     width: 100%;
     max-width: 800px;
     max-height: 90vh;
+    margin-top: calc(var(--header-size) + 1rem);
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -264,75 +223,10 @@
     font-weight: 600;
   }
 
-  .recent-items {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .recent-item {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 12px;
-    background: #252525;
-    border-radius: 8px;
-    transition: background 0.2s;
-  }
-
-  .recent-item:hover {
-    background: #2a2a2a;
-  }
-
-  .item-poster-container {
-    width: 60px;
-    height: 90px;
-    flex-shrink: 0;
-    border-radius: 6px;
-    overflow: hidden;
-    background: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .item-poster-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .item-poster-fallback {
-    font-size: 32px;
-  }
-
-  .item-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .item-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .item-meta {
-    font-size: 12px;
-    color: #888;
-  }
-
-  .item-rating {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 14px;
-    color: #fbbf24;
-    flex-shrink: 0;
+  .recent-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
   }
 
   .genre-list {
@@ -376,6 +270,11 @@
   @media (max-width: 768px) {
     .library-stats-overview {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .recent-items-grid {
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 16px;
     }
 
     .genre-item {
