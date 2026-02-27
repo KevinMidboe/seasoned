@@ -212,15 +212,23 @@
   // ----- OAuth flow -----
   async function completePlexAuth(authToken: string) {
     try {
+      console.log(
+        "[PlexSettings] completePlexAuth called with token:",
+        authToken.substring(0, 10) + "..."
+      );
       setPlexAuthCookie(authToken);
+      console.log("[PlexSettings] Fetching user data...");
       const userData = await fetchPlexUserData(authToken);
       if (userData) {
+        console.log("[PlexSettings] User data received:", userData.username);
         plexUserData.value = userData;
         plexUsername.value = userData.username;
         isPlexConnected.value = true;
       }
+      console.log("[PlexSettings] Linking Plex account to backend...");
       const { success, message } = await linkPlexAccount(authToken);
       if (success) {
+        console.log("[PlexSettings] ✅ Account linked successfully");
         emit("reload");
         await fetchPlexLibraries(authToken);
         messages.value.push({
@@ -229,6 +237,7 @@
           message: message || "Successfully connected your Plex account"
         } as IErrorMessage);
       } else {
+        console.error("[PlexSettings] ❌ Account linking failed:", message);
         messages.value.push({
           type: ErrorMessageTypes.Error,
           title: "Authentication failed",
@@ -236,6 +245,7 @@
         } as IErrorMessage);
       }
     } catch (error) {
+      console.error("[PlexSettings] Error in completePlexAuth:", error);
       messages.value.push({
         type: ErrorMessageTypes.Error,
         title: "Authentication failed",
@@ -247,14 +257,20 @@
   }
 
   async function authenticatePlex() {
+    console.log("[PlexSettings] Starting authentication flow...");
     loading.value = true;
     openAuthPopup(
       // onSuccess
       async (authToken: string) => {
+        console.log("[PlexSettings] onSuccess callback triggered with token");
         await completePlexAuth(authToken);
       },
       // onError
       (errorMessage: string) => {
+        console.error(
+          "[PlexSettings] onError callback triggered:",
+          errorMessage
+        );
         messages.value.push({
           type: ErrorMessageTypes.Error,
           title: "Authentication failed",
