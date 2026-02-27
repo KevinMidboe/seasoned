@@ -9,10 +9,6 @@ export function usePlexAuth() {
   // Generate a PIN for Plex OAuth
   async function generatePlexPin() {
     try {
-      console.log(
-        "[PlexAuth] Generating PIN with CLIENT_IDENTIFIER:",
-        CLIENT_IDENTIFIER
-      );
       const response = await fetch("https://plex.tv/api/v2/pins?strong=true", {
         method: "POST",
         headers: {
@@ -24,10 +20,6 @@ export function usePlexAuth() {
 
       if (!response.ok) throw new Error("Failed to generate PIN");
       const data = await response.json();
-      console.log("[PlexAuth] PIN generated successfully:", {
-        id: data.id,
-        code: data.code
-      });
       return { id: data.id, code: data.code };
     } catch (error) {
       console.error("[PlexAuth] Error generating PIN:", error);
@@ -48,17 +40,8 @@ export function usePlexAuth() {
         }
       );
 
-      if (!response.ok) {
-        console.log("[PlexAuth] PIN check response not OK:", response.status);
-        return null;
-      }
+      if (!response.ok) return null;
       const data = await response.json();
-      if (data.authToken) {
-        console.log(
-          "[PlexAuth] ✅ Auth token received:",
-          data.authToken.substring(0, 10) + "..."
-        );
-      }
       return data.authToken;
     } catch (error) {
       console.error("[PlexAuth] Error checking PIN:", error);
@@ -82,13 +65,9 @@ export function usePlexAuth() {
     pinCode: string,
     onSuccess: (token: string) => void
   ) {
-    console.log("[PlexAuth] Starting polling for PIN:", pinId);
     pollInterval.value = window.setInterval(async () => {
       const authToken = await checkPin(pinId, pinCode);
       if (authToken) {
-        console.log(
-          "[PlexAuth] 🎉 Authentication successful! Calling onSuccess callback"
-        );
         stopPolling();
         if (plexPopup.value && !plexPopup.value.closed) {
           plexPopup.value.close();
@@ -108,20 +87,9 @@ export function usePlexAuth() {
 
   // Set cookie
   function setPlexAuthCookie(authToken: string) {
-    console.log(
-      "[PlexAuth] Setting cookie for token:",
-      authToken.substring(0, 10) + "..."
-    );
     const expires = new Date();
     expires.setDate(expires.getDate() + 30);
-    const cookieString = `plex_auth_token=${authToken}; path=/; expires=${expires.toUTCString()}; SameSite=Strict`;
-    document.cookie = cookieString;
-    console.log("[PlexAuth] Cookie set. Verifying...");
-    const verification = getCookie("plex_auth_token");
-    console.log(
-      "[PlexAuth] Cookie verification:",
-      verification ? "✅ SUCCESS" : "❌ FAILED"
-    );
+    document.cookie = `plex_auth_token=${authToken}; path=/; expires=${expires.toUTCString()}; SameSite=Strict`;
   }
 
   // Get cookie
@@ -139,7 +107,6 @@ export function usePlexAuth() {
     onSuccess: (token: string) => void,
     onError: (msg: string) => void
   ) {
-    console.log("[PlexAuth] openAuthPopup called");
     loading.value = true;
 
     const width = 600;
@@ -154,12 +121,10 @@ export function usePlexAuth() {
     );
 
     if (!plexPopup.value) {
-      console.error("[PlexAuth] Popup blocked!");
       onError("Please allow popups for this site to authenticate with Plex");
       loading.value = false;
       return;
     }
-    console.log("[PlexAuth] Popup opened successfully");
 
     // Add loading screen
     if (plexPopup.value.document) {

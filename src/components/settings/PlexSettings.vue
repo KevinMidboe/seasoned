@@ -211,23 +211,15 @@
   // ----- OAuth flow (handlers for PlexAuthButton events) -----
   async function handleAuthSuccess(authToken: string) {
     try {
-      console.log(
-        "[PlexSettings] Auth success! Token received:",
-        authToken.substring(0, 10) + "..."
-      );
       setPlexAuthCookie(authToken);
-      console.log("[PlexSettings] Fetching user data...");
       const userData = await fetchPlexUserData(authToken);
       if (userData) {
-        console.log("[PlexSettings] User data received:", userData.username);
         plexUserData.value = userData;
         plexUsername.value = userData.username;
         isPlexConnected.value = true;
       }
-      console.log("[PlexSettings] Linking Plex account to backend...");
       const { success, message } = await linkPlexAccount(authToken);
       if (success) {
-        console.log("[PlexSettings] ✅ Account linked successfully");
         emit("reload");
         await fetchPlexLibraries(authToken);
         messages.value.push({
@@ -236,7 +228,6 @@
           message: message || "Successfully connected your Plex account"
         } as IErrorMessage);
       } else {
-        console.error("[PlexSettings] ❌ Account linking failed:", message);
         messages.value.push({
           type: ErrorMessageTypes.Error,
           title: "Authentication failed",
@@ -254,7 +245,6 @@
   }
 
   function handleAuthError(errorMessage: string) {
-    console.error("[PlexSettings] Auth error:", errorMessage);
     messages.value.push({
       type: ErrorMessageTypes.Error,
       title: "Authentication failed",
