@@ -139,6 +139,7 @@ export function usePlexAuth() {
     onSuccess: (token: string) => void,
     onError: (msg: string) => void
   ) {
+    console.log("[PlexAuth] openAuthPopup called");
     loading.value = true;
 
     const width = 600;
@@ -153,10 +154,12 @@ export function usePlexAuth() {
     );
 
     if (!plexPopup.value) {
+      console.error("[PlexAuth] Popup blocked!");
       onError("Please allow popups for this site to authenticate with Plex");
       loading.value = false;
       return;
     }
+    console.log("[PlexAuth] Popup opened successfully");
 
     // Add loading screen
     if (plexPopup.value.document) {
