@@ -30,9 +30,13 @@
 
   .admin {
     padding: 3rem;
+    max-width: 100%;
+    overflow-x: hidden;
 
     @include mobile-only {
-      padding: 1rem;
+      padding: 0.75rem;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     &__title {
@@ -40,6 +44,11 @@
       font-size: 2rem;
       font-weight: 300;
       color: $text-color;
+
+      @include mobile-only {
+        font-size: 1.5rem;
+        margin: 0 0 1rem 0;
+      }
     }
 
     &__grid {
@@ -50,27 +59,49 @@
 
       @include mobile-only {
         grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
       }
     }
 
     &__stats {
       grid-column: 1;
+      min-width: 0;
+
+      @include mobile-only {
+        width: 100%;
+      }
     }
 
     &__system-status {
       grid-column: 2;
+      min-width: 0;
 
       @include mobile-only {
         grid-column: 1;
+        width: 100%;
       }
     }
 
     &__torrents {
       margin-bottom: 1.5rem;
+      min-width: 0;
+      overflow-x: hidden;
+
+      @include mobile-only {
+        margin-bottom: 1rem;
+        width: 100%;
+      }
     }
 
     &__activity {
       margin-bottom: 1.5rem;
+      min-width: 0;
+
+      @include mobile-only {
+        margin-bottom: 1rem;
+        width: 100%;
+      }
     }
   }
 </style>
