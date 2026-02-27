@@ -113,11 +113,11 @@ export function usePlexApi() {
   }
 
   // Fetch library sections
-  async function fetchLibrarySections(authToken: string) {
-    if (!plexServerUrl.value) return [];
+  async function fetchLibrarySections(authToken: string, serverUrl: string) {
+    if (!serverUrl) return [];
 
     try {
-      const response = await fetch(`${plexServerUrl.value}/library/sections`, {
+      const response = await fetch(`${serverUrl}/library/sections`, {
         method: "GET",
         headers: {
           accept: "application/json",
@@ -138,13 +138,17 @@ export function usePlexApi() {
   }
 
   // Fetch library details
-  async function fetchLibraryDetails(authToken: string, sectionKey: string) {
-    if (!plexServerUrl.value) return null;
+  async function fetchLibraryDetails(
+    authToken: string,
+    serverUrl: string,
+    sectionKey: string
+  ) {
+    if (!serverUrl) return null;
 
     try {
       // Fetch all items
       const allResponse = await fetch(
-        `${plexServerUrl.value}/library/sections/${sectionKey}/all`,
+        `${serverUrl}/library/sections/${sectionKey}/all`,
         {
           method: "GET",
           headers: {
@@ -159,7 +163,7 @@ export function usePlexApi() {
 
       // Fetch recently added
       const recentResponse = await fetch(
-        `${plexServerUrl.value}/library/sections/${sectionKey}/recentlyAdded?X-Plex-Container-Start=0&X-Plex-Container-Size=5`,
+        `${serverUrl}/library/sections/${sectionKey}/recentlyAdded?X-Plex-Container-Start=0&X-Plex-Container-Size=5`,
         {
           method: "GET",
           headers: {
