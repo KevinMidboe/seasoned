@@ -1,9 +1,7 @@
 import { ref } from "vue";
-import { usePlexApi } from "./usePlexApi";
+import { CLIENT_IDENTIFIER, APP_NAME } from "./usePlexApi";
 
 export function usePlexAuth() {
-  const { CLIENT_IDENTIFIER, APP_NAME } = usePlexApi();
-
   const loading = ref(false);
   const plexPopup = ref<Window | null>(null);
   const pollInterval = ref<number | null>(null);

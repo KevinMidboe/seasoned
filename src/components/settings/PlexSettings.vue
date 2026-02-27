@@ -68,17 +68,10 @@
   import { ErrorMessageTypes } from "../../interfaces/IErrorMessage";
   import type { IErrorMessage } from "../../interfaces/IErrorMessage";
 
-  const CLIENT_IDENTIFIER =
-    "seasoned-plex-app-" + Math.random().toString(36).substring(7);
-  const APP_NAME = "Seasoned";
-
   const messages: Ref<IErrorMessage[]> = ref([]);
   const loading = ref(false);
   const syncing = ref(false);
   const showConfirmModal = ref(false);
-  const plexPopup = ref<Window | null>(null);
-  const pollInterval = ref<number | null>(null);
-  const currentPinId = ref<number | null>(null);
   const plexUsername = ref<string>("");
   const plexUserData = ref<any>(null);
   const isPlexConnected = ref<boolean>(false);
@@ -125,16 +118,14 @@
   }>();
 
   // Composables
-  const { getCookie, setPlexAuthCookie } = usePlexAuth(
-    CLIENT_IDENTIFIER,
-    APP_NAME
-  );
+  const { getCookie, setPlexAuthCookie, openAuthPopup, cleanup } =
+    usePlexAuth();
   const {
     fetchPlexUserData,
     fetchPlexServers,
     fetchLibrarySections,
     fetchLibraryDetails
-  } = usePlexApi(CLIENT_IDENTIFIER, APP_NAME);
+  } = usePlexApi();
   const { loadLibraries } = usePlexLibraries();
 
   // ----- Connection check -----
@@ -219,71 +210,6 @@
   }
 
   // ----- OAuth flow -----
-  async function generatePlexPin() {
-    try {
-      const response = await fetch("https://plex.tv/api/v2/pins?strong=true", {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "X-Plex-Product": APP_NAME,
-          "X-Plex-Client-Identifier": CLIENT_IDENTIFIER
-        }
-      });
-      if (!response.ok) throw new Error("Failed to generate PIN");
-      return response.json();
-    } catch (error) {
-      console.error("Error generating Plex PIN:", error);
-      return null;
-    }
-  }
-
-  async function checkPin(pinId: number, pinCode: string) {
-    try {
-      const response = await fetch(
-        `https://plex.tv/api/v2/pins/${pinId}?code=${pinCode}`,
-        {
-          headers: {
-            accept: "application/json",
-            "X-Plex-Client-Identifier": CLIENT_IDENTIFIER
-          }
-        }
-      );
-      if (!response.ok) return null;
-      const data = await response.json();
-      return data.authToken;
-    } catch (error) {
-      console.error("Error checking PIN:", error);
-      return null;
-    }
-  }
-
-  function constructAuthUrl(pinCode: string) {
-    const params = new URLSearchParams({
-      clientID: CLIENT_IDENTIFIER,
-      code: pinCode,
-      "context[device][product]": APP_NAME
-    });
-    return `https://app.plex.tv/auth#?${params.toString()}`;
-  }
-
-  function startPolling(pinId: number, pinCode: string) {
-    pollInterval.value = window.setInterval(async () => {
-      const authToken = await checkPin(pinId, pinCode);
-      if (authToken) {
-        stopPolling();
-        if (plexPopup.value && !plexPopup.value.closed) plexPopup.value.close();
-        await completePlexAuth(authToken);
-      }
-    }, 1000);
-  }
-
-  function stopPolling() {
-    if (pollInterval.value) {
-      clearInterval(pollInterval.value);
-      pollInterval.value = null;
-    }
-  }
-
   async function completePlexAuth(authToken: string) {
     try {
       setPlexAuthCookie(authToken);
@@ -322,84 +248,21 @@
 
   async function authenticatePlex() {
     loading.value = true;
-    const width = 600;
-    const height = 700;
-    const left = window.screen.width / 2 - width / 2;
-    const top = window.screen.height / 2 - height / 2;
-    plexPopup.value = window.open(
-      "about:blank",
-      "PlexAuth",
-      `width=${width},height=${height},left=${left},top=${top}`
-    );
-    if (!plexPopup.value) {
-      messages.value.push({
-        type: ErrorMessageTypes.Error,
-        title: "Popup blocked",
-        message: "Please allow popups for this site to authenticate with Plex"
-      } as IErrorMessage);
-      loading.value = false;
-      return;
-    }
-    if (plexPopup.value.document) {
-      plexPopup.value.document.write(`
-      <html>
-        <head>
-          <title>Connecting to Plex...</title>
-          <style>
-            body{margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#1c3a13;color:#fcfcf7;}
-            .loader{text-align:center;}
-            .spinner{border:4px solid rgba(252,252,247,0.3);border-top:4px solid #fcfcf7;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 20px;}
-            @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-          </style>
-        </head>
-        <body>
-          <div class="loader">
-            <div class="spinner"></div>
-            <p>Connecting to Plex...</p>
-          </div>
-        </body>
-      </html>
-    `);
-    }
-    const pin = await generatePlexPin();
-    if (!pin) {
-      if (plexPopup.value && !plexPopup.value.closed) plexPopup.value.close();
-      messages.value.push({
-        type: ErrorMessageTypes.Error,
-        title: "Connection failed",
-        message: "Could not generate Plex authentication PIN"
-      } as IErrorMessage);
-      loading.value = false;
-      return;
-    }
-    currentPinId.value = pin.id;
-    const authUrl = constructAuthUrl(pin.code);
-    if (plexPopup.value && !plexPopup.value.closed)
-      plexPopup.value.location.href = authUrl;
-    else {
-      messages.value.push({
-        type: ErrorMessageTypes.Warning,
-        title: "Authentication cancelled",
-        message: "Authentication window was closed"
-      } as IErrorMessage);
-      loading.value = false;
-      return;
-    }
-    startPolling(pin.id, pin.code);
-    const popupChecker = setInterval(() => {
-      if (plexPopup.value && plexPopup.value.closed) {
-        clearInterval(popupChecker);
-        stopPolling();
-        if (loading.value) {
-          loading.value = false;
-          messages.value.push({
-            type: ErrorMessageTypes.Warning,
-            title: "Authentication cancelled",
-            message: "Plex authentication window was closed"
-          } as IErrorMessage);
-        }
+    openAuthPopup(
+      // onSuccess
+      async (authToken: string) => {
+        await completePlexAuth(authToken);
+      },
+      // onError
+      (errorMessage: string) => {
+        messages.value.push({
+          type: ErrorMessageTypes.Error,
+          title: "Authentication failed",
+          message: errorMessage
+        } as IErrorMessage);
+        loading.value = false;
       }
-    }, 500);
+    );
   }
 
   // ----- Unlink flow -----
@@ -480,8 +343,7 @@
     loadPlexUserData();
   });
   onUnmounted(() => {
-    stopPolling();
-    if (plexPopup.value && !plexPopup.value.closed) plexPopup.value.close();
+    cleanup();
   });
 </script>
 
