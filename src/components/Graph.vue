@@ -106,6 +106,12 @@
 
     const graphOptions = {
       maintainAspectRatio: false,
+      elements: {
+        point: {
+          radius: 2,
+
+        }
+      },
       plugins: {
         tooltip: {
           callbacks: {

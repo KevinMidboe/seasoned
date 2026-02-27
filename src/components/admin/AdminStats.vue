@@ -439,13 +439,12 @@
       padding: 1rem 0;
 
       @include mobile-only {
-        font-size: 1.25rem;
         margin-bottom: 0.1rem;
       }
     }
 
     &__label {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: $text-color-70;
       text-transform: uppercase;
       letter-spacing: 0.4px;
@@ -455,7 +454,6 @@
       line-height: 1.2;
 
       @include mobile-only {
-        font-size: 0.65rem;
         margin-bottom: 0.3rem;
         letter-spacing: 0.2px;
       }

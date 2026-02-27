@@ -26,7 +26,6 @@ export function usePlexApi() {
       }
 
       const data = await response.json();
-      console.log("[PlexAPI] Raw Plex API response:", data);
 
       // Convert Unix timestamp to ISO date string if needed
       let joinedDate = null;
@@ -62,7 +61,6 @@ export function usePlexApi() {
         created_at: new Date().toISOString()
       };
 
-      console.log("[PlexAPI] Processed user data:", userData);
       localStorage.setItem("plex_user_data", JSON.stringify(userData));
       return userData;
     } catch (error) {

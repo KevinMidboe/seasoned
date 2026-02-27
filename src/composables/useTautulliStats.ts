@@ -108,7 +108,8 @@ export function useTautulliStats() {
       .map(([date, stats]) => ({
         date,
         plays: stats.plays,
-        duration: Math.round(stats.duration / 60) // Convert to minutes
+        duration: stats.duration
+        // duration: Math.round(stats.duration / 60) // Convert to minutes
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
   }

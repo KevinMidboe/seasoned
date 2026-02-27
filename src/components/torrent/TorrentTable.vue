@@ -22,18 +22,26 @@
         class="table__content"
       >
         <td
+          class="torrent-info"
           @click="expand($event, torrent.name)"
           @keydown.enter="expand($event, torrent.name)"
         >
-          {{ torrent.name }}
+          <div class="torrent-title">{{ torrent.name }}</div>
+          <div class="torrent-meta">
+            <span class="meta-item">{{ torrent.size }}</span>
+            <span class="meta-separator">•</span>
+            <span class="meta-item">{{ torrent.seed }} seeders</span>
+          </div>
         </td>
         <td
+          class="torrent-seed desktop-only"
           @click="expand($event, torrent.name)"
           @keydown.enter="expand($event, torrent.name)"
         >
           {{ torrent.seed }}
         </td>
         <td
+          class="torrent-size desktop-only"
           @click="expand($event, torrent.name)"
           @keydown.enter="expand($event, torrent.name)"
         >
@@ -177,6 +185,13 @@
     }
   }
 
+  // Hide seed and size columns on mobile
+  .desktop-only {
+    @include mobile {
+      display: none;
+    }
+  }
+
   thead {
     position: relative;
     user-select: none;
@@ -194,34 +209,81 @@
     th:last-of-type {
       padding-right: 0.4rem;
     }
+
+    // Hide seed and size headers on mobile
+    @include mobile {
+      th:nth-child(2),
+      th:nth-child(3) {
+        display: none;
+      }
+    }
   }
 
   tbody {
-    // first column
-    tr td:first-of-type {
+    // first column - torrent info
+    .torrent-info {
       position: relative;
-      padding: 0 0.3rem;
+      padding: 0.5rem 0.6rem;
       cursor: default;
-      word-break: break-all;
+      word-break: break-word;
       border-left: 1px solid var(--table-background-color);
 
       @include mobile {
-        max-width: 40vw;
-        overflow-x: hidden;
+        width: 100%;
+        padding: 0.75rem 0.5rem;
+      }
+
+      .torrent-title {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        line-height: 1.3;
+
+        @include mobile {
+          font-size: 0.95rem;
+        }
+      }
+
+      .torrent-meta {
+        display: none; // Hidden on desktop, shown on mobile
+        font-size: 0.85rem;
+        color: var(--text-color-60);
+
+        @include mobile {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        .meta-item {
+          white-space: nowrap;
+        }
+
+        .meta-separator {
+          color: var(--text-color-40);
+        }
       }
     }
 
-    // all columns except first
-    tr td:not(td:first-of-type) {
+    // seed and size columns (desktop only)
+    .torrent-seed,
+    .torrent-size {
       text-align: center;
       white-space: nowrap;
+      padding: 0.5rem;
     }
 
-    // last column
+    // last column - action
     tr td:last-of-type {
       vertical-align: middle;
       cursor: pointer;
       border-right: 1px solid var(--table-background-color);
+      width: 60px;
+      text-align: center;
+
+      @include mobile {
+        width: 50px;
+      }
 
       svg {
         width: 21px;
@@ -229,6 +291,10 @@
         margin: auto;
         padding: 0.3rem 0;
         fill: var(--text-color);
+
+        @include mobile {
+          width: 18px;
+        }
       }
     }
 

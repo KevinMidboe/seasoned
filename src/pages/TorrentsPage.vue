@@ -1,28 +1,25 @@
 <template>
-  <div>
-    <page-header title="Torrent search page" />
+  <div class="torrents">
+    <h1 class="torrents__title">Torrent Search</h1>
 
-    <section>
-      <div class="search-input-group">
-        <seasoned-input
-          v-model="query"
-          type="torrents"
-          placeholder="Search torrents"
-          @keydown.enter="setTorrentQuery"
-        />
-        <seasoned-button @click="setTorrentQuery">Search</seasoned-button>
-      </div>
+    <div class="search-input-group">
+      <seasoned-input
+        v-model="query"
+        type="torrents"
+        placeholder="Search torrents"
+        @keydown.enter="setTorrentQuery"
+      />
+      <seasoned-button @click="setTorrentQuery">Search</seasoned-button>
+    </div>
 
-      <active-torrents />
+    <active-torrents />
 
-      <TorrentList :query="torrentQuery" />
-    </section>
+    <TorrentList :query="torrentQuery" />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref } from "vue";
-  import PageHeader from "@/components/PageHeader.vue";
   import SeasonedInput from "@/components/ui/SeasonedInput.vue";
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import TorrentList from "@/components/torrent/TorrentSearchResults.vue";
@@ -42,16 +39,44 @@
 </script>
 
 <style lang="scss" scoped>
-  section {
-    padding: 1.25rem;
+  @import "scss/variables";
+  @import "scss/media-queries";
+
+  .torrents {
+    padding: 3rem;
+    max-width: 100%;
+
+    @include mobile-only {
+      padding: 0.75rem;
+    }
+
+    &__title {
+      margin: 0 0 2rem 0;
+      font-size: 2rem;
+      font-weight: 300;
+      color: $text-color;
+      line-height: 1;
+
+      @include mobile-only {
+        font-size: 1.5rem;
+        margin: 0 0 1rem 0;
+      }
+    }
 
     .search-input-group {
       display: flex;
-
+      gap: 0.5rem;
       margin-bottom: 2rem;
 
+      @include mobile-only {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
       button {
-        margin-left: 0.5rem;
+        @include mobile-only {
+          width: 100%;
+        }
       }
     }
   }
