@@ -1,16 +1,21 @@
 <template>
   <section class="settings">
     <div class="settings__container">
-      <!-- Large Profile Hero Card -->
+      <!-- Profile Hero Card -->
       <div class="profile-hero">
-        <div class="profile-hero__avatar">
-          <div class="avatar-large">{{ userInitials }}</div>
+        <div class="profile-hero__main">
+          <div class="profile-hero__avatar">
+            <div class="avatar-large">{{ userInitials }}</div>
+          </div>
+          <div class="profile-hero__info">
+            <h1 class="profile-hero__name">{{ username }}</h1>
+            <span :class="['profile-hero__badge', `badge--${userRole}`]">
+              <a v-if="userRole === 'admin'" href="/admin">{{ userRole }}</a>
+              <span v-else>{{ userRole }}</span>
+            </span>
+            <p class="profile-hero__member">Member since {{ memberSince }}</p>
+          </div>
         </div>
-        <h1 class="profile-hero__name">{{ username }}</h1>
-        <span :class="['profile-hero__badge', `badge--${userRole}`]">
-          {{ userRole }}
-        </span>
-        <p class="profile-hero__member">Member since {{ memberSince }}</p>
 
         <div class="profile-hero__stats">
           <div class="stat-large">
@@ -25,27 +30,33 @@
         </div>
       </div>
 
-      <!-- Settings Sections -->
-      <div class="settings__sections">
-        <section class="settings-section">
-          <h2 class="section-header">Appearance</h2>
-          <theme-preferences />
-        </section>
+      <!-- Settings Grid -->
+      <div class="settings__grid">
+        <!-- Left Column: Quick Settings -->
+        <div class="settings__column settings__column--left">
+          <section class="settings-section settings-section--compact">
+            <h2 class="section-header">Appearance</h2>
+            <theme-preferences />
+          </section>
 
-        <section class="settings-section">
-          <h2 class="section-header">Integrations</h2>
-          <plex-settings @reload="reloadSettings" />
-        </section>
+          <section class="settings-section settings-section--compact">
+            <h2 class="section-header">Security</h2>
+            <change-password />
+          </section>
+        </div>
 
-        <section class="settings-section">
-          <h2 class="section-header">Security</h2>
-          <change-password />
-        </section>
+        <!-- Right Column: Data-Heavy Sections -->
+        <div class="settings__column settings__column--right">
+          <section class="settings-section">
+            <h2 class="section-header">Integrations</h2>
+            <plex-settings @reload="reloadSettings" />
+          </section>
 
-        <section class="settings-section">
-          <h2 class="section-header">Data & Privacy</h2>
-          <data-export />
-        </section>
+          <section class="settings-section">
+            <h2 class="section-header">Data & Privacy</h2>
+            <data-export />
+          </section>
+        </div>
       </div>
     </div>
   </section>
@@ -126,19 +137,43 @@
     }
 
     &__container {
-      max-width: 800px;
+      max-width: 1400px;
       margin: 0 auto;
+
+      @include mobile-only {
+        max-width: 100%;
+      }
     }
 
-    &__sections {
+    &__grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+      align-items: start;
+
+      @include mobile-only {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+    }
+
+    &__column {
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
-      margin-top: 1.25rem;
 
       @include mobile-only {
         gap: 1rem;
-        margin-top: 1rem;
+      }
+
+      &--left {
+        // Quick settings - lighter, more concise
+      }
+
+      &--right {
+        // Data-heavy sections
       }
     }
   }
@@ -146,32 +181,54 @@
   .profile-hero {
     background-color: var(--background-color-secondary);
     border-radius: 0.75rem;
-    padding: 2rem 1.5rem 1.5rem;
-    text-align: center;
+    padding: 1.5rem;
     border: 1px solid var(--background-40);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
 
     @include mobile-only {
-      padding: 1.5rem 1.25rem 1.25rem;
+      flex-direction: column;
+      padding: 1.5rem 1.25rem;
       border-radius: 0.5rem;
+      text-align: center;
+      gap: 1rem;
+    }
+
+    &__main {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+
+      @include mobile-only {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
     }
 
     &__avatar {
-      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    &__info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
 
       @include mobile-only {
-        margin-bottom: 0.75rem;
+        align-items: center;
       }
     }
 
     &__name {
-      margin: 0 0 0.4rem 0;
-      font-size: 1.85rem;
+      margin: 0;
+      font-size: 1.75rem;
       font-weight: 600;
-      line-height: 1;
+      line-height: 1.1;
 
       @include mobile-only {
         font-size: 1.5rem;
-        margin-bottom: 0.3rem;
       }
     }
 
@@ -179,14 +236,14 @@
       display: inline-block;
       padding: 0.25rem 0.7rem;
       border-radius: 2rem;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       font-weight: 600;
-      margin-bottom: 0.4rem;
+      width: fit-content;
 
       @include mobile-only {
         padding: 0.2rem 0.6rem;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
       }
 
       &.badge--admin {
@@ -200,33 +257,36 @@
     }
 
     &__member {
-      margin: 0 0 1.25rem 0;
-      font-size: 0.9rem;
+      margin: 0;
+      font-size: 0.85rem;
+      color: $text-color-70;
 
       @include mobile-only {
-        font-size: 0.85rem;
-        margin-bottom: 1rem;
+        font-size: 0.8rem;
       }
     }
 
     &__stats {
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 1.75rem;
-      padding-top: 1.25rem;
-      border-top: 1px solid var(--background-40);
+      padding-left: 1.75rem;
+      border-left: 1px solid var(--background-40);
 
       @include mobile-only {
+        width: 100%;
+        padding: 1rem 0 0 0;
+        border-left: none;
+        border-top: 1px solid var(--background-40);
+        justify-content: center;
         gap: 1.25rem;
-        padding-top: 1rem;
       }
     }
   }
 
   .avatar-large {
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     background: linear-gradient(
       135deg,
@@ -236,10 +296,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.25rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: $white;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 
     @include mobile-only {
       width: 80px;
@@ -252,10 +312,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
 
     &__value {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 700;
       color: var(--highlight-color);
       line-height: 1;
@@ -266,10 +326,11 @@
     }
 
     &__label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: $text-color-70;
       text-transform: uppercase;
       font-weight: 500;
+      letter-spacing: 0.5px;
 
       @include mobile-only {
         font-size: 0.75rem;
@@ -279,7 +340,7 @@
 
   .stat-divider {
     width: 1px;
-    height: 50px;
+    height: 45px;
     background-color: var(--background-40);
 
     @include mobile-only {
@@ -295,6 +356,21 @@
 
     @include mobile-only {
       padding: 1rem;
+    }
+
+    &--compact {
+      // Tighter spacing for quick settings
+      .section-header {
+        font-size: 1.25rem;
+        margin-bottom: 0.85rem;
+        padding-bottom: 0.65rem;
+
+        @include mobile-only {
+          font-size: 1.2rem;
+          margin-bottom: 0.75rem;
+          padding-bottom: 0.6rem;
+        }
+      }
     }
   }
 
