@@ -1,6 +1,6 @@
 <template>
-  <div v-if="plexUserId && plexUsername" class="wrapper">
-    <h1>Your watch activity</h1>
+  <div v-if="plexUserId && plexUsername" class="activity">
+    <h1 class="activity__title">Watch Activity</h1>
 
     <!-- Stats Overview -->
     <div v-if="watchStats" class="stats-overview">
@@ -22,75 +22,82 @@
       </div>
     </div>
 
-    <div style="display: flex; flex-direction: row">
-      <label class="filter" for="dayinput">
-        <span>Days:</span>
-        <input
-          id="dayinput"
-          v-model="days"
-          class="dayinput"
-          placeholder="days"
-          type="number"
-          pattern="[0-9]*"
-          @change="fetchChartData"
-        />
-      </label>
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-label">Time Range</label>
+        <div class="input-wrapper">
+          <input
+            v-model.number="days"
+            class="days-input"
+            type="number"
+            min="1"
+            max="365"
+            @change="fetchChartData"
+          />
+          <span class="input-suffix">days</span>
+        </div>
+      </div>
 
-      <div class="filter">
-        <span>Data sorted by:</span>
+      <div class="control-group">
+        <label class="control-label">View Mode</label>
         <toggle-button
           v-model:selected="graphViewMode"
-          class="filter-item"
           :options="[GraphTypes.Plays, GraphTypes.Duration]"
           @change="fetchChartData"
         />
       </div>
     </div>
 
-    <div class="chart-section">
-      <h3 class="chart-header">Activity per day:</h3>
-      <div class="graph">
-        <Graph
-          v-if="playsByDayData"
-          :data="playsByDayData"
-          type="line"
-          :stacked="false"
-          :dataset-description-suffix="`watch last ${days} days`"
-          :tooltip-description-suffix="selectedGraphViewMode.tooltipLabel"
-          :graph-value-type="selectedGraphViewMode.valueType"
-        />
+    <div class="activity__charts">
+      <div class="chart-card">
+        <h3 class="chart-card__title">Daily Activity</h3>
+        <div class="chart-card__graph">
+          <Graph
+            v-if="playsByDayData"
+            :data="playsByDayData"
+            type="line"
+            :stacked="false"
+            :dataset-description-suffix="`watch last ${days} days`"
+            :tooltip-description-suffix="selectedGraphViewMode.tooltipLabel"
+            :graph-value-type="selectedGraphViewMode.valueType"
+          />
+        </div>
       </div>
 
-      <h3 class="chart-header">Activity by media type:</h3>
-      <div class="graph">
-        <Graph
-          v-if="playsByDayofweekData"
-          :data="playsByDayofweekData"
-          type="bar"
-          :stacked="true"
-          :dataset-description-suffix="`watch last ${days} days`"
-          tooltip-description-suffix="plays"
-          :graph-value-type="GraphValueTypes.Number"
-        />
+      <div class="chart-card">
+        <h3 class="chart-card__title">Activity by Media Type</h3>
+        <div class="chart-card__graph">
+          <Graph
+            v-if="playsByDayofweekData"
+            :data="playsByDayofweekData"
+            type="bar"
+            :stacked="true"
+            :dataset-description-suffix="`watch last ${days} days`"
+            tooltip-description-suffix="plays"
+            :graph-value-type="GraphValueTypes.Number"
+          />
+        </div>
       </div>
 
-      <h3 class="chart-header">Watch time by hour:</h3>
-      <div class="graph">
-        <Graph
-          v-if="hourlyData"
-          :data="hourlyData"
-          type="bar"
-          :stacked="false"
-          :dataset-description-suffix="`last ${days} days`"
-          tooltip-description-suffix="plays"
-          :graph-value-type="GraphValueTypes.Number"
-        />
+      <div class="chart-card">
+        <h3 class="chart-card__title">Viewing Patterns by Hour</h3>
+        <div class="chart-card__graph">
+          <Graph
+            v-if="hourlyData"
+            :data="hourlyData"
+            type="bar"
+            :stacked="false"
+            :dataset-description-suffix="`last ${days} days`"
+            tooltip-description-suffix="plays"
+            :graph-value-type="GraphValueTypes.Number"
+          />
+        </div>
       </div>
     </div>
 
     <!-- Top Content -->
-    <div v-if="topContent.length > 0" class="top-content-section">
-      <h3 class="chart-header">Most watched:</h3>
+    <div v-if="topContent.length > 0" class="activity__top-content">
+      <h3 class="section-title">Most Watched</h3>
       <div class="top-content-list">
         <div
           v-for="(item, index) in topContent"
@@ -262,38 +269,41 @@
 
 <style lang="scss" scoped>
   @import "scss/variables";
+  @import "scss/media-queries";
 
-  .wrapper {
-    padding: 2rem;
+  .activity {
+    padding: 3rem;
+    max-width: 100%;
 
     @include mobile-only {
-      padding: 0 0.8rem;
-    }
-  }
-
-  .filter {
-    margin-top: 0.5rem;
-    display: inline-flex;
-    flex-direction: column;
-    font-size: 1.2rem;
-
-    &:not(:first-of-type) {
-      margin-left: 1.25rem;
+      padding: 0.75rem;
     }
 
-    input {
-      width: 100%;
-      font-size: inherit;
-      max-width: 6rem;
-      background-color: $background-ui;
-      color: $text-color;
-    }
-
-    span {
-      font-size: inherit;
-      line-height: 1;
-      margin: 0.5rem 0;
+    &__title {
+      margin: 0 0 2rem 0;
+      font-size: 2rem;
       font-weight: 300;
+      color: $text-color;
+      line-height: 1;
+
+      @include mobile-only {
+        font-size: 1.5rem;
+        margin: 0 0 1rem 0;
+      }
+    }
+
+    &__charts {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      @include mobile-only {
+        gap: 1rem;
+      }
+    }
+
+    &__top-content {
+      margin-top: 2rem;
     }
   }
 
@@ -322,27 +332,121 @@
   //   }
   // }
 
-  .chart-section {
-    display: flex;
-    flex-wrap: wrap;
+  .chart-card {
+    background: var(--background-ui);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--text-color-50);
 
-    .graph {
+    @include mobile-only {
+      padding: 1rem;
+    }
+
+    &__title {
+      margin: 0 0 1rem 0;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: $text-color;
+
+      @include mobile-only {
+        font-size: 1rem;
+      }
+    }
+
+    &__graph {
       position: relative;
       height: 35vh;
-      width: 90vw;
-      margin-bottom: 2rem;
-    }
+      min-height: 300px;
 
-    .chart-header {
-      font-weight: 300;
+      @include mobile-only {
+        height: 30vh;
+        min-height: 250px;
+      }
     }
+  }
+
+  .section-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: $text-color;
+  }
+
+  .controls {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+
+    @include mobile-only {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 200px;
+
+    @include mobile-only {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+
+  .control-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color-60);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    background: var(--background-ui);
+    border: 1px solid var(--text-color-50);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--text-color);
+    }
+  }
+
+  .days-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: $text-color;
+    outline: none;
+    width: 80px;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      opacity: 1;
+    }
+  }
+
+  .input-suffix {
+    padding: 0 1rem;
+    font-size: 0.9rem;
+    color: var(--text-color-60);
+    user-select: none;
   }
 
   .stats-overview {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1.5rem;
-    margin: 2rem 0;
+    margin-bottom: 2rem;
 
     @include mobile-only {
       grid-template-columns: repeat(2, 1fr);
@@ -389,14 +493,14 @@
     }
   }
 
-  .top-content-section {
-    margin-top: 3rem;
-  }
-
   .top-content-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+
+    @include mobile-only {
+      grid-template-columns: 1fr;
+    }
   }
 
   .top-content-item {
@@ -406,10 +510,12 @@
     background: var(--background-ui);
     padding: 1rem;
     border-radius: 8px;
-    transition: background 0.2s;
+    border: 1px solid var(--text-color-50);
+    transition: all 0.2s;
 
     &:hover {
-      background: var(--background-40);
+      border-color: var(--text-color);
+      transform: translateY(-2px);
     }
   }
 
