@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-  import { inject, computed } from "vue";
+  import { inject, computed, onMounted } from "vue";
   import { useStore } from "vuex";
   import { useRoute } from "vue-router";
   import ThemePreferences from "@/components/settings/ThemePreferences.vue";
@@ -110,7 +110,7 @@
   }
 
   // Functions called on component load
-  displayWarningIfMissingPlexAccount();
+  onMounted(() => displayWarningIfMissingPlexAccount());
 </script>
 
 <style lang="scss" scoped>
