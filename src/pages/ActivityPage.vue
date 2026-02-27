@@ -194,12 +194,11 @@
   );
 
   const {
-    fetchUserHistory,
-    calculateWatchStats,
-    groupByDay,
-    groupByDayOfWeek,
-    getTopContent,
-    getHourlyDistribution
+    fetchHomeStats,
+    fetchPlaysByDate,
+    fetchPlaysByDayOfWeek,
+    fetchPlaysByHourOfDay,
+    fetchTopContent
   } = useTautulliStats();
 
   function convertDateStringToDayMonth(date: string): string {
@@ -212,19 +211,29 @@
   }
 
   async function fetchChartData() {
-    if (!plexUsername.value) return;
+    if (!plexUserId.value) return;
 
     try {
-      const history = await fetchUserHistory(plexUsername.value, days.value);
+      const yAxis =
+        graphViewMode.value === GraphTypes.Plays ? "plays" : "duration";
 
-      // Calculate overall stats
-      watchStats.value = calculateWatchStats(history);
+      // Fetch all data in parallel using efficient Tautulli APIs
+      const [homeStats, dayData, weekData, hourData, topContentData] =
+        await Promise.all([
+          fetchHomeStats(plexUserId.value, days.value, "duration"), // Need duration for hours
+          fetchPlaysByDate(days.value, yAxis, plexUserId.value),
+          fetchPlaysByDayOfWeek(days.value, yAxis, plexUserId.value),
+          fetchPlaysByHourOfDay(days.value, yAxis, plexUserId.value),
+          fetchTopContent(days.value, 10, plexUserId.value)
+        ]);
 
-      // Get top content
-      topContent.value = getTopContent(history, 10);
+      // Set overall stats
+      watchStats.value = homeStats;
+
+      // Set top content
+      topContent.value = topContentData;
 
       // Activity per day
-      const dayData = groupByDay(history, days.value);
       playsByDayData.value = {
         labels: dayData.map(d => convertDateStringToDayMonth(d.date)),
         series: [
@@ -239,7 +248,6 @@
       };
 
       // Activity by day of week (stacked by media type)
-      const weekData = groupByDayOfWeek(history);
       playsByDayofweekData.value = {
         labels: weekData.labels,
         series: [
@@ -250,7 +258,6 @@
       };
 
       // Hourly distribution
-      const hourData = getHourlyDistribution(history);
       hourlyData.value = {
         labels: hourData.labels,
         series: [{ name: "Plays", data: hourData.data }]
