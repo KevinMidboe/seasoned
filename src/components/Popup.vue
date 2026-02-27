@@ -1,16 +1,26 @@
 <template>
-  <div v-if="isOpen" class="movie-popup" @click="close" @keydown.enter="close">
+  <div
+    v-if="isOpen"
+    ref="popupContainer"
+    class="movie-popup"
+    role="dialog"
+    aria-modal="true"
+    tabindex="-1"
+    @click="close"
+    @keydown.enter="close"
+    @keydown="handleKeydown"
+  >
     <div class="movie-popup__box" @click.stop>
       <person v-if="type === 'person'" :id="id" type="person" />
       <movie v-else :id="id" :type="type"></movie>
-      <button class="movie-popup__close" @click="close"></button>
+      <button class="movie-popup__close" @click="close" tabindex="0"></button>
     </div>
     <i class="loader"></i>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, onBeforeUnmount } from "vue";
+  import { ref, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
   import { useStore } from "vuex";
   import Movie from "@/components/popup/Movie.vue";
   import Person from "@/components/popup/Person.vue";
@@ -26,6 +36,8 @@
   const isOpen: Ref<boolean> = ref();
   const id: Ref<string> = ref();
   const type: Ref<MediaTypes> = ref();
+  const popupContainer = ref<HTMLElement | null>(null);
+  let previouslyFocusedElement: HTMLElement | null = null;
 
   const unsubscribe = store.subscribe((mutation, state) => {
     if (!mutation.type.includes("popup")) return;
@@ -76,6 +88,75 @@
     close();
   }
 
+  function getFocusableElements(): HTMLElement[] {
+    if (!popupContainer.value) return [];
+
+    const focusableSelectors = [
+      "button:not([disabled])",
+      "a[href]",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(", ");
+
+    return Array.from(
+      popupContainer.value.querySelectorAll(focusableSelectors)
+    ) as HTMLElement[];
+  }
+
+  function trapFocus(event: KeyboardEvent) {
+    if (event.key !== "Tab") return;
+
+    const focusableElements = getFocusableElements();
+    if (focusableElements.length === 0) return;
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey) {
+      // Shift + Tab
+      if (document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      }
+    } else {
+      // Tab
+      if (document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    }
+  }
+
+  function handleKeydown(event: KeyboardEvent) {
+    trapFocus(event);
+  }
+
+  function setInitialFocus() {
+    nextTick(() => {
+      // Focus the popup container itself instead of a specific element
+      // This allows tab to start fresh without any element being focused
+      if (popupContainer.value) {
+        popupContainer.value.focus();
+      }
+    });
+  }
+
+  watch(isOpen, newValue => {
+    if (newValue) {
+      // Store the previously focused element
+      previouslyFocusedElement = document.activeElement as HTMLElement;
+      // Set focus to popup
+      setInitialFocus();
+    } else {
+      // Restore focus to previously focused element
+      if (previouslyFocusedElement) {
+        previouslyFocusedElement.focus();
+      }
+    }
+  });
+
   window.addEventListener("keyup", checkEventForEscapeKey);
 
   onMounted(() => {
@@ -103,6 +184,10 @@
     background: rgba($dark, 0.93);
     -webkit-overflow-scrolling: touch;
     overflow: auto;
+
+    &:focus {
+      outline: none;
+    }
 
     &__box {
       max-width: 768px;

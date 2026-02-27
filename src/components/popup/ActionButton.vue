@@ -2,8 +2,12 @@
   <li
     class="sidebar-list-element"
     :class="{ active, disabled }"
+    :tabindex="disabled ? -1 : 0"
+    role="button"
+    :aria-disabled="disabled"
     @click="emit('click')"
-    @keydown.enter="emit('click')"
+    @keydown.enter.prevent="emit('click')"
+    @keydown.space.prevent="emit('click')"
   >
     <slot></slot>
   </li>
@@ -53,14 +57,22 @@
     }
 
     &:hover,
+    &:focus,
     &.active {
       color: var(--text-color);
+      outline: none;
 
       div > svg,
       svg {
         fill: var(--text-color);
         transform: scale(1.1, 1.1);
       }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--highlight-color);
+      outline-offset: 2px;
+      border-radius: 4px;
     }
 
     &.active > div > svg,
