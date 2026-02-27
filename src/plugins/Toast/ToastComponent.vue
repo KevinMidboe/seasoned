@@ -62,161 +62,161 @@
 </script>
 
 <style lang="scss" scoped>
-/* ------------------------------
+  /* ------------------------------
    Transition
 ------------------------------ */
 
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
 
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateY(40px);
-  opacity: 0;
-}
+  .slide-enter-from,
+  .slide-leave-to {
+    transform: translateY(40px);
+    opacity: 0;
+  }
 
-/* ------------------------------
+  /* ------------------------------
    Toast
 ------------------------------ */
 
-.toast {
-  position: fixed;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  z-index: 1000;
-  cursor: pointer;
+  .toast {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 1000;
+    cursor: pointer;
 
-  min-width: 340px;
-  max-width: 460px;
-  width: calc(100vw - 2rem);
+    min-width: 340px;
+    max-width: 460px;
+    width: calc(100vw - 2rem);
 
-  padding: 1.1rem 1.25rem;
+    padding: 1.1rem 1.25rem;
 
-  border-radius: 16px;
+    border-radius: 16px;
 
-  /* System-based surface */
-  background: var(--background-color-secondary);
+    /* System-based surface */
+    background: var(--background-color-secondary);
 
-  /* Subtle separation */
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    /* Subtle separation */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-  /* Clear state indicator */
-  border-left: 5px solid transparent;
+    /* Clear state indicator */
+    border-left: 5px solid transparent;
 
-  /* Base text tone */
-  color: var(--text-color, #1f2937);
+    /* Base text tone */
+    color: var(--text-color, #1f2937);
 
-  line-height: 1.5;
+    line-height: 1.5;
 
-  /* ------------------------------
+    /* ------------------------------
      Content Layout
   ------------------------------ */
 
-  &--content {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-  }
+    &--content {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
 
-  &--text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
+    &--text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-  /* ------------------------------
+    /* ------------------------------
      Typography Hierarchy
   ------------------------------ */
 
-  /* Context label */
-  &--text__title {
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
+    /* Context label */
+    &--text__title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
 
-    /* Softer than body but not faded */
-    color: color-mix(in srgb, currentColor 75%, transparent);
-  }
+      /* Softer than body but not faded */
+      color: color-mix(in srgb, currentColor 75%, transparent);
+    }
 
-  /* Primary message */
-  &--text__description {
-    margin-top: 0.3rem;
-    font-size: 0.98rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: currentColor;
-  }
+    /* Primary message */
+    &--text__description {
+      margin-top: 0.3rem;
+      font-size: 0.98rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: currentColor;
+    }
 
-  &--text__title-large {
-    font-size: 1.15rem;
-    font-weight: 500;
-  }
+    &--text__title-large {
+      font-size: 1.15rem;
+      font-weight: 500;
+    }
 
-  /* ------------------------------
+    /* ------------------------------
      Dismiss Button
   ------------------------------ */
 
-  &--dismiss {
-    flex-shrink: 0;
+    &--dismiss {
+      flex-shrink: 0;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-    width: 30px;
-    height: 30px;
+      width: 30px;
+      height: 30px;
 
-    border-radius: 8px;
+      border-radius: 8px;
 
-    transition: background 0.2s ease;
+      transition: background 0.2s ease;
 
-    &:hover {
-      background: var(--background-color);
+      &:hover {
+        background: var(--background-color);
+      }
+
+      i {
+        font-size: 0.75rem;
+      }
     }
 
-    i {
-      font-size: 0.75rem;
+    /* ------------------------------
+     State Colors
+  ------------------------------ */
+
+    &.success {
+      border-left-color: #22c55e;
+    }
+
+    &.info {
+      border-left-color: #facc15;
+    }
+
+    &.warning {
+      border-left-color: #f97316;
+    }
+
+    &.error {
+      border-left-color: #ef4444;
+    }
+
+    &.simple {
+      border-left-color: transparent;
     }
   }
 
   /* ------------------------------
-     State Colors
-  ------------------------------ */
-
-  &.success {
-    border-left-color: #22c55e;
-  }
-
-  &.info {
-    border-left-color: #facc15;
-  }
-
-  &.warning {
-    border-left-color: #f97316;
-  }
-
-  &.error {
-    border-left-color: #ef4444;
-  }
-
-  &.simple {
-    border-left-color: transparent;
-  }
-}
-
-/* ------------------------------
    Mobile
 ------------------------------ */
 
-@media (max-width: 480px) {
-  .toast {
-    right: 1rem;
-    left: 1rem;
-    width: auto;
-    min-width: unset;
+  @media (max-width: 480px) {
+    .toast {
+      right: 1rem;
+      left: 1rem;
+      width: auto;
+      min-width: unset;
+    }
   }
-}
 </style>

@@ -204,7 +204,11 @@
 
   const routes = computed(() => {
     return router.getRoutes().filter(route => {
-      return routeMetadata[route?.name?.toString() ?? ""] && route.name && route.name !== "NotFound";
+      return (
+        routeMetadata[route?.name?.toString() ?? ""] &&
+        route.name &&
+        route.name !== "NotFound"
+      );
     });
   });
 

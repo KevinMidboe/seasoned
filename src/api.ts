@@ -262,17 +262,22 @@ const getRequestStatus = async (
     .catch(err => Promise.reject(err));
 };
 
-/*
-const watchLink = async (title, year) => {
+const watchLink = async (title: string, year: string) => {
   const url = new URL("/api/v1/plex/watch-link", API_HOSTNAME);
   url.searchParams.append("title", title);
   url.searchParams.append("year", year);
 
-  return fetch(url.href)
+  const options: RequestInit = {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
+  };
+
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .then(response => response.link);
 };
 
+/*
 const movieImages = id => {
   const url = new URL(`v2/movie/${id}/images`, API_HOSTNAME);
 
@@ -560,6 +565,7 @@ export {
   getSettings,
   updateSettings,
   fetchGraphData,
+  watchLink,
   getEmoji,
   elasticSearchMoviesAndShows
 };

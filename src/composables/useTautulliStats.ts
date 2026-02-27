@@ -31,10 +31,10 @@ interface HomeStatItem {
 
 interface PlaysGraphData {
   categories: string[];
-  series: Array<{
+  series: {
     name: string;
     data: number[];
-  }>;
+  }[];
 }
 
 export function useTautulliStats() {
@@ -72,7 +72,7 @@ export function useTautulliStats() {
   // Fetch home statistics (pre-aggregated by Tautulli!)
   async function fetchHomeStats(
     userId?: number,
-    timeRange: number = 30,
+    timeRange = 30,
     statsType: "plays" | "duration" = "plays"
   ): Promise<WatchStats> {
     try {
@@ -162,7 +162,7 @@ export function useTautulliStats() {
 
   // Fetch plays by date (already aggregated by Tautulli!)
   async function fetchPlaysByDate(
-    timeRange: number = 30,
+    timeRange = 30,
     yAxis: "plays" | "duration" = "plays",
     userId?: number
   ): Promise<DayStats[]> {
@@ -184,10 +184,9 @@ export function useTautulliStats() {
 
       // Sum all series data for each date
       return data.categories.map((date, index) => {
-        const totalValue = data.series.reduce(
-          (sum, series) => sum + (series.data[index] || 0),
-          0
-        );
+        const totalValue = data.series
+          .filter(s => s.name !== "Total")
+          .reduce((sum, series) => sum + (series.data[index] || 0), 0);
 
         return {
           date,
@@ -203,7 +202,7 @@ export function useTautulliStats() {
 
   // Fetch plays by day of week (already aggregated!)
   async function fetchPlaysByDayOfWeek(
-    timeRange: number = 30,
+    timeRange = 30,
     yAxis: "plays" | "duration" = "plays",
     userId?: number
   ): Promise<{
@@ -264,7 +263,7 @@ export function useTautulliStats() {
 
   // Fetch plays by hour of day (already aggregated!)
   async function fetchPlaysByHourOfDay(
-    timeRange: number = 30,
+    timeRange = 30,
     yAxis: "plays" | "duration" = "plays",
     userId?: number
   ): Promise<{ labels: string[]; data: number[] }> {
@@ -285,12 +284,9 @@ export function useTautulliStats() {
       );
 
       // Sum all series data for each hour
-      const hourlyData = data.categories.map((hour, index) => {
-        return data.series.reduce(
-          (sum, series) => sum + (series.data[index] || 0),
-          0
-        );
-      });
+      const hourlyData = data.categories.map((hour, index) =>
+        data.series.reduce((sum, series) => sum + (series.data[index] || 0), 0)
+      );
 
       return {
         labels: data.categories.map(h => `${h}:00`),
@@ -306,11 +302,7 @@ export function useTautulliStats() {
   }
 
   // Fetch top watched content from home stats
-  async function fetchTopContent(
-    timeRange: number = 30,
-    limit: number = 10,
-    userId?: number
-  ) {
+  async function fetchTopContent(timeRange = 30, limit = 10, userId?: number) {
     try {
       const params: Record<string, any> = {
         time_range: timeRange,

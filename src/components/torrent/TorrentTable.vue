@@ -192,16 +192,23 @@
     border-spacing: 0;
     margin-top: 0.5rem;
     width: 100%;
-    // border-collapse: collapse;
+    max-width: 100%;
     border-radius: 0.5rem;
     overflow: hidden;
+    table-layout: fixed;
+
+    @include mobile {
+      table-layout: auto;
+    }
   }
 
   th,
   td {
     border: 0.5px solid var(--background-color-40);
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     @include mobile {
-      white-space: nowrap;
       padding: 0;
     }
   }
@@ -241,6 +248,8 @@
         font-weight: 500;
         margin-bottom: 0.25rem;
         line-height: 1.3;
+        word-break: break-word;
+        overflow-wrap: break-word;
 
         @include mobile {
           font-size: 0.95rem;

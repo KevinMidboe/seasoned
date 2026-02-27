@@ -36,19 +36,19 @@
               sortDirection === "asc" ? "↑" : "↓"
             }}</span>
           </th>
-          <th @click="sortBy('size')" class="sortable">
+          <th v-if="!isMobile" @click="sortBy('size')" class="sortable">
             Size
             <span v-if="sortColumn === 'size'">{{
               sortDirection === "asc" ? "↑" : "↓"
             }}</span>
           </th>
-          <th @click="sortBy('seeders')" class="sortable">
+          <th v-if="!isMobile" @click="sortBy('seeders')" class="sortable">
             Seeders
             <span v-if="sortColumn === 'seeders'">{{
               sortDirection === "asc" ? "↑" : "↓"
             }}</span>
           </th>
-          <th>Status</th>
+          <th v-if="!isMobile">Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -58,10 +58,23 @@
           :key="torrent.id"
           :class="{ processing: torrent.processing }"
         >
-          <td class="torrent-name" :title="torrent.name">{{ torrent.name }}</td>
-          <td>{{ torrent.size }}</td>
-          <td>{{ torrent.seeders }}</td>
-          <td>
+          <td class="torrent-name" :title="torrent.name">
+            <div class="torrent-name__title">{{ torrent.name }}</div>
+            <div v-if="isMobile" class="torrent-name__meta">
+              <span class="meta-item">{{ torrent.size }}</span>
+              <span class="meta-separator">•</span>
+              <span class="meta-item">{{ torrent.seeders }} seeders</span>
+              <span class="meta-separator">•</span>
+              <span
+                :class="['status-badge', `status-badge--${torrent.status}`]"
+              >
+                {{ torrent.status }}
+              </span>
+            </div>
+          </td>
+          <td v-if="!isMobile">{{ torrent.size }}</td>
+          <td v-if="!isMobile">{{ torrent.seeders }}</td>
+          <td v-if="!isMobile">
             <span :class="['status-badge', `status-badge--${torrent.status}`]">
               {{ torrent.status }}
             </span>
@@ -116,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted } from "vue";
+  import { ref, computed, onMounted, onUnmounted } from "vue";
   import IconStop from "@/icons/IconStop.vue";
   import IconPlay from "@/icons/IconPlay.vue";
   import IconClose from "@/icons/IconClose.vue";
@@ -143,6 +156,13 @@
   const statusFilter = ref("");
   const sortColumn = ref<keyof Torrent>("name");
   const sortDirection = ref<"asc" | "desc">("asc");
+
+  const windowWidth = ref(window.innerWidth);
+  const isMobile = computed(() => windowWidth.value <= 768);
+
+  function handleResize() {
+    windowWidth.value = window.innerWidth;
+  }
 
   const filteredTorrents = computed(() => {
     let result = [...torrents.value];
@@ -306,7 +326,14 @@
     );
   }
 
-  onMounted(fetchTorrents);
+  onMounted(() => {
+    fetchTorrents();
+    window.addEventListener("resize", handleResize);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("resize", handleResize);
+  });
 </script>
 
 <style lang="scss" scoped>
@@ -441,15 +468,14 @@
 
     &__table {
       width: 100%;
+      max-width: 100%;
       border-spacing: 0;
       border-radius: 0.5rem;
       overflow: hidden;
+      table-layout: fixed;
 
       @include mobile-only {
-        display: block;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        max-width: 100%;
+        table-layout: auto;
       }
 
       th,
@@ -525,8 +551,42 @@
     white-space: nowrap;
 
     @include mobile-only {
-      max-width: 150px;
+      max-width: none;
+      white-space: normal;
+      overflow: visible;
+    }
+
+    &__title {
+      word-break: break-word;
+      overflow-wrap: break-word;
+
+      @include mobile-only {
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+    }
+
+    &__meta {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
       font-size: 0.7rem;
+      color: var(--text-color-60);
+      margin-top: 0.25rem;
+
+      .meta-item {
+        white-space: nowrap;
+      }
+
+      .meta-separator {
+        color: var(--text-color-40);
+      }
+
+      .status-badge {
+        margin: 0;
+      }
     }
   }
 

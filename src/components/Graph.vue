@@ -1,9 +1,11 @@
 <template>
-  <canvas ref="graphCanvas"></canvas>
+  <div class="graph-wrapper">
+    <canvas ref="graphCanvas"></canvas>
+  </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, watch } from "vue";
+  import { ref, onMounted, watch, onBeforeUnmount } from "vue";
   import {
     Chart,
     LineElement,
@@ -16,12 +18,14 @@
     Legend,
     Title,
     Tooltip,
+    Filler,
     ChartType
   } from "chart.js";
+  import type { BarOptions, ChartOptions } from "chart.js";
 
   import type { Ref } from "vue";
   import { convertSecondsToHumanReadable } from "../utils";
-  import { GraphValueTypes } from "../interfaces/IGraph";
+  import { GraphTypes, GraphValueTypes } from "../interfaces/IGraph";
   import type { IGraphDataset, IGraphData } from "../interfaces/IGraph";
 
   Chart.register(
@@ -34,7 +38,8 @@
     CategoryScale,
     Legend,
     Title,
-    Tooltip
+    Tooltip,
+    Filler
   );
 
   interface Props {
@@ -42,135 +47,212 @@
     data: IGraphData;
     type: ChartType;
     stacked: boolean;
-
     datasetDescriptionSuffix: string;
     tooltipDescriptionSuffix: string;
     graphValueType?: GraphValueTypes;
   }
 
-  Chart.defaults.elements.point.radius = 0;
-  Chart.defaults.elements.point.hitRadius = 10;
-  // Chart.defaults.elements.point.pointHoverRadius = 10;
-  Chart.defaults.elements.point.hoverBorderWidth = 4;
-
   const props = defineProps<Props>();
-  const graphCanvas: Ref<HTMLCanvasElement> = ref(null);
-  let graphInstance = null;
+  const graphCanvas: Ref<HTMLCanvasElement | null> = ref(null);
+  let graphInstance: Chart | null = null;
 
-  /* eslint-disable no-use-before-define */
-  onMounted(() => generateGraph());
-  watch(() => props.data, generateGraph);
-  /* eslint-enable no-use-before-define */
+  /*
+|--------------------------------------------------------------------------
+| Modern Color System
+|--------------------------------------------------------------------------
+*/
 
   const graphTemplates = [
     {
-      backgroundColor: "rgba(54, 162, 235, 0.2)",
-      borderColor: "rgba(54, 162, 235, 1)",
-      borderWidth: 1,
-      tension: 0.4
+      borderColor: "#6366F1",
+      backgroundColor: "rgba(99,102,241,0.12)"
     },
     {
-      backgroundColor: "rgba(255, 159, 64, 0.2)",
-      borderColor: "rgba(255, 159, 64, 1)",
-      borderWidth: 1,
-      tension: 0.4
+      borderColor: "#F59E0B",
+      backgroundColor: "rgba(245,158,11,0.12)"
     },
     {
-      backgroundColor: "rgba(255, 99, 132, 0.2)",
-      borderColor: "rgba(255, 99, 132, 1)",
-      borderWidth: 1,
-      tension: 0.4
+      borderColor: "#10B981",
+      backgroundColor: "rgba(16,185,129,0.12)"
     }
   ];
-  // const gridColor = getComputedStyle(document.documentElement).getPropertyValue(
-  //   "--text-color-5"
-  // );
 
-  function hydrateGraphLineOptions(dataset: IGraphDataset, index: number) {
+  /*
+|--------------------------------------------------------------------------
+| Lifecycle
+|--------------------------------------------------------------------------
+*/
+
+  onMounted(() => generateGraph());
+  watch(() => props.data, generateGraph, { deep: true });
+
+  onBeforeUnmount(() => {
+    if (graphInstance) graphInstance.destroy();
+  });
+
+  /*
+|--------------------------------------------------------------------------
+| Helpers
+|--------------------------------------------------------------------------
+*/
+
+  function removeEmptyDataset(dataset: IGraphDataset) {
+    return dataset;
+    return !dataset.data.every(point => point === 0);
+  }
+
+  function hydrateDataset(dataset: IGraphDataset, index: number) {
+    const base = graphTemplates[index % graphTemplates.length];
+
+    if (props.type === "bar") {
+      return {
+        label: `${dataset.name} ${props.datasetDescriptionSuffix}`,
+        data: dataset.data,
+        backgroundColor: base.borderColor,
+        inflateAmount: 0,
+        borderRadius: {
+          topLeft: 8,
+          topRight: 8,
+          bottomLeft: 8,
+          bottomRight: 8
+        },
+
+        borderSkipped: false,
+        borderWidth: 2,
+        borderColor: "transparent",
+
+        // Slight spacing between categories
+        barPercentage: 0.8,
+        categoryPercentage: 0.9
+      } as BarOptions;
+    }
+
+    // Line chart — subtle, minimal points
     return {
       label: `${dataset.name} ${props.datasetDescriptionSuffix}`,
       data: dataset.data,
-      ...graphTemplates[index]
+      borderColor: base.borderColor,
+      backgroundColor: base.backgroundColor,
+      borderWidth: 2,
+      tension: 0.35,
+      fill: true,
+
+      pointRadius: 2,
+      pointHoverRadius: 5,
+      pointHitRadius: 12,
+      pointBackgroundColor: base.borderColor,
+      pointBorderColor: base.borderColor,
+      pointBorderWidth: 0
     };
   }
 
-  function removeEmptyDataset(dataset: IGraphDataset) {
-    /* eslint-disable-next-line no-unneeded-ternary */
-    return dataset.data.every(point => point === 0) ? false : true;
-  }
+  /*
+|--------------------------------------------------------------------------
+| Chart Generator
+|--------------------------------------------------------------------------
+*/
 
   function generateGraph() {
+    if (!graphCanvas.value) return;
+
     const datasets = props.data.series
       .filter(removeEmptyDataset)
-      .map(hydrateGraphLineOptions);
+      .map(hydrateDataset);
 
-    const graphOptions = {
+    const chartData = {
+      labels: props.data.labels,
+      datasets
+    };
+
+    const options: ChartOptions = {
       maintainAspectRatio: false,
-      elements: {
-        point: {
-          radius: 2,
-
-        }
+      responsive: true,
+      layout: {
+        padding: { top: 8 }
       },
       plugins: {
-        tooltip: {
-          callbacks: {
-            // title: (tooltipItem, data) => `Watch date: ${tooltipItem[0].label}`,
-            label: tooltipItem => {
-              const context = tooltipItem.dataset.label.split(" ")[0];
-              const text = `${context} ${props.tooltipDescriptionSuffix}`;
+        legend: {
+          display: true
+        },
 
+        tooltip: {
+          backgroundColor: "#111827",
+          bodyColor: "#e5e7eb",
+          padding: 12,
+          cornerRadius: 8,
+          displayColors: true,
+          callbacks: {
+            label: (tooltipItem: any) => {
+              const context = tooltipItem.dataset.label.split(" ")[0];
+
+              let type = GraphTypes.Plays;
               let value = tooltipItem.raw;
-              if (props.graphValueType === GraphValueTypes.Time) {
+              if (props.graphValueType === String(GraphTypes.Duration)) {
                 value = convertSecondsToHumanReadable(value);
+                type = GraphTypes.Duration;
               }
 
-              return ` ${text}: ${value}`;
+              const text = `${context} ${type}`;
+              return `${text}: ${value}`;
             }
           }
         }
       },
+
       scales: {
-        xAxes: {
+        x: {
           stacked: props.stacked,
-          gridLines: {
-            display: false
+          grid: {
+            display: false,
+            drawBorder: false
+          },
+          ticks: {
+            color: "#9CA3AF",
+            font: { size: 11 }
           }
         },
-        yAxes: {
+
+        y: {
           stacked: props.stacked,
+          beginAtZero: true,
+          grid: {
+            color: "rgba(0,0,0,0.04)",
+            drawBorder: false
+          },
           ticks: {
-            callback: value => {
-              if (props.graphValueType === GraphValueTypes.Time) {
+            color: "#9CA3AF",
+            font: { size: 11 },
+            padding: 8,
+            callback: (value: number) => {
+              if (props.graphValueType === String(GraphTypes.Duration)) {
                 return convertSecondsToHumanReadable(value);
               }
-
               return value;
-            },
-            beginAtZero: true
+            }
           }
         }
       }
     };
 
-    const chartData = {
-      labels: props.data.labels.toString().split(","),
-      datasets
-    };
-
     if (graphInstance) {
-      graphInstance.clear();
       graphInstance.data = chartData;
-      graphInstance.update("none");
+      graphInstance.update();
       return;
     }
 
     graphInstance = new Chart(graphCanvas.value, {
       type: props.type,
       data: chartData,
-      options: graphOptions
+      options
     });
   }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped lang="scss">
+  .graph-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 240px;
+  }
+</style>

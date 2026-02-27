@@ -42,7 +42,8 @@
   .navigation-link {
     display: grid;
     place-items: center;
-    min-height: var(--header-size);
+    height: var(--header-size);
+    width: var(--header-size);
     list-style: none;
     padding: 1rem 0.15rem;
     text-align: center;

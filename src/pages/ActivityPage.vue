@@ -59,7 +59,7 @@
             :stacked="false"
             :dataset-description-suffix="`watch last ${days} days`"
             :tooltip-description-suffix="selectedGraphViewMode.tooltipLabel"
-            :graph-value-type="selectedGraphViewMode.valueType"
+            :graph-value-type="graphViewMode"
           />
         </div>
       </div>
@@ -70,11 +70,11 @@
           <Graph
             v-if="playsByDayofweekData"
             :data="playsByDayofweekData"
+            :graphValueType="graphViewMode"
             type="bar"
             :stacked="true"
             :dataset-description-suffix="`watch last ${days} days`"
             tooltip-description-suffix="plays"
-            :graph-value-type="GraphValueTypes.Number"
           />
         </div>
       </div>
@@ -89,7 +89,7 @@
             :stacked="false"
             :dataset-description-suffix="`last ${days} days`"
             tooltip-description-suffix="plays"
-            :graph-value-type="GraphValueTypes.Number"
+            :graph-value-type="graphViewMode"
           />
         </div>
       </div>
@@ -201,13 +201,13 @@
     fetchTopContent
   } = useTautulliStats();
 
-  function convertDateStringToDayMonth(date: string): string {
+  function convertDateStringToDayMonth(date: string, short = true): string {
     if (!date.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)) {
       return date;
     }
 
-    const [, month, day] = date.split("-");
-    return `${day}.${month}`;
+    const [year, month, day] = date.split("-");
+    return short ? `${month}.${day}` : `${day}.${month}.${year}`;
   }
 
   async function fetchChartData() {
@@ -235,7 +235,9 @@
 
       // Activity per day
       playsByDayData.value = {
-        labels: dayData.map(d => convertDateStringToDayMonth(d.date)),
+        labels: dayData.map(d =>
+          convertDateStringToDayMonth(d.date, dayData.length < 365)
+        ),
         series: [
           {
             name: "Activity",

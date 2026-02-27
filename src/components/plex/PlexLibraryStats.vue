@@ -4,7 +4,10 @@
       v-for="stat in displayStats"
       :key="stat.key"
       class="stat-card"
-      :class="{ disabled: stat.value === 0 || loading }"
+      :class="{
+        disabled: stat.value === 0 || loading,
+        unclickable: !!!stat.clickable
+      }"
       @click="
         stat.clickable && stat.value > 0 && !loading && handleClick(stat.key)
       "
@@ -88,6 +91,10 @@
     gap: 0.75rem;
     margin-bottom: 0.85rem;
 
+    @include tablet-only {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
     @include mobile-only {
       grid-template-columns: repeat(2, 1fr);
       gap: 0.65rem;
@@ -102,7 +109,6 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid transparent;
 
@@ -110,15 +116,15 @@
       padding: 0.85rem 0.75rem;
     }
 
-    &:hover:not(.disabled) {
+    &:hover:not(.disabled, .unclickable) {
       background-color: var(--background-40);
       border-color: var(--highlight-color);
+      cursor: pointer;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     &.disabled {
-      cursor: default;
       opacity: 0.6;
 
       &:hover {

@@ -90,10 +90,18 @@
 
     @include desktop {
       grid-template-rows: var(--header-size);
+      grid-auto-flow: row;
     }
 
     @include mobile {
       grid-template-columns: 1fr 1fr;
     }
+  }
+
+  :global(.navigation-icons > *:last-child) {
+    margin-top: auto;
+    justify-self: end;
+    align-self: end;
+    background-color: red;
   }
 </style>

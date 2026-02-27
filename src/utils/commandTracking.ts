@@ -6,9 +6,7 @@ interface CommandData {
 }
 
 interface CommandStats {
-  commands: {
-    [key: string]: CommandData;
-  };
+  commands: Record<string, CommandData>;
   version: number;
 }
 
@@ -24,6 +22,7 @@ function getStats(): CommandStats {
     const parsed = JSON.parse(stored) as CommandStats;
     return parsed;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Failed to parse command stats:", error);
     return { commands: {}, version: CURRENT_VERSION };
   }
@@ -33,6 +32,7 @@ function saveStats(stats: CommandStats): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Failed to save command stats:", error);
   }
 }
@@ -53,7 +53,7 @@ export function trackCommand(
     };
   }
 
-  stats.commands[id].count++;
+  stats.commands[id].count += 1;
   stats.commands[id].lastUsed = new Date().toISOString();
 
   if (metadata?.routePath) {
@@ -80,9 +80,7 @@ export function getCommandScore(commandId: string): number {
   return command.count * 0.7 + recencyBonus * 0.3;
 }
 
-export function getTopCommands(
-  limit = 10
-): Array<{ id: string; score: number }> {
+export function getTopCommands(limit = 10): { id: string; score: number }[] {
   const stats = getStats();
 
   const scored = Object.keys(stats.commands).map(id => ({

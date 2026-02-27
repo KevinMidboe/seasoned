@@ -293,10 +293,12 @@
   // ----- Library modal -----
   function showLibraryDetails(type: string) {
     selectedLibrary.value = type;
+    document.getElementsByTagName("body")[0].classList.add("no-scroll");
     showLibraryModal.value = true;
   }
   function closeLibraryModal() {
     showLibraryModal.value = false;
+    document.getElementsByTagName("body")[0].classList.remove("no-scroll");
     selectedLibrary.value = "";
   }
 

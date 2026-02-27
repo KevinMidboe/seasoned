@@ -79,10 +79,8 @@ export function processLibraryItem(
     }
   }
   // For movies and other types, use thumb
-  else {
-    if (item.thumb) {
-      posterUrl = `${serverUrl}${item.thumb}?X-Plex-Token=${authToken}`;
-    }
+  else if (item.thumb) {
+    posterUrl = `${serverUrl}${item.thumb}?X-Plex-Token=${authToken}`;
   }
 
   // Build Plex Web App URL
@@ -120,7 +118,8 @@ export function processLibraryItem(
       ...baseItem,
       episodes: item.leafCount || 0
     };
-  } else if (libraryType === "music") {
+  }
+  if (libraryType === "music") {
     return {
       ...baseItem,
       artist: item.parentTitle || "Unknown Artist",
@@ -166,7 +165,7 @@ export function calculateDuration(metadata: any[], libraryType: string) {
   });
 
   const hours = Math.round(totalDuration / (1000 * 60 * 60));
-  const formattedDuration = hours.toLocaleString() + " hours";
+  const formattedDuration = `${hours.toLocaleString()} hours`;
 
   return {
     totalDuration: formattedDuration,

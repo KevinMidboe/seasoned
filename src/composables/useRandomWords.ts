@@ -703,7 +703,7 @@ export function useRandomWords() {
   ];
 
   // Try to fetch random words from API, fallback to local list
-  async function getRandomWords(count: number = 4): Promise<string[]> {
+  async function getRandomWords(count = 4): Promise<string[]> {
     try {
       // Try Random Word API first
       const response = await fetch(

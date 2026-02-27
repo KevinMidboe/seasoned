@@ -34,8 +34,8 @@ export function usePlexLibraries() {
 
     try {
       for (const section of sections) {
-        const type = section.type;
-        const key = section.key;
+        const { type } = section;
+        const { key } = section;
 
         if (type === "movie") {
           await processLibrarySection(

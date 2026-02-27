@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from "vue";
+  import { computed, onBeforeUnmount } from "vue";
   import IconClose from "@/icons/IconClose.vue";
   import IconMovie from "@/icons/IconMovie.vue";
   import IconShow from "@/icons/IconShow.vue";
@@ -112,6 +112,17 @@
     if (props.libraryType === "music") return IconMusic;
     return IconMovie;
   });
+
+  function checkEventForEscapeKey(event: KeyboardEvent) {
+    if (event.key !== "Escape") return;
+    emit("close");
+  }
+
+  window.addEventListener("keyup", checkEventForEscapeKey);
+
+  onBeforeUnmount(() => {
+    window.removeEventListener("keyup", checkEventForEscapeKey);
+  });
 </script>
 
 <style scoped>
@@ -136,7 +147,6 @@
     width: 100%;
     max-width: 800px;
     max-height: 90vh;
-    margin-top: calc(var(--header-size) + 1rem);
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -183,12 +193,16 @@
   }
 
   .close-btn {
+    --size: 2.4rem;
     background: none;
     border: none;
     color: #888;
     cursor: pointer;
     padding: 8px;
+    height: var(--size);
+    width: var(--size);
     border-radius: 6px;
+    fill: white;
     transition: all 0.2s;
   }
 
