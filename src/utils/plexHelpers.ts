@@ -7,6 +7,15 @@ export function getLibraryIcon(type: string): string {
   return icons[type] || "📁";
 }
 
+export function getLibraryIconComponent(type: string): string {
+  const components: Record<string, string> = {
+    movies: "IconMovie",
+    shows: "IconShow",
+    music: "IconMusic"
+  };
+  return components[type] || "IconMovie";
+}
+
 export function getLibraryTitle(type: string): string {
   const titles: Record<string, string> = {
     movies: "Movies",
@@ -57,12 +66,24 @@ export function processLibraryItem(
     posterUrl = `${serverUrl}${item.grandparentThumb}?X-Plex-Token=${authToken}`;
   }
 
+  // Build Plex Web App URL
+  // Format: https://app.plex.tv/desktop/#!/server/{machineId}/details?key=/library/metadata/{ratingKey}
+  const ratingKey = item.ratingKey || item.key;
+  let plexUrl = null;
+  if (ratingKey) {
+    // Extract machine ID from serverUrl or use a placeholder
+    // For now, we'll create a direct link to the library metadata
+    plexUrl = `${serverUrl}/web/index.html#!/server/library/metadata/${ratingKey}`;
+  }
+
   const baseItem = {
     title: item.title,
     year: item.year || item.parentYear || new Date().getFullYear(),
     poster: posterUrl,
     fallbackIcon: getLibraryIcon(libraryType),
-    rating: item.rating ? Math.round(item.rating * 10) / 10 : null
+    rating: item.rating ? Math.round(item.rating * 10) / 10 : null,
+    ratingKey,
+    plexUrl
   };
 
   if (libraryType === "shows") {

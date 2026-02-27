@@ -3,9 +3,9 @@
     <div class="library-modal-content" @click.stop>
       <div class="library-modal-header">
         <div class="library-header-title">
-          <span class="library-icon-large">
-            {{ getLibraryIcon(libraryType) }}
-          </span>
+          <div class="library-icon-large">
+            <component :is="libraryIconComponent" />
+          </div>
           <div>
             <h3>{{ getLibraryTitle(libraryType) }}</h3>
             <p class="library-subtitle">{{ details.total }} items</p>
@@ -78,9 +78,13 @@
 </template>
 
 <script setup lang="ts">
+  import { computed } from "vue";
   import IconClose from "@/icons/IconClose.vue";
+  import IconMovie from "@/icons/IconMovie.vue";
+  import IconShow from "@/icons/IconShow.vue";
+  import IconMusic from "@/icons/IconMusic.vue";
   import PlexLibraryItem from "@/components/plex/PlexLibraryItem.vue";
-  import { getLibraryIcon, getLibraryTitle } from "@/utils/plexHelpers";
+  import { getLibraryTitle } from "@/utils/plexHelpers";
 
   interface LibraryDetails {
     total: number;
@@ -96,11 +100,18 @@
     details: LibraryDetails;
   }
 
-  defineProps<Props>();
+  const props = defineProps<Props>();
 
   const emit = defineEmits<{
     (e: "close"): void;
   }>();
+
+  const libraryIconComponent = computed(() => {
+    if (props.libraryType === "movies") return IconMovie;
+    if (props.libraryType === "shows") return IconShow;
+    if (props.libraryType === "music") return IconMusic;
+    return IconMovie;
+  });
 </script>
 
 <style scoped>
@@ -146,8 +157,17 @@
   }
 
   .library-icon-large {
-    font-size: 48px;
-    line-height: 1;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--highlight-color);
+    }
   }
 
   .library-modal-header h3 {

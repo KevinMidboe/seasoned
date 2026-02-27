@@ -9,7 +9,9 @@
         stat.clickable && stat.value > 0 && !loading && handleClick(stat.key)
       "
     >
-      <div class="stat-icon">{{ stat.icon }}</div>
+      <div class="stat-icon">
+        <component :is="stat.icon" />
+      </div>
       <div class="stat-content">
         <div class="stat-value" v-if="!loading">{{ stat.value }}</div>
         <div class="stat-value loading-dots" v-else>...</div>
@@ -21,6 +23,10 @@
 
 <script setup lang="ts">
   import { computed } from "vue";
+  import IconMovie from "@/icons/IconMovie.vue";
+  import IconShow from "@/icons/IconShow.vue";
+  import IconMusic from "@/icons/IconMusic.vue";
+  import IconClock from "@/icons/IconClock.vue";
 
   interface Props {
     movies: number;
@@ -39,28 +45,28 @@
   const displayStats = computed(() => [
     {
       key: "movies",
-      icon: "🎬",
+      icon: IconMovie,
       value: props.movies,
       label: "Movies",
       clickable: true
     },
     {
       key: "shows",
-      icon: "📺",
+      icon: IconShow,
       value: props.shows,
       label: "TV Shows",
       clickable: true
     },
     {
       key: "music",
-      icon: "🎵",
+      icon: IconMusic,
       value: props.music,
       label: "Albums",
       clickable: true
     },
     {
       key: "watchtime",
-      icon: "⏱️",
+      icon: IconClock,
       value: props.watchtime,
       label: "Hours Watched",
       clickable: false
@@ -123,12 +129,27 @@
   }
 
   .stat-icon {
-    font-size: 2rem;
-    line-height: 1;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     @include mobile-only {
-      font-size: 1.75rem;
+      width: 2rem;
+      height: 2rem;
     }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--highlight-color);
+      transition: fill 0.2s ease;
+    }
+  }
+
+  .stat-card:hover:not(.disabled) .stat-icon svg {
+    fill: var(--color-green-90);
   }
 
   .stat-content {
