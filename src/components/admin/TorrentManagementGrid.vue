@@ -306,9 +306,7 @@
     );
   }
 
-  onMounted(() => {
-    fetchTorrents();
-  });
+  onMounted(fetchTorrents);
 </script>
 
 <style lang="scss" scoped>
@@ -318,7 +316,7 @@
   .torrent-management {
     background-color: var(--background-color-secondary);
     border-radius: 0.5rem;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     max-width: 100%;
 
@@ -335,26 +333,26 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 0.75rem;
 
       @include mobile-only {
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
       }
     }
 
     &__title {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 400;
       color: $text-color;
       text-transform: uppercase;
       letter-spacing: 0.8px;
 
       @include mobile-only {
-        font-size: 1rem;
+        font-size: 0.95rem;
         width: 100%;
       }
     }

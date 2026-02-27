@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted, onUnmounted } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import IconProfile from "@/icons/IconProfile.vue";
   import IconPlay from "@/icons/IconPlay.vue";
   import IconRequest from "@/icons/IconRequest.vue";
@@ -95,7 +95,6 @@
 
   const loading = ref(false);
   const timeRange = ref("week");
-  let refreshInterval: number | null = null;
 
   const statCards = computed<Stat[]>(() => [
     {
@@ -155,7 +154,7 @@
     baseValue: number,
     points: number = 7
   ): number[] => {
-    return Array.from({ length: points }, (_, i) => {
+    return Array.from({ length: points }, () => {
       const variance = Math.random() * 0.3 - 0.15;
       return Math.max(0, Math.floor(baseValue * (1 + variance)));
     });
@@ -197,29 +196,7 @@
     console.log(`Stat card clicked: ${key}`);
   }
 
-  function startAutoRefresh() {
-    refreshInterval = window.setInterval(() => {
-      if (!loading.value) {
-        fetchStats();
-      }
-    }, 60000);
-  }
-
-  function stopAutoRefresh() {
-    if (refreshInterval) {
-      clearInterval(refreshInterval);
-      refreshInterval = null;
-    }
-  }
-
-  onMounted(() => {
-    fetchStats();
-    startAutoRefresh();
-  });
-
-  onUnmounted(() => {
-    stopAutoRefresh();
-  });
+  onMounted(() => fetchStats());
 </script>
 
 <style lang="scss" scoped>
@@ -229,7 +206,7 @@
   .admin-stats {
     background-color: var(--background-color-secondary);
     border-radius: 0.5rem;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     max-width: 100%;
     overflow: hidden;
@@ -246,26 +223,26 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       flex-wrap: wrap;
-      gap: 0.75rem;
+      gap: 0.5rem;
 
       @include mobile-only {
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.6rem;
         width: 100%;
       }
     }
 
     &__title {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 400;
       color: $text-color;
       text-transform: uppercase;
       letter-spacing: 0.8px;
 
       @include mobile-only {
-        font-size: 1rem;
+        font-size: 0.95rem;
       }
     }
 
@@ -294,11 +271,11 @@
     &__grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
+      gap: 0.75rem;
 
       @include mobile-only {
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+        gap: 0.6rem;
         width: 100%;
       }
     }
@@ -373,7 +350,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem;
+    padding: 0.75rem;
     background-color: var(--background-ui);
     border-radius: 0.5rem;
     text-align: center;
@@ -382,7 +359,7 @@
     min-width: 0;
 
     @include mobile-only {
-      padding: 0.65rem 0.4rem;
+      padding: 0.6rem 0.4rem;
       width: 100%;
       box-sizing: border-box;
     }
@@ -412,22 +389,22 @@
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
 
       @include mobile-only {
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.3rem;
       }
     }
 
     &__icon {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       fill: var(--highlight-color);
       opacity: 0.8;
 
       @include mobile-only {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
       }
     }
 
@@ -454,31 +431,33 @@
     }
 
     &__value {
-      font-size: 1.75rem;
+      font-size: 2.2rem;
       font-weight: 600;
       color: var(--highlight-color);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.15rem;
+      line-height: 1.1;
+      padding: 1rem 0;
 
       @include mobile-only {
-        font-size: 1.4rem;
-        margin-bottom: 0.15rem;
+        font-size: 1.25rem;
+        margin-bottom: 0.1rem;
       }
     }
 
     &__label {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: $text-color-70;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 0.5rem;
+      letter-spacing: 0.4px;
+      margin-bottom: 0.4rem;
       word-break: break-word;
       max-width: 100%;
+      line-height: 1.2;
 
       @include mobile-only {
-        font-size: 0.68rem;
-        margin-bottom: 0.35rem;
+        font-size: 0.65rem;
+        margin-bottom: 0.3rem;
         letter-spacing: 0.2px;
-        line-height: 1.2;
       }
     }
 
@@ -487,13 +466,13 @@
       align-items: flex-end;
       justify-content: space-between;
       width: 100%;
-      height: 30px;
-      margin-top: 0.5rem;
+      height: 24px;
+      margin-top: 0.4rem;
       gap: 2px;
 
       @include mobile-only {
-        height: 20px;
-        margin-top: 0.35rem;
+        height: 18px;
+        margin-top: 0.3rem;
         gap: 1px;
       }
     }

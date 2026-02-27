@@ -44,6 +44,7 @@
       font-size: 2rem;
       font-weight: 300;
       color: $text-color;
+      line-height: 1;
 
       @include mobile-only {
         font-size: 1.5rem;

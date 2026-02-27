@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, onUnmounted } from "vue";
+  import { ref, onMounted } from "vue";
   import IconActivity from "@/icons/IconActivity.vue";
   import IconClose from "@/icons/IconClose.vue";
 
@@ -152,7 +152,6 @@
   const systemItems = ref<SystemItem[]>([]);
   const loading = ref(false);
   const selectedItem = ref<SystemItem | null>(null);
-  let refreshInterval: number | null = null;
 
   const getMetricClass = (value: number) => {
     if (value >= 90) return "metric__fill--critical";
@@ -238,29 +237,7 @@
     alert(`Full logs for ${item.name} would open here`);
   }
 
-  function startAutoRefresh() {
-    refreshInterval = window.setInterval(() => {
-      if (!loading.value && !selectedItem.value) {
-        fetchSystemStatus();
-      }
-    }, 30000);
-  }
-
-  function stopAutoRefresh() {
-    if (refreshInterval) {
-      clearInterval(refreshInterval);
-      refreshInterval = null;
-    }
-  }
-
-  onMounted(() => {
-    fetchSystemStatus();
-    startAutoRefresh();
-  });
-
-  onUnmounted(() => {
-    stopAutoRefresh();
-  });
+  onMounted(fetchSystemStatus);
 </script>
 
 <style lang="scss" scoped>
@@ -270,7 +247,7 @@
   .system-status {
     background-color: var(--background-color-secondary);
     border-radius: 0.5rem;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     max-width: 100%;
     overflow: hidden;
@@ -287,41 +264,41 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
 
       @include mobile-only {
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.6rem;
       }
     }
 
     &__title {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 400;
       color: $text-color;
       text-transform: uppercase;
       letter-spacing: 0.8px;
 
       @include mobile-only {
-        font-size: 1rem;
+        font-size: 0.95rem;
       }
     }
 
     &__loading {
-      padding: 2rem;
+      padding: 1.5rem;
       text-align: center;
       color: $text-color-70;
 
       @include mobile-only {
-        padding: 1.5rem;
-        font-size: 0.9rem;
+        padding: 1rem;
+        font-size: 0.85rem;
       }
     }
 
     &__items {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.6rem;
 
       @include mobile-only {
         gap: 0.5rem;
@@ -373,7 +350,7 @@
   }
 
   .status-item {
-    padding: 0.75rem;
+    padding: 0.65rem;
     background-color: var(--background-ui);
     border-radius: 0.5rem;
     cursor: pointer;
@@ -381,7 +358,7 @@
     min-width: 0;
 
     @include mobile-only {
-      padding: 0.65rem;
+      padding: 0.6rem;
       width: 100%;
       box-sizing: border-box;
     }
@@ -406,16 +383,17 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
 
     &__name {
       font-weight: 500;
       color: $text-color;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      line-height: 1.2;
 
       @include mobile-only {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
       }
     }
 
@@ -469,43 +447,45 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
 
       @include mobile-only {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.25rem;
-        margin-bottom: 0.35rem;
+        gap: 0.15rem;
+        margin-bottom: 0.3rem;
       }
     }
 
     &__value {
-      font-size: 0.85rem;
-      color: $text-color-70;
-
-      @include mobile-only {
-        font-size: 0.8rem;
-      }
-    }
-
-    &__description {
       font-size: 0.8rem;
-      color: $text-color-50;
+      color: $text-color-70;
+      line-height: 1.2;
 
       @include mobile-only {
         font-size: 0.75rem;
       }
     }
 
-    &__metrics {
-      margin-top: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+    &__description {
+      font-size: 0.75rem;
+      color: $text-color-50;
+      line-height: 1.2;
 
       @include mobile-only {
-        margin-top: 0.35rem;
-        gap: 0.35rem;
+        font-size: 0.7rem;
+      }
+    }
+
+    &__metrics {
+      margin-top: 0.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      @include mobile-only {
+        margin-top: 0.3rem;
+        gap: 0.3rem;
       }
     }
   }
@@ -513,17 +493,18 @@
   .metric {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
+    gap: 0.4rem;
+    font-size: 0.7rem;
 
     &__label {
-      min-width: 70px;
+      min-width: 65px;
       color: $text-color-70;
+      line-height: 1;
     }
 
     &__bar {
       flex: 1;
-      height: 6px;
+      height: 5px;
       background-color: var(--background-40);
       border-radius: 3px;
       overflow: hidden;

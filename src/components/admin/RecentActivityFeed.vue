@@ -121,7 +121,6 @@
   const timeFilter = ref("24h");
   const hasMore = ref(true);
   const page = ref(1);
-  let refreshInterval: number | null = null;
 
   const filteredActivities = computed(() => {
     let result = [...activities.value];
@@ -265,29 +264,7 @@
     console.log("Activity clicked:", activity);
   }
 
-  function startAutoRefresh() {
-    refreshInterval = window.setInterval(() => {
-      if (!loading.value && !loadingMore.value) {
-        fetchActivities();
-      }
-    }, 30000);
-  }
-
-  function stopAutoRefresh() {
-    if (refreshInterval) {
-      clearInterval(refreshInterval);
-      refreshInterval = null;
-    }
-  }
-
-  onMounted(() => {
-    fetchActivities();
-    startAutoRefresh();
-  });
-
-  onUnmounted(() => {
-    stopAutoRefresh();
-  });
+  onMounted(fetchActivities);
 </script>
 
 <style lang="scss" scoped>
@@ -297,7 +274,7 @@
   .activity-feed {
     background-color: var(--background-color-secondary);
     border-radius: 0.5rem;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     max-width: 100%;
     overflow: hidden;
@@ -314,26 +291,26 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 0.75rem;
 
       @include mobile-only {
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
       }
     }
 
     &__title {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 400;
       color: $text-color;
       text-transform: uppercase;
       letter-spacing: 0.8px;
 
       @include mobile-only {
-        font-size: 1rem;
+        font-size: 0.95rem;
         width: 100%;
       }
     }
@@ -391,14 +368,14 @@
     &__list {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      max-height: 500px;
+      gap: 0.4rem;
+      max-height: 450px;
       overflow-y: auto;
       padding-right: 0.25rem;
 
       @include mobile-only {
-        max-height: 400px;
-        gap: 0.4rem;
+        max-height: 350px;
+        gap: 0.35rem;
       }
 
       &::-webkit-scrollbar {
@@ -453,8 +430,8 @@
   .activity-item {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    padding: 0.75rem;
+    gap: 0.75rem;
+    padding: 0.65rem;
     background-color: var(--background-ui);
     border-radius: 0.5rem;
     transition: background-color 0.2s;
@@ -462,8 +439,8 @@
     min-width: 0;
 
     @include mobile-only {
-      gap: 0.65rem;
-      padding: 0.65rem;
+      gap: 0.6rem;
+      padding: 0.6rem;
       width: 100%;
       box-sizing: border-box;
     }
@@ -484,16 +461,16 @@
 
     &__icon {
       flex-shrink: 0;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
 
       @include mobile-only {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
       }
 
       &--request {
@@ -513,13 +490,13 @@
       }
 
       svg {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
         fill: $white;
 
         @include mobile-only {
-          width: 14px;
-          height: 14px;
+          width: 13px;
+          height: 13px;
         }
       }
     }
@@ -528,11 +505,11 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.25rem;
       min-width: 0;
 
       @include mobile-only {
-        gap: 0.25rem;
+        gap: 0.2rem;
       }
     }
 
@@ -540,11 +517,11 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
 
     &__message {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: $text-color;
       line-height: 1.3;
       flex: 1;
@@ -552,7 +529,7 @@
       overflow-wrap: break-word;
 
       @include mobile-only {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         line-height: 1.25;
       }
     }
