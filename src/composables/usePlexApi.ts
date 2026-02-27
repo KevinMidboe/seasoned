@@ -3,7 +3,7 @@ import { ref } from "vue";
 // Shared constants - generated once and reused
 export const CLIENT_IDENTIFIER =
   "seasoned-plex-app-" + Math.random().toString(36).substring(7);
-export const APP_NAME = "Seasoned";
+export const APP_NAME = window.location.hostname;
 
 export function usePlexApi() {
   const plexServerUrl = ref("");

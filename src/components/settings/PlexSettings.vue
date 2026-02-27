@@ -3,8 +3,8 @@
     <!-- Unconnected state -->
     <PlexAuthButton
       v-if="!isPlexConnected"
-      :loading="loading"
-      @authenticate="authenticatePlex"
+      @auth-success="handleAuthSuccess"
+      @auth-error="handleAuthError"
     />
 
     <!-- Connected state -->
@@ -118,8 +118,7 @@
   }>();
 
   // Composables
-  const { getCookie, setPlexAuthCookie, openAuthPopup, cleanup } =
-    usePlexAuth();
+  const { getCookie, setPlexAuthCookie, cleanup } = usePlexAuth();
   const {
     fetchPlexUserData,
     fetchPlexServers,
@@ -209,11 +208,11 @@
     }
   }
 
-  // ----- OAuth flow -----
-  async function completePlexAuth(authToken: string) {
+  // ----- OAuth flow (handlers for PlexAuthButton events) -----
+  async function handleAuthSuccess(authToken: string) {
     try {
       console.log(
-        "[PlexSettings] completePlexAuth called with token:",
+        "[PlexSettings] Auth success! Token received:",
         authToken.substring(0, 10) + "..."
       );
       setPlexAuthCookie(authToken);
@@ -245,40 +244,22 @@
         } as IErrorMessage);
       }
     } catch (error) {
-      console.error("[PlexSettings] Error in completePlexAuth:", error);
+      console.error("[PlexSettings] Error in handleAuthSuccess:", error);
       messages.value.push({
         type: ErrorMessageTypes.Error,
         title: "Authentication failed",
         message: "An error occurred while connecting to Plex"
       } as IErrorMessage);
-    } finally {
-      loading.value = false;
     }
   }
 
-  async function authenticatePlex() {
-    console.log("[PlexSettings] Starting authentication flow...");
-    loading.value = true;
-    openAuthPopup(
-      // onSuccess
-      async (authToken: string) => {
-        console.log("[PlexSettings] onSuccess callback triggered with token");
-        await completePlexAuth(authToken);
-      },
-      // onError
-      (errorMessage: string) => {
-        console.error(
-          "[PlexSettings] onError callback triggered:",
-          errorMessage
-        );
-        messages.value.push({
-          type: ErrorMessageTypes.Error,
-          title: "Authentication failed",
-          message: errorMessage
-        } as IErrorMessage);
-        loading.value = false;
-      }
-    );
+  function handleAuthError(errorMessage: string) {
+    console.error("[PlexSettings] Auth error:", errorMessage);
+    messages.value.push({
+      type: ErrorMessageTypes.Error,
+      title: "Authentication failed",
+      message: errorMessage
+    } as IErrorMessage);
   }
 
   // ----- Unlink flow -----
