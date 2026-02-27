@@ -162,8 +162,9 @@ export function usePlexApi() {
       const allData = await allResponse.json();
 
       // Fetch recently added
+      const size = 20;
       const recentResponse = await fetch(
-        `${serverUrl}/library/sections/${sectionKey}/recentlyAdded?X-Plex-Container-Start=0&X-Plex-Container-Size=5`,
+        `${serverUrl}/library/sections/${sectionKey}/recentlyAdded?X-Plex-Container-Start=0&X-Plex-Container-Size=${size}`,
         {
           method: "GET",
           headers: {

@@ -128,11 +128,9 @@ export function usePlexLibraries() {
       }
 
       // Process recently added items
-      const recentItems = data.recentMetadata
-        .slice(0, 5)
-        .map((item: any) =>
-          processLibraryItem(item, libraryType, authToken, serverUrl)
-        );
+      const recentItems = data.recentMetadata.map((item: any) =>
+        processLibraryItem(item, libraryType, authToken, serverUrl)
+      );
 
       // Calculate stats
       const genres = calculateGenreStats(data.metadata);
