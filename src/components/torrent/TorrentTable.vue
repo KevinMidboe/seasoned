@@ -108,7 +108,10 @@
     expandedCol.dataset[scopedStyleDataVariable] = "";
     expandedRow.className = "expanded";
     expandedCol.innerText = text;
-    expandedCol.colSpan = 4;
+
+    // Colspan: 2 on mobile (name + add), 4 on desktop (name + seed + size + add)
+    const isMobile = window.innerWidth <= 768;
+    expandedCol.colSpan = isMobile ? 2 : 4;
 
     expandedRow.appendChild(expandedCol);
     tableRow.insertAdjacentElement("afterend", expandedRow);
@@ -244,15 +247,16 @@
       }
 
       .torrent-meta {
-        display: none; // Hidden on desktop, shown on mobile
         font-size: 0.85rem;
         color: var(--text-color-60);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
 
-        @include mobile {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          flex-wrap: wrap;
+        // Hide on desktop
+        @include desktop {
+          display: none !important;
         }
 
         .meta-item {
