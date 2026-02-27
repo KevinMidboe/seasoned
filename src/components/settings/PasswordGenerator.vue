@@ -1,11 +1,6 @@
 <template>
   <div class="password-generator">
-    <button class="generator-toggle" @click="toggleGenerator">
-      <IconKey class="toggle-icon" />
-      <span>{{ showGenerator ? "Hide" : "Generate Strong Password" }}</span>
-    </button>
-
-    <div v-if="showGenerator" class="generator-panel">
+    <div class="generator-panel">
       <div class="generator-tabs">
         <button
           :class="['tab', { 'tab--active': mode === 'words' }]"
@@ -28,7 +23,9 @@
         </div>
 
         <div class="password-display" @click="copyPassword">
-          <span class="password-text">{{ generatedPassword }}</span>
+          <span class="password-text password-text--mono">{{
+            generatedPassword
+          }}</span>
           <button
             class="copy-btn"
             :title="copied ? 'Copied!' : 'Click to copy'"
@@ -136,8 +133,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch } from "vue";
-  import IconKey from "@/icons/IconKey.vue";
+  import { ref, computed, watch, onMounted } from "vue";
   import IconActivity from "@/icons/IconActivity.vue";
 
   interface Emit {
@@ -146,7 +142,6 @@
 
   const emit = defineEmits<Emit>();
 
-  const showGenerator = ref(false);
   const mode = ref<"words" | "chars">("words");
   const generatedPassword = ref("");
   const copied = ref(false);
@@ -256,13 +251,6 @@
     ]
   };
 
-  function toggleGenerator() {
-    showGenerator.value = !showGenerator.value;
-    if (showGenerator.value && !generatedPassword.value) {
-      generateWordsPassword();
-    }
-  }
-
   function getRandomWord(category: keyof typeof wordLists): string {
     const words = wordLists[category];
     return words[Math.floor(Math.random() * words.length)];
@@ -323,7 +311,8 @@
 
   function usePassword() {
     emit("passwordGenerated", generatedPassword.value);
-    showGenerator.value = false;
+    // TODO: emit
+    // showGenerator.value = false;
   }
 
   watch(mode, () => {
@@ -333,6 +322,8 @@
       generateCharsPassword();
     }
   });
+
+  onMounted(generateWordsPassword);
 </script>
 
 <style lang="scss" scoped>
@@ -341,32 +332,6 @@
 
   .password-generator {
     margin-bottom: 1rem;
-  }
-
-  .generator-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background-color: var(--background-ui);
-    border: 1px solid var(--background-40);
-    border-radius: 0.5rem;
-    color: $text-color;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-
-    &:hover {
-      background-color: var(--background-40);
-      border-color: var(--highlight-color);
-    }
-  }
-
-  .toggle-icon {
-    width: 18px;
-    height: 18px;
-    fill: var(--highlight-color);
   }
 
   .generator-panel {
@@ -455,11 +420,14 @@
 
   .password-text {
     flex: 1;
-    font-size: 1.1rem;
+    font-size: 1.8rem;
     font-weight: 500;
     color: var(--highlight-color);
-    word-break: break-all;
     user-select: all;
+    word-break: break-all;
+    word-break: break-word;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 
     @include mobile-only {
       font-size: 0.95rem;
@@ -467,7 +435,6 @@
 
     &--mono {
       font-family: "Courier New", monospace;
-      font-size: 1rem;
 
       @include mobile-only {
         font-size: 0.85rem;

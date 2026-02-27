@@ -74,11 +74,16 @@ const routes: RouteRecordRaw[] = [
   //   }
   // },
   {
+    name: "password-gen",
+    path: "/password",
+    component: () => import("./pages/GenPasswordPage.vue")
+  },
+  {
     name: "admin",
     path: "/admin",
     meta: { requiresAuth: true },
     component: () => import("./pages/AdminPage.vue")
-  },
+  }
   // {
   //   path: "*",
   //   redirect: "/"

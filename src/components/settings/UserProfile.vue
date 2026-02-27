@@ -8,8 +8,28 @@
           <span :class="['role-badge', `role-badge--${userRole}`]">{{
             userRole
           }}</span>
+          <span
+            v-if="plexUsername"
+            class="role-badge role-badge--plex"
+            :title="`Connected as ${plexUsername}`"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 256 256"
+              fill="currentColor"
+            >
+              <path
+                d="M128 0C57.3 0 0 57.3 0 128s57.3 128 128 128 128-57.3 128-128S198.7 0 128 0zm57.7 128.7l-48 48c-.4.4-.9.7-1.4.9-.5.2-1.1.4-1.6.4s-1.1-.1-1.6-.4c-.5-.2-1-.5-1.4-.9l-48-48c-1.6-1.6-1.6-4.1 0-5.7 1.6-1.6 4.1-1.6 5.7 0l41.1 41.1V80c0-2.2 1.8-4 4-4s4 1.8 4 4v84.1l41.1-41.1c1.6-1.6 4.1-1.6 5.7 0 .8.8 1.2 1.8 1.2 2.8s-.4 2.1-1.2 2.9z"
+              />
+            </svg>
+            Plex
+          </span>
         </div>
         <span class="member-info">Member since {{ memberSince }}</span>
+        <span v-if="plexUsername" class="plex-info"
+          >Connected as {{ plexUsername }}</span
+        >
       </div>
     </div>
   </div>
@@ -20,6 +40,7 @@
   import { useStore } from "vuex";
 
   const store = useStore();
+  const plexUsername = ref<string>("");
 
   const username = computed(() => store.getters["user/username"] || "User");
 
@@ -49,6 +70,23 @@
       now.getMonth() -
       memberSinceDate.value.getMonth()
     );
+  });
+
+  // Load Plex username from localStorage
+  function loadPlexUsername() {
+    const cachedData = localStorage.getItem("plex_user_data");
+    if (cachedData) {
+      try {
+        const plexData = JSON.parse(cachedData);
+        plexUsername.value = plexData.username || "";
+      } catch (error) {
+        console.error("Error parsing cached Plex data:", error);
+      }
+    }
+  }
+
+  onMounted(() => {
+    loadPlexUsername();
   });
 </script>
 
@@ -136,6 +174,19 @@
     }
   }
 
+  .plex-info {
+    font-size: 0.75rem;
+    color: #cc7b19;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+
+    @include mobile-only {
+      font-size: 0.7rem;
+    }
+  }
+
   .role-badge {
     padding: 0.2rem 0.55rem;
     border-radius: 0.25rem;
@@ -143,6 +194,9 @@
     text-transform: uppercase;
     font-weight: 600;
     line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
 
     &--admin {
       background-color: var(--color-warning);
@@ -152,6 +206,16 @@
     &--user {
       background-color: var(--background-40);
       color: $text-color;
+    }
+
+    &--plex {
+      background-color: #cc7b19;
+      color: $white;
+      cursor: help;
+
+      svg {
+        flex-shrink: 0;
+      }
     }
   }
 </style>

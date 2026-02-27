@@ -14,7 +14,17 @@
           type="password"
         />
 
-        <password-generator @password-generated="handleGeneratedPassword" />
+        <div class="password-generator">
+          <button class="generator-toggle" @click="toggleGenerator">
+            <IconKey class="toggle-icon" />
+            <span>{{
+              showGenerator ? "Hide" : "Generate Strong Password"
+            }}</span>
+          </button>
+          <div v-if="showGenerator">
+            <password-generator @password-generated="handleGeneratedPassword" />
+          </div>
+        </div>
 
         <seasoned-input
           v-model="newPassword"
@@ -45,10 +55,12 @@
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import SeasonedMessages from "@/components/ui/SeasonedMessages.vue";
   import PasswordGenerator from "@/components/settings/PasswordGenerator.vue";
+  import IconKey from "@/icons/IconKey.vue";
   import type { Ref } from "vue";
   import { ErrorMessageTypes } from "../../interfaces/IErrorMessage";
   import type { IErrorMessage } from "../../interfaces/IErrorMessage";
 
+  const showGenerator = ref(false);
   const oldPassword: Ref<string> = ref("");
   const newPassword: Ref<string> = ref("");
   const newPasswordRepeat: Ref<string> = ref("");
@@ -69,7 +81,7 @@
   }
 
   function validate() {
-    return
+    return;
     return new Promise((resolve, reject) => {
       if (!oldPassword.value || oldPassword?.value?.length === 0) {
         addWarningMessage("Missing old password!", "Validation error");
@@ -120,6 +132,15 @@
       loading.value = false;
     }
   }
+
+  function toggleGenerator() {
+    showGenerator.value = !showGenerator.value;
+    /*
+    if (showGenerator.value && !generatedPassword.value) {
+      generateWordsPassword();
+    }
+    */
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -150,5 +171,37 @@
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
+  }
+
+  .generator-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--background-ui);
+    border: 1px solid var(--background-40);
+    border-radius: 0.5rem;
+    color: $text-color;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+
+    &:hover {
+      background-color: var(--background-40);
+      border-color: var(--highlight-color);
+    }
+  }
+
+  .toggle-icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--highlight-color);
+  }
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
   }
 </style>
