@@ -74,10 +74,11 @@ const routes: RouteRecordRaw[] = [
   //   }
   // },
   {
-    name: "404",
-    path: "/404",
-    component: () => import("./pages/404Page.vue")
-  }
+    name: "admin",
+    path: "/admin",
+    meta: { requiresAuth: true },
+    component: () => import("./pages/AdminPage.vue")
+  },
   // {
   //   path: "*",
   //   redirect: "/"
