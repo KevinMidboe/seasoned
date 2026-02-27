@@ -81,7 +81,6 @@
     display: flex;
     width: 100%;
     position: relative;
-    max-width: 35rem;
     border: 1px solid var(--text-color-50);
     background-color: var(--background-color-secondary);
 

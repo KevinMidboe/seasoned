@@ -37,7 +37,6 @@
     min-height: 45px;
     padding: 5px 10px 4px 10px;
     margin: 0;
-    margin-right: 0.3rem;
     color: $text-color;
     background: $background-color-secondary;
     cursor: pointer;
