@@ -373,9 +373,9 @@ const updateSettings = async (settings: any) => {
 
 // - - - Authenticate with plex - - -
 
-const linkPlexAccount = async (username: string, password: string) => {
+const linkPlexAccount = async (authToken: string) => {
   const url = new URL("/api/v1/user/link_plex", API_HOSTNAME);
-  const body = { username, password };
+  const body = { authToken };
 
   const options: RequestInit = {
     method: "POST",
@@ -387,7 +387,7 @@ const linkPlexAccount = async (username: string, password: string) => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error linking plex account: ${username}`); // eslint-disable-line no-console
+      console.error("api error linking plex account"); // eslint-disable-line no-console
       throw error;
     });
 };
