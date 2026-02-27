@@ -132,7 +132,25 @@
 
   const days: Ref<number> = ref(30);
   const graphViewMode: Ref<GraphTypes> = ref(GraphTypes.Plays);
-  const plexUserId = computed(() => store.getters["user/plexUserId"]);
+
+  // Check both Vuex store and localStorage for Plex user
+  const plexUserId = computed(() => {
+    // First try Vuex store
+    const storeId = store.getters["user/plexUserId"];
+    if (storeId) return storeId;
+
+    // Fallback to localStorage
+    const userData = localStorage.getItem("plex_user_data");
+    if (userData) {
+      try {
+        return JSON.parse(userData).id;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
   const plexUsername = computed(() => {
     const userData = localStorage.getItem("plex_user_data");
     if (userData) {

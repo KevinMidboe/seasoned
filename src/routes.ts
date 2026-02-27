@@ -102,7 +102,22 @@ const router = createRouter({
 });
 
 const loggedIn = () => store.getters["user/loggedIn"];
-const hasPlexAccount = () => store.getters["user/plexUserId"] !== null;
+const hasPlexAccount = () => {
+  // Check Vuex store first
+  if (store.getters["user/plexUserId"] !== null) return true;
+
+  // Fallback to localStorage
+  const userData = localStorage.getItem("plex_user_data");
+  if (userData) {
+    try {
+      const parsed = JSON.parse(userData);
+      return parsed.id !== null && parsed.id !== undefined;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+};
 const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
 router.beforeEach(
