@@ -135,6 +135,7 @@
 <script setup lang="ts">
   import { ref, computed, watch, onMounted } from "vue";
   import IconActivity from "@/icons/IconActivity.vue";
+  import { useRandomWords } from "@/composables/useRandomWords";
 
   interface Emit {
     (e: "passwordGenerated", password: string): void;
@@ -149,8 +150,6 @@
   // Words mode options
   const wordCount = ref(4);
   const separator = ref("-");
-  const capitalize = ref(true);
-  const includeNumber = ref(true);
 
   // Chars mode options
   const charLength = ref(16);
@@ -159,115 +158,11 @@
   const includeNumbers = ref(true);
   const includeSymbols = ref(true);
 
-  // Word lists for passphrase generation
-  const wordLists = {
-    adjectives: [
-      "Swift",
-      "Brave",
-      "Cosmic",
-      "Silent",
-      "Golden",
-      "Mystic",
-      "Ancient",
-      "Noble",
-      "Rapid",
-      "Stellar",
-      "Thunder",
-      "Crystal",
-      "Shadow",
-      "Bright",
-      "Wild",
-      "Mighty",
-      "Silver",
-      "Storm",
-      "Frozen",
-      "Lunar"
-    ],
-    nouns: [
-      "Dragon",
-      "Phoenix",
-      "Tiger",
-      "Wolf",
-      "Eagle",
-      "Panther",
-      "Falcon",
-      "Lion",
-      "Shark",
-      "Bear",
-      "Hawk",
-      "Raven",
-      "Cobra",
-      "Lynx",
-      "Viper",
-      "Jaguar",
-      "Orca",
-      "Cheetah",
-      "Puma",
-      "Raptor"
-    ],
-    verbs: [
-      "Jumps",
-      "Runs",
-      "Flies",
-      "Hunts",
-      "Strikes",
-      "Dances",
-      "Glides",
-      "Soars",
-      "Prowls",
-      "Climbs",
-      "Swims",
-      "Races",
-      "Leaps",
-      "Dives",
-      "Roars",
-      "Stalks",
-      "Bounds",
-      "Slides",
-      "Charges",
-      "Springs"
-    ],
-    objects: [
-      "Mountain",
-      "Ocean",
-      "Forest",
-      "Desert",
-      "River",
-      "Canyon",
-      "Glacier",
-      "Valley",
-      "Island",
-      "Volcano",
-      "Lake",
-      "Meadow",
-      "Cliff",
-      "Cave",
-      "Peak",
-      "Reef",
-      "Marsh",
-      "Dune",
-      "Stream",
-      "Ridge"
-    ]
-  };
+  const { getRandomWords } = useRandomWords();
 
-  function getRandomWord(category: keyof typeof wordLists): string {
-    const words = wordLists[category];
-    return words[Math.floor(Math.random() * words.length)];
-  }
-
-  function generateWordsPassword() {
-    const categories = ["adjectives", "nouns", "verbs", "objects"] as const;
-    const words: string[] = [];
-
-    for (let i = 0; i < wordCount.value; i++) {
-      const category = categories[i % categories.length];
-      let word = getRandomWord(category);
-      words.push(word.toLowerCase());
-    }
-
-    let password = words.join(separator.value);
-
+  async function generateWordsPassword() {
+    const words = await getRandomWords(wordCount.value);
+    const password = words.join(separator.value);
     generatedPassword.value = password;
   }
 
@@ -289,9 +184,9 @@
     generatedPassword.value = password;
   }
 
-  function regenerate() {
+  async function regenerate() {
     if (mode.value === "words") {
-      generateWordsPassword();
+      await generateWordsPassword();
     } else {
       generateCharsPassword();
     }
@@ -315,9 +210,9 @@
     // showGenerator.value = false;
   }
 
-  watch(mode, () => {
+  watch(mode, async () => {
     if (mode.value === "words") {
-      generateWordsPassword();
+      await generateWordsPassword();
     } else {
       generateCharsPassword();
     }
