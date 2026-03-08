@@ -29,7 +29,7 @@
       <seasoned-button @click="submit">Register</seasoned-button>
     </form>
 
-    <router-link class="link" to="/signin"
+    <router-link class="link" to="/login"
       >Have a user? Sign in here</router-link
     >
 
