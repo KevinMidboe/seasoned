@@ -1,12 +1,7 @@
 <template>
   <div class="change-password">
     <div class="password-card">
-      <p class="password-info">
-        Update your password to keep your account secure. Use a strong password
-        with at least 8 characters.
-      </p>
-
-      <form class="password-form" @submit.prevent="changePassword">
+      <form class="password-form" @submit.prevent>
         <seasoned-input
           v-model="oldPassword"
           placeholder="Current password"
@@ -72,49 +67,8 @@
     newPasswordRepeat.value = password;
   }
 
-  function addWarningMessage(message: string, title?: string) {
-    messages.value.push({
-      message,
-      title,
-      type: ErrorMessageTypes.Warning
-    } as IErrorMessage);
-  }
-
-  function validate() {
-    return;
-    return new Promise((resolve, reject) => {
-      if (!oldPassword.value || oldPassword?.value?.length === 0) {
-        addWarningMessage("Missing old password!", "Validation error");
-        reject();
-      }
-
-      if (!newPassword.value || newPassword?.value?.length === 0) {
-        addWarningMessage("Missing new password!", "Validation error");
-        reject();
-      }
-
-      if (newPassword.value !== newPasswordRepeat.value) {
-        addWarningMessage(
-          "Password and password repeat do not match!",
-          "Validation error"
-        );
-        reject();
-      }
-
-      resolve(true);
-    });
-  }
-
-  async function changePassword() {
+  async function changePassword(event: CustomEvent) {
     try {
-      await validate();
-
-      loading.value = true;
-
-      // API call disabled for now
-      // TODO: Implement actual password change API call
-      // await api.changePassword({ oldPassword, newPassword });
-
       messages.value.push({
         message: "Password change is currently disabled",
         title: "Feature Disabled",
@@ -151,20 +105,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
-  }
-
-  .password-info {
-    margin: 0;
-    padding: 0.65rem;
-    background-color: var(--background-ui);
-    border-radius: 0.25rem;
-    font-size: 0.9rem;
-    border-left: 3px solid var(--highlight-color);
-
-    @include mobile-only {
-      padding: 0.6rem;
-      font-size: 0.85rem;
-    }
   }
 
   .password-form {

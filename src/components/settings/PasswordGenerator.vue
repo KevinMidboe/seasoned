@@ -36,7 +36,10 @@
 
         <div class="generator-options">
           <div class="option-row">
-            <label>Number of words: {{ wordCount }}</label>
+            <div class="slider-header">
+              <label>Words</label>
+              <span class="slider-value">{{ wordCount }}</span>
+            </div>
             <input
               v-model.number="wordCount"
               type="range"
@@ -45,7 +48,10 @@
               class="slider"
               @input="generateWordsPassword"
             />
-            <span class="option-value">{{ wordCount }}</span>
+            <div class="slider-labels">
+              <span>3</span>
+              <span>7</span>
+            </div>
           </div>
         </div>
       </div>
@@ -70,7 +76,10 @@
 
         <div class="generator-options">
           <div class="option-row">
-            <label>Length: {{ charLength }}</label>
+            <div class="slider-header">
+              <label>Length</label>
+              <span class="slider-value">{{ charLength }}</span>
+            </div>
             <input
               v-model.number="charLength"
               type="range"
@@ -79,7 +88,10 @@
               class="slider"
               @input="generateCharsPassword"
             />
-            <span class="option-value">{{ charLength }}</span>
+            <div class="slider-labels">
+              <span>12</span>
+              <span>46</span>
+            </div>
           </div>
 
           <div class="option-row checkbox-row">
@@ -133,7 +145,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch, onMounted } from "vue";
+  import { ref, watch, onMounted } from "vue";
   import IconActivity from "@/icons/IconActivity.vue";
   import { useRandomWords } from "@/composables/useRandomWords";
 
@@ -360,12 +372,12 @@
   .option-row {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.75rem;
 
     label {
-      font-size: 0.85rem;
+      font-size: 0.95rem;
       color: $text-color;
-      font-weight: 500;
+      font-weight: 600;
       line-height: 1.2;
     }
 
@@ -396,38 +408,121 @@
     }
   }
 
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+  }
+
+  .slider-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--highlight-color);
+    min-width: 2.5rem;
+    text-align: right;
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: $text-color-50;
+    margin-top: 0.25rem;
+    padding: 0 0.25rem;
+  }
+
   .slider {
     width: 100%;
-    height: 6px;
-    border-radius: 3px;
+    height: 10px;
+    border-radius: 5px;
     background: var(--background-40);
     outline: none;
     appearance: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin: 0.5rem 0;
+
+    @include mobile-only {
+      height: 12px;
+    }
+
+    &:hover {
+      background: var(--background-40);
+    }
 
     &::-webkit-slider-thumb {
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: var(--highlight-color);
-      cursor: pointer;
+      cursor: grab;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s;
+      margin-top: -7px;
+
+      @include mobile-only {
+        width: 28px;
+        height: 28px;
+        margin-top: -8px;
+      }
+
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      &:active {
+        cursor: grabbing;
+        transform: scale(1.05);
+      }
     }
 
     &::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: var(--highlight-color);
-      cursor: pointer;
+      cursor: grab;
       border: none;
-    }
-  }
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s;
 
-  .option-value {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--highlight-color);
-    text-align: center;
+      @include mobile-only {
+        width: 28px;
+        height: 28px;
+      }
+
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      &:active {
+        cursor: grabbing;
+        transform: scale(1.05);
+      }
+    }
+
+    &::-webkit-slider-runnable-track {
+      height: 10px;
+      border-radius: 5px;
+
+      @include mobile-only {
+        height: 12px;
+      }
+    }
+
+    &::-moz-range-track {
+      height: 10px;
+      border-radius: 5px;
+      background: var(--background-40);
+
+      @include mobile-only {
+        height: 12px;
+      }
+    }
   }
 
   .separator-input {

@@ -1,0 +1,30 @@
+@import "./media-queries.scss";
+
+.settings-section-card {
+  padding: 0.85rem;
+  background-color: var(--background-ui);
+  border-radius: 0.25rem;
+  border-left: 3px solid var(--highlight-color);
+
+  @include mobile-only {
+    padding: 0.75rem;
+  }
+}
+
+.settings-section-header {
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-color-70);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
