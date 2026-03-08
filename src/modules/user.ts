@@ -16,12 +16,13 @@ export interface CookieOptions {
 /**
  * Read a cookie value.
  */
-export function getCookie(name: string): string | null {
+export function getAuthorizationCookie(): string | null {
+  const key = 'authorization';
   const array = document.cookie.split(";");
   let match = null;
 
   array.forEach((item: string) => {
-    const query = `${name}=`;
+    const query = `${key}=`;
     if (!item.trim().startsWith(query)) return;
     match = item.trim().substring(query.length);
   });
@@ -132,7 +133,7 @@ const userModule: Module<UserState, RootState> = {
   /* ── Actions ─────────────────────────────────────────────────── */
   actions: {
     async initUserFromCookie({ dispatch }): Promise<boolean | null> {
-      const jwtToken = getCookie("authorization");
+      const jwtToken = getAuthorizationCookie();
       if (!jwtToken) return null;
 
       const token = parseJwt(jwtToken);
