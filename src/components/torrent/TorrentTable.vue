@@ -3,7 +3,7 @@
     <thead class="table__header noselect">
       <tr>
         <th
-          v-for="column in columns"
+          v-for="column in visibleColumns"
           :key="column"
           :class="column === selectedColumn ? 'active' : null"
           @click="sortTable(column)"
@@ -22,18 +22,28 @@
         class="table__content"
       >
         <td
+          class="torrent-info"
           @click="expand($event, torrent.name)"
           @keydown.enter="expand($event, torrent.name)"
         >
-          {{ torrent.name }}
+          <div class="torrent-title">{{ torrent.name }}</div>
+          <div v-if="isMobile" class="torrent-meta">
+            <span class="meta-item">{{ torrent.size }}</span>
+            <span class="meta-separator">•</span>
+            <span class="meta-item">{{ torrent.seed }} seeders</span>
+          </div>
         </td>
         <td
+          v-if="!isMobile"
+          class="torrent-seed"
           @click="expand($event, torrent.name)"
           @keydown.enter="expand($event, torrent.name)"
         >
           {{ torrent.seed }}
         </td>
         <td
+          v-if="!isMobile"
+          class="torrent-size"
           @click="expand($event, torrent.name)"
           @keydown.enter="expand($event, torrent.name)"
         >
@@ -52,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from "vue";
+  import { ref, computed, onMounted, onUnmounted } from "vue";
   import IconMagnet from "@/icons/IconMagnet.vue";
   import type { Ref } from "vue";
   import { sortableSize } from "../../utils";
@@ -70,11 +80,28 @@
   const emit = defineEmits<Emit>();
 
   const columns: string[] = ["name", "seed", "size", "add"];
+  const windowWidth = ref(window.innerWidth);
+  const isMobile = computed(() => windowWidth.value <= 768);
+  const visibleColumns = computed(() =>
+    isMobile.value ? ["name", "add"] : columns
+  );
 
   const torrents: Ref<ITorrent[]> = ref(props.torrents);
   const direction: Ref<boolean> = ref(false);
   const selectedColumn: Ref<string> = ref(columns[0]);
   const prevCol: Ref<string> = ref("");
+
+  function handleResize() {
+    windowWidth.value = window.innerWidth;
+  }
+
+  onMounted(() => {
+    window.addEventListener("resize", handleResize);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("resize", handleResize);
+  });
 
   function expand(event: MouseEvent, text: string) {
     const elementClicked = event.target as HTMLElement;
@@ -100,7 +127,9 @@
     expandedCol.dataset[scopedStyleDataVariable] = "";
     expandedRow.className = "expanded";
     expandedCol.innerText = text;
-    expandedCol.colSpan = 4;
+
+    // Colspan: 2 on mobile (name + add), 4 on desktop (name + seed + size + add)
+    expandedCol.colSpan = isMobile.value ? 2 : 4;
 
     expandedRow.appendChild(expandedCol);
     tableRow.insertAdjacentElement("afterend", expandedRow);
@@ -163,16 +192,23 @@
     border-spacing: 0;
     margin-top: 0.5rem;
     width: 100%;
-    // border-collapse: collapse;
+    max-width: 100%;
     border-radius: 0.5rem;
     overflow: hidden;
+    table-layout: fixed;
+
+    @include mobile {
+      table-layout: auto;
+    }
   }
 
   th,
   td {
     border: 0.5px solid var(--background-color-40);
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     @include mobile {
-      white-space: nowrap;
       padding: 0;
     }
   }
@@ -186,8 +222,6 @@
     cursor: pointer;
     background-color: var(--table-background-color);
     background-color: var(--highlight-color);
-    // background-color: black;
-    // color: var(--color-green);
     letter-spacing: 0.8px;
     font-size: 1rem;
 
@@ -197,31 +231,69 @@
   }
 
   tbody {
-    // first column
-    tr td:first-of-type {
+    // first column - torrent info
+    .torrent-info {
       position: relative;
-      padding: 0 0.3rem;
+      padding: 0.5rem 0.6rem;
       cursor: default;
-      word-break: break-all;
+      word-break: break-word;
       border-left: 1px solid var(--table-background-color);
 
       @include mobile {
-        max-width: 40vw;
-        overflow-x: hidden;
+        width: 100%;
+        padding: 0.75rem 0.5rem;
+      }
+
+      .torrent-title {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        line-height: 1.3;
+        word-break: break-word;
+        overflow-wrap: break-word;
+
+        @include mobile {
+          font-size: 0.95rem;
+        }
+      }
+
+      .torrent-meta {
+        font-size: 0.85rem;
+        color: var(--text-color-60);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.25rem;
+
+        .meta-item {
+          white-space: nowrap;
+        }
+
+        .meta-separator {
+          color: var(--text-color-40);
+        }
       }
     }
 
-    // all columns except first
-    tr td:not(td:first-of-type) {
+    // seed and size columns (desktop only)
+    .torrent-seed,
+    .torrent-size {
       text-align: center;
       white-space: nowrap;
+      padding: 0.5rem;
     }
 
-    // last column
+    // last column - action
     tr td:last-of-type {
       vertical-align: middle;
       cursor: pointer;
       border-right: 1px solid var(--table-background-color);
+      width: 60px;
+      text-align: center;
+
+      @include mobile {
+        width: 50px;
+      }
 
       svg {
         width: 21px;
@@ -229,6 +301,10 @@
         margin: auto;
         padding: 0.3rem 0;
         fill: var(--text-color);
+
+        @include mobile {
+          width: 18px;
+        }
       }
     }
 
