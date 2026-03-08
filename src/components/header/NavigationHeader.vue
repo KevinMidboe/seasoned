@@ -41,7 +41,7 @@
 
   const signinNavigationIcon: INavigationIcon = {
     title: "Signin",
-    route: "/signin",
+    route: "/login",
     icon: IconProfileLock
   };
 

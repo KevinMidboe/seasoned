@@ -51,7 +51,7 @@
       </Detail>
 
       <Detail
-        v-if="creditedShows.length"
+        v-if="creditedMovies.length"
         title="movies"
         :detail="`Credited in ${creditedMovies.length} movies`"
       >

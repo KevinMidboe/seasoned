@@ -1,40 +1,107 @@
 <template>
-  <section>
-    <h1>Register new user</h1>
+  <div class="register auth-page">
+    <div class="auth-content auth-content--wide">
+      <div class="auth-header">
+        <h1 class="auth-title">Register new user</h1>
+        <p class="auth-subtitle">Create an account to get started</p>
+      </div>
 
-    <form ref="formElement" class="form">
-      <seasoned-input
-        v-model="username"
-        placeholder="username"
-        icon="Email"
-        type="email"
-        @keydown.enter="focusOnNextElement"
-      />
+      <form ref="formElement" class="auth-form" @submit.prevent>
+        <seasoned-input
+          v-model="username"
+          placeholder="Email address"
+          icon="Email"
+          type="email"
+          @keydown.enter="focusOnNextElement"
+        />
 
-      <seasoned-input
-        v-model="password"
-        placeholder="password"
-        icon="Keyhole"
-        type="password"
-        @keydown.enter="focusOnNextElement"
-      />
-      <seasoned-input
-        v-model="passwordRepeat"
-        placeholder="repeat password"
-        icon="Keyhole"
-        type="password"
-        @keydown.enter="submit"
-      />
+        <div class="register__password-section">
+          <div class="password-generator">
+            <button
+              type="button"
+              class="generator-toggle"
+              @click="toggleGenerator"
+            >
+              <IconKey class="toggle-icon" />
+              <span>{{
+                showGenerator
+                  ? "Hide Password Generator"
+                  : "Generate Strong Password"
+              }}</span>
+            </button>
+            <div v-if="showGenerator" class="generator-content">
+              <password-generator
+                @password-generated="handlePasswordGenerated"
+              />
+            </div>
+          </div>
 
-      <seasoned-button @click="submit">Register</seasoned-button>
-    </form>
+          <seasoned-input
+            v-model="password"
+            placeholder="Password"
+            icon="Keyhole"
+            type="password"
+            class="password-input"
+            @keydown.enter="focusOnNextElement"
+          />
 
-    <router-link class="link" to="/signin"
-      >Have a user? Sign in here</router-link
-    >
+          <seasoned-input
+            v-model="passwordRepeat"
+            placeholder="Confirm password"
+            icon="Keyhole"
+            type="password"
+            class="password-input"
+            @keydown.enter="submit"
+          />
+        </div>
 
-    <seasoned-messages v-model:messages="messages"></seasoned-messages>
-  </section>
+        <div v-if="password.length > 0" class="register__password-requirements">
+          <p class="requirements-title">Password must contain:</p>
+          <div class="requirements-grid">
+            <div class="requirement" :class="{ met: password.length >= 8 }">
+              <span class="requirement-icon">{{
+                password.length >= 8 ? "✓" : "✗"
+              }}</span>
+              <span class="requirement-text">At least 8 characters</span>
+            </div>
+            <div class="requirement" :class="{ met: /[A-Z]/.test(password) }">
+              <span class="requirement-icon">{{
+                /[A-Z]/.test(password) ? "✓" : "✗"
+              }}</span>
+              <span class="requirement-text">One uppercase letter</span>
+            </div>
+            <div class="requirement" :class="{ met: /[a-z]/.test(password) }">
+              <span class="requirement-icon">{{
+                /[a-z]/.test(password) ? "✓" : "✗"
+              }}</span>
+              <span class="requirement-text">One lowercase letter</span>
+            </div>
+            <div class="requirement" :class="{ met: /[0-9]/.test(password) }">
+              <span class="requirement-icon">{{
+                /[0-9]/.test(password) ? "✓" : "✗"
+              }}</span>
+              <span class="requirement-text">One number</span>
+            </div>
+          </div>
+        </div>
+
+        <seasoned-button class="auth-button" @click="submit">
+          Create Account
+        </seasoned-button>
+      </form>
+
+      <div class="auth-footer">
+        <p class="auth-footer-text">
+          Already have an account?
+          <router-link class="auth-link" to="/login">
+            Sign in here
+          </router-link>
+        </p>
+      </div>
+
+      <seasoned-messages v-model:messages="messages"></seasoned-messages>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -44,6 +111,8 @@
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
   import SeasonedInput from "@/components/ui/SeasonedInput.vue";
   import SeasonedMessages from "@/components/ui/SeasonedMessages.vue";
+  import PasswordGenerator from "@/components/settings/PasswordGenerator.vue";
+  import IconKey from "@/icons/IconKey.vue";
   import type { Ref } from "vue";
   import { register } from "../api";
   import { focusFirstFormInput, focusOnNextElement } from "../utils";
@@ -55,6 +124,7 @@
   const passwordRepeat: Ref<string> = ref("");
   const messages: Ref<IErrorMessage[]> = ref([]);
   const formElement: Ref<HTMLFormElement> = ref(null);
+  const showGenerator = ref(false);
 
   const store = useStore();
   const router = useRouter();
@@ -70,99 +140,198 @@
       message,
       title,
       type: ErrorMessageTypes.Error
-    } as IErrorMessage);
-  }
-
-  function addWarningMessage(message: string, title?: string) {
-    messages.value.push({
-      message,
-      title,
-      type: ErrorMessageTypes.Warning
-    } as IErrorMessage);
-  }
-
-  function validate(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (!username.value || username?.value?.length === 0) {
-        addWarningMessage("Missing username", "Validation error");
-        reject();
-      }
-
-      if (!password.value || password?.value?.length === 0) {
-        addWarningMessage("Missing password", "Validation error");
-        reject();
-      }
-
-      if (passwordRepeat.value == null || passwordRepeat.value.length === 0) {
-        addWarningMessage("Missing repeat password", "Validation error");
-        reject();
-      }
-      if (passwordRepeat.value !== password.value) {
-        addWarningMessage("Passwords do not match", "Validation error");
-        reject();
-      }
-
-      resolve(true);
     });
   }
 
-  function registerUser() {
-    register(username.value, password.value)
-      .then(data => {
-        if (data?.success && store.dispatch("user/login")) {
-          router.push({ name: "profile" });
-        }
+  function addSuccessMessage(message: string, title?: string) {
+    messages.value.push({
+      message,
+      title,
+      type: ErrorMessageTypes.Success
+    });
+  }
+
+  function validate() {
+    const errors = [];
+
+    if (username.value.length === 0) {
+      errors.push("Email must not be empty");
+    }
+
+    if (password.value.length === 0) {
+      errors.push("Password must not be empty");
+    }
+
+    if (password.value.length < 8) {
+      errors.push("Password must be at least 8 characters");
+    }
+
+    if (!/[A-Z]/.test(password.value)) {
+      errors.push("Password must contain at least one uppercase letter");
+    }
+
+    if (!/[a-z]/.test(password.value)) {
+      errors.push("Password must contain at least one lowercase letter");
+    }
+
+    if (!/[0-9]/.test(password.value)) {
+      errors.push("Password must contain at least one number");
+    }
+
+    if (password.value !== passwordRepeat.value) {
+      errors.push("Passwords do not match");
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(error => addErrorMessage(error, "Validation error"));
+      return Promise.reject();
+    }
+
+    return Promise.resolve(true);
+  }
+
+  function createUser() {
+    return register(username.value, password.value)
+      .then(response => {
+        addSuccessMessage(
+          "Account created successfully! Redirecting to login...",
+          "Success"
+        );
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+        return response;
       })
       .catch(error => {
-        if (error?.status === 401) {
-          addErrorMessage("Incorrect username or password", "Access denied");
-          return null;
-        }
-
-        addErrorMessage(error?.message, "Unexpected error");
+        addErrorMessage(error?.message || "Registration failed", "Error");
         return null;
       });
   }
 
   function submit() {
     clearMessages();
-    validate().then(registerUser);
+    validate().then(createUser);
+  }
+
+  function handlePasswordGenerated(generatedPassword: string) {
+    password.value = generatedPassword;
+    passwordRepeat.value = generatedPassword;
+  }
+
+  function toggleGenerator() {
+    showGenerator.value = !showGenerator.value;
   }
 </script>
 
 <style lang="scss" scoped>
-  @import "scss/variables";
+  @import "scss/shared-auth";
 
-  section {
-    padding: 1.3rem;
-
-    @include tablet-min {
-      padding: 4rem;
+  .register {
+    // Password inputs use monospace font
+    :deep(.password-input input[type="password"]),
+    :deep(.password-input input[type="text"]) {
+      font-family: "Courier New", monospace;
     }
+  }
 
-    .form > div,
-    input,
-    button {
-      margin-bottom: 1rem;
+  .register__password-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
 
-      &:last-child {
-        margin-bottom: 0px;
+  .password-generator {
+    .generator-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: var(--background-ui);
+      border: 1px solid var(--text-color-10);
+      border-radius: 8px;
+      color: var(--text-color);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: var(--background-color-secondary);
+        border-color: var(--text-color-20);
+      }
+
+      .toggle-icon {
+        width: 18px;
+        height: 18px;
+        color: var(--highlight-color);
       }
     }
 
-    h1 {
-      margin: 0;
-      line-height: 16px;
+    .generator-content {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--text-color-10);
+    }
+  }
+
+  .register__password-requirements {
+    background: var(--background-ui);
+    border: 1px solid var(--text-color-10);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-top: -0.25rem;
+
+    .requirements-title {
+      margin: 0 0 1rem 0;
+      font-size: 0.95rem;
+      font-weight: 500;
       color: $text-color;
-      font-weight: 300;
-      margin-bottom: 20px;
-      text-transform: uppercase;
     }
 
-    .link {
-      display: block;
-      width: max-content;
-      margin-top: 1rem;
+    .requirements-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+
+      @include mobile-only {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .requirement {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-color-60);
+
+      &-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--text-color-10);
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: var(--text-color-60);
+      }
+
+      &-text {
+        line-height: 1.3;
+      }
+
+      &.met {
+        color: var(--success-color, #51cf66);
+
+        .requirement-icon {
+          background: var(--success-color, #51cf66);
+          color: white;
+        }
+      }
     }
   }
 </style>

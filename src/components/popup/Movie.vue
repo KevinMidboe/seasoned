@@ -215,7 +215,7 @@
 
   const props = defineProps<Props>();
   const ASSET_URL = "https://image.tmdb.org/t/p/";
-  const COLORS_URL = "https://colors.schleppe.cloud/colors";
+  const COLORS_API = import.meta.env.VITE_SEASONED_COLORS_API || "";
   const ASSET_SIZES = ["w500", "w780", "original"];
 
   const media: Ref<IMovie | IShow> = ref();
@@ -352,7 +352,7 @@
   }
 
   async function colorsFromPoster(posterPath: string) {
-    const url = new URL(COLORS_URL);
+    const url = new URL("/colors", COLORS_API);
     url.searchParams.append("id", posterPath.replace("/", ""));
     url.searchParams.append("size", "w342");
 
@@ -435,7 +435,7 @@
 
       > img {
         width: 100%;
-        border-radius: inherit;
+        border-radius: calc(1.6rem - 1px);
       }
     }
   }
