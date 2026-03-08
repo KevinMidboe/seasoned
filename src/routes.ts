@@ -4,7 +4,6 @@ import type { RouteRecordRaw, RouteLocationNormalized } from "vue-router";
 /* eslint-disable-next-line import-x/no-cycle */
 import store from "./store";
 import { usePlexAuth } from "./composables/usePlexAuth";
-
 const { getPlexAuthCookie } = usePlexAuth();
 
 declare global {
@@ -79,6 +78,12 @@ const routes: RouteRecordRaw[] = [
     name: "password-gen",
     path: "/password",
     component: () => import("./pages/GenPasswordPage.vue")
+  },
+  {
+    name: "admin",
+    path: "/admin",
+    meta: { requiresAuth: true },
+    component: () => import("./pages/AdminPage.vue")
   },
   {
     name: "missing-plex-auth",
