@@ -1,21 +1,48 @@
 <template>
   <section class="settings">
-    <link-plex-account @reload="reloadSettings" />
+    <div class="settings__container">
+      <!-- Profile Hero Card -->
+      <ProfileHero />
 
-    <hr class="setting__divider" />
+      <!-- Settings Grid -->
+      <div class="settings__grid">
+        <!-- Left Column -->
+        <div class="settings__column">
+          <section class="settings-section settings-section--compact">
+            <div class="settings-section-header"><h2>Appearance</h2></div>
+            <theme-preferences />
+          </section>
 
-    <change-password />
+          <section class="settings-section settings-section--compact">
+            <security-settings />
+          </section>
+        </div>
 
-    <hr class="setting__divider" />
+        <!-- Right Column -->
+        <div class="settings__column">
+          <section class="settings-section">
+            <div class="settings-section-header"><h2>Integrations</h2></div>
+            <plex-settings @reload="reloadSettings" />
+          </section>
+
+          <section class="settings-section">
+            <data-export />
+          </section>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-  import { inject } from "vue";
+  import { inject, onMounted } from "vue";
   import { useStore } from "vuex";
   import { useRoute } from "vue-router";
-  import ChangePassword from "@/components/profile/ChangePassword.vue";
-  import LinkPlexAccount from "@/components/profile/LinkPlexAccount.vue";
+  import ProfileHero from "@/components/settings/ProfileHero.vue";
+  import ThemePreferences from "@/components/settings/ThemePreferences.vue";
+  import PlexSettings from "@/components/settings/PlexSettings.vue";
+  import SecuritySettings from "@/components/settings/SecuritySettings.vue";
+  import DataExport from "@/components/settings/DataExport.vue";
   import { getSettings } from "../api";
 
   const store = useStore();
@@ -44,53 +71,73 @@
   }
 
   // Functions called on component load
-  displayWarningIfMissingPlexAccount();
+  onMounted(() => displayWarningIfMissingPlexAccount());
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import "scss/variables";
   @import "scss/media-queries";
+  @import "scss/shared-settings";
 
   .settings {
-    padding: 3rem;
+    min-height: calc(100vh - var(--header-size));
+    padding: 2rem 1.5rem;
 
     @include mobile-only {
-      padding: 1rem;
+      padding: 0.5rem;
     }
 
-    &__header {
-      margin: 0;
-      line-height: 16px;
-      color: $text-color;
-      font-weight: 300;
-      margin-bottom: 20px;
-      text-transform: uppercase;
+    &__container {
+      max-width: 1400px;
+      margin: 0 auto;
+
+      @include mobile-only {
+        max-width: 100%;
+      }
     }
 
-    &__info {
-      display: block;
-      margin-bottom: 25px;
+    &__grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+      align-items: start;
+
+      @include mobile-only {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
     }
 
-    hr {
-      display: block;
-      height: 1px;
-      border: 0;
-      border-bottom: 1px solid $text-color-50;
-      margin-top: 30px;
-      margin-bottom: 70px;
-      margin-left: 20px;
-      width: 96%;
-      text-align: left;
-    }
+    &__column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
 
-    span {
-      font-weight: 200;
-      size: 16px;
+      @include mobile-only {
+        gap: 1rem;
+      }
     }
   }
 
-  a {
-    text-decoration: none;
+  .settings-section {
+    background-color: var(--background-color-secondary);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--background-40);
+
+    @include mobile-only {
+      padding: 0.5rem;
+    }
+
+    &--compact {
+      // Tighter padding for quick settings, but same header size
+      padding: 1rem;
+
+      @include mobile-only {
+        padding: 0.5rem;
+      }
+    }
   }
 </style>

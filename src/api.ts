@@ -262,17 +262,22 @@ const getRequestStatus = async (
     .catch(err => Promise.reject(err));
 };
 
-/*
-const watchLink = async (title, year) => {
+const watchLink = async (title: string, year: string) => {
   const url = new URL("/api/v1/plex/watch-link", API_HOSTNAME);
   url.searchParams.append("title", title);
   url.searchParams.append("year", year);
 
-  return fetch(url.href)
+  const options: RequestInit = {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
+  };
+
+  return fetch(url.href, options)
     .then(resp => resp.json())
     .then(response => response.link);
 };
 
+/*
 const movieImages = id => {
   const url = new URL(`v2/movie/${id}/images`, API_HOSTNAME);
 
@@ -373,9 +378,9 @@ const updateSettings = async (settings: any) => {
 
 // - - - Authenticate with plex - - -
 
-const linkPlexAccount = async (username: string, password: string) => {
+const linkPlexAccount = async (authToken: string) => {
   const url = new URL("/api/v1/user/link_plex", API_HOSTNAME);
-  const body = { username, password };
+  const body = { authToken };
 
   const options: RequestInit = {
     method: "POST",
@@ -387,7 +392,7 @@ const linkPlexAccount = async (username: string, password: string) => {
   return fetch(url.href, options)
     .then(resp => resp.json())
     .catch(error => {
-      console.error(`api error linking plex account: ${username}`); // eslint-disable-line no-console
+      console.error("api error linking plex account"); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -404,6 +409,20 @@ const unlinkPlexAccount = async () => {
     .then(resp => resp.json())
     .catch(error => {
       console.error(`api error unlinking your plex account`); // eslint-disable-line no-console
+      throw error;
+    });
+};
+
+const plexRecentlyAddedInLibrary = async (id: number) => {
+  const url = new URL(`/api/v2/plex/recently_added/${id}`, API_HOSTNAME);
+  const options: RequestInit = {
+    credentials: "include"
+  };
+
+  return fetch(url.href, options)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error(`api error fetch plex recently added`); // eslint-disable-line no-console
       throw error;
     });
 };
@@ -538,6 +557,7 @@ const elasticSearchMoviesAndShows = async (query: string, count = 22) => {
 };
 
 export {
+  API_HOSTNAME,
   getMovie,
   getShow,
   getPerson,
@@ -554,12 +574,14 @@ export {
   getRequestStatus,
   linkPlexAccount,
   unlinkPlexAccount,
+  plexRecentlyAddedInLibrary,
   register,
   login,
   logout,
   getSettings,
   updateSettings,
   fetchGraphData,
+  watchLink,
   getEmoji,
   elasticSearchMoviesAndShows
 };
