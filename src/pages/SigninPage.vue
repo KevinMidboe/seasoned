@@ -1,31 +1,44 @@
 <template>
-  <section>
-    <h1>Sign in</h1>
+  <div class="signin auth-page">
+    <div class="auth-content">
+      <div class="auth-header">
+        <h1 class="auth-title">Sign in</h1>
+        <p class="auth-subtitle">Welcome back! Please enter your credentials</p>
+      </div>
 
-    <form ref="formElement" class="form">
-      <seasoned-input
-        v-model="username"
-        placeholder="username"
-        icon="Email"
-        type="email"
-        @keydown.enter="focusOnNextElement"
-      />
-      <seasoned-input
-        v-model="password"
-        placeholder="password"
-        icon="Keyhole"
-        type="password"
-        @keydown.enter="submit"
-      />
+      <form ref="formElement" class="auth-form">
+        <seasoned-input
+          v-model="username"
+          placeholder="Email address"
+          icon="Email"
+          type="email"
+          @keydown.enter="focusOnNextElement"
+        />
+        <seasoned-input
+          v-model="password"
+          placeholder="Password"
+          icon="Keyhole"
+          type="password"
+          @keydown.enter="submit"
+        />
 
-      <seasoned-button @click="submit">sign in</seasoned-button>
-    </form>
-    <router-link class="link" to="/register"
-      >Don't have a user? Register here</router-link
-    >
+        <seasoned-button class="auth-button" @click="submit">
+          Sign In
+        </seasoned-button>
+      </form>
 
-    <seasoned-messages v-model:messages="messages" />
-  </section>
+      <div class="auth-footer">
+        <p class="auth-footer-text">
+          Don't have an account?
+          <router-link class="auth-link" to="/register">
+            Register here
+          </router-link>
+        </p>
+      </div>
+
+      <seasoned-messages v-model:messages="messages" />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -60,43 +73,38 @@
       message,
       title,
       type: ErrorMessageTypes.Error
-    } as IErrorMessage);
-  }
-
-  function addWarningMessage(message: string, title?: string) {
-    messages.value.push({
-      message,
-      title,
-      type: ErrorMessageTypes.Warning
-    } as IErrorMessage);
-  }
-
-  function validate(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (!username.value || username?.value?.length === 0) {
-        addWarningMessage("Missing username", "Validation error");
-        reject();
-      }
-
-      if (!password.value || password?.value?.length === 0) {
-        addWarningMessage("Missing password", "Validation error");
-        reject();
-      }
-
-      resolve(true);
     });
   }
 
+  function validate() {
+    const errors = [];
+
+    if (username.value.length === 0) {
+      errors.push("Username must not be empty");
+    }
+
+    if (password.value.length === 0) {
+      errors.push("Password must not be empty");
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(error => addErrorMessage(error, "Validation error"));
+      return Promise.reject();
+    }
+
+    return Promise.resolve(true);
+  }
+
   function signin() {
-    login(username.value, password.value, true)
-      .then(data => {
-        if (data?.success && store.dispatch("user/login")) {
-          router.push({ name: "profile" });
-        }
+    return login(username.value, password.value)
+      .then(response => {
+        store.dispatch("user/login", response.user);
+        router.push("/");
+        return response;
       })
       .catch(error => {
-        if (error?.status === 401) {
-          addErrorMessage("Incorrect username or password", "Access denied");
+        if (error.error === "Incorrect username or password.") {
+          addErrorMessage(error.error, "Authentication failed");
           return null;
         }
 
@@ -112,28 +120,13 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "scss/variables";
+  @import "scss/shared-auth";
 
-  section {
-    padding: 1.3rem;
-
-    @include tablet-min {
-      padding: 4rem;
-    }
-
-    h1 {
-      margin: 0;
-      line-height: 16px;
-      color: $text-color;
-      font-weight: 300;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-    }
-
-    .link {
-      display: block;
-      width: max-content;
-      margin-top: 1rem;
+  .signin {
+    // Password input uses monospace font
+    :deep(input[type="password"]),
+    :deep(input[type="text"][placeholder="Password"]) {
+      font-family: "Courier New", monospace;
     }
   }
 </style>

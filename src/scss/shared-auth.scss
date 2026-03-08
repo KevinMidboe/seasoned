@@ -1,0 +1,100 @@
+// Shared styles for authentication pages (signin, register)
+@import "variables";
+@import "media-queries";
+
+// Base auth page layout
+.auth-page {
+  padding: 3rem;
+  max-width: 100%;
+
+  @include mobile-only {
+    padding: 0.75rem;
+  }
+}
+
+.auth-content {
+  max-width: 600px;
+
+  @include mobile-only {
+    max-width: 100%;
+  }
+
+  &--wide {
+    max-width: 700px;
+  }
+}
+
+.auth-header {
+  margin-bottom: 2.5rem;
+
+  @include mobile-only {
+    margin-bottom: 2rem;
+  }
+}
+
+.auth-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: $text-color;
+  line-height: 1.2;
+
+  @include mobile-only {
+    font-size: 2rem;
+  }
+}
+
+.auth-subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--text-color-60);
+  line-height: 1.5;
+
+  @include mobile-only {
+    font-size: 1rem;
+  }
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.auth-button {
+  margin-top: 0.5rem;
+  max-width: 200px;
+
+  @include mobile-only {
+    max-width: 100%;
+  }
+}
+
+.auth-footer {
+  padding-top: 2rem;
+  border-top: 1px solid var(--text-color-10);
+}
+
+.auth-footer-text {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-color-60);
+
+  @include mobile-only {
+    font-size: 0.95rem;
+  }
+}
+
+.auth-link {
+  color: var(--highlight-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+}
