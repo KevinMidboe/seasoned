@@ -1,26 +1,9 @@
 <template>
-  <div v-if="plexUserId && plexUsername" class="activity">
+  <div class="activity">
     <h1 class="activity__title">Watch Activity</h1>
 
     <!-- Stats Overview -->
-    <div v-if="watchStats" class="stats-overview">
-      <div class="stat-card">
-        <div class="stat-value">{{ watchStats.totalPlays }}</div>
-        <div class="stat-label">Total Plays</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">{{ watchStats.totalHours }}h</div>
-        <div class="stat-label">Watch Time</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">{{ watchStats.moviePlays }}</div>
-        <div class="stat-label">Movies</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">{{ watchStats.episodePlays }}</div>
-        <div class="stat-label">Episodes</div>
-      </div>
-    </div>
+    <stats-overview :watch-stats="watchStats" />
 
     <div class="controls">
       <div class="control-group">
@@ -50,7 +33,7 @@
 
     <div class="activity__charts">
       <div class="chart-card">
-        <h3 class="chart-card__title">Daily Activity</h3>
+        <h3>Daily Activity</h3>
         <div class="chart-card__graph">
           <Graph
             v-if="playsByDayData"
@@ -65,7 +48,7 @@
       </div>
 
       <div class="chart-card">
-        <h3 class="chart-card__title">Activity by Media Type</h3>
+        <h3>Activity by Media Type</h3>
         <div class="chart-card__graph">
           <Graph
             v-if="playsByDayofweekData"
@@ -80,7 +63,7 @@
       </div>
 
       <div class="chart-card">
-        <h3 class="chart-card__title">Viewing Patterns by Hour</h3>
+        <h3>Viewing Patterns by Hour</h3>
         <div class="chart-card__graph">
           <Graph
             v-if="hourlyData"
@@ -96,79 +79,32 @@
     </div>
 
     <!-- Top Content -->
-    <div v-if="topContent.length > 0" class="activity__top-content">
-      <h3 class="section-title">Most Watched</h3>
-      <div class="top-content-list">
-        <div
-          v-for="(item, index) in topContent"
-          :key="index"
-          class="top-content-item"
-        >
-          <div class="content-rank">{{ index + 1 }}</div>
-          <div class="content-details">
-            <div class="content-title">{{ item.title }}</div>
-            <div class="content-meta">
-              {{ item.type }} • {{ item.plays }} plays • {{ item.duration }}min
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div v-else class="not-authenticated">
-    <h1><IconStop /> Must be authenticated with Plex</h1>
-    <p>Go to Settings to link your Plex account</p>
+    <watch-history :top-content="topContent" />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, computed, onMounted } from "vue";
-  import { useStore } from "vuex";
   import Graph from "@/components/Graph.vue";
   import ToggleButton from "@/components/ui/ToggleButton.vue";
-  import IconStop from "@/icons/IconStop.vue";
-  import type { Ref } from "vue";
-  import { useTautulliStats } from "@/composables/useTautulliStats";
+  import StatsOverview from "@/components/activity/StatsOverview.vue";
+  import WatchHistory from "@/components/activity/WatchHistory.vue";
+  import {
+    fetchHomeStats,
+    fetchPlaysByDate,
+    fetchPlaysByDayOfWeek,
+    fetchPlaysByHourOfDay
+  } from "../composables/useTautulliStats";
   import {
     GraphTypes,
     GraphValueTypes,
     IGraphData
   } from "../interfaces/IGraph";
-
-  const store = useStore();
+  import type { Ref } from "vue";
+  import type { WatchStats } from "../composables/useTautulliStats";
 
   const days: Ref<number> = ref(30);
   const graphViewMode: Ref<GraphTypes> = ref(GraphTypes.Plays);
-
-  // Check both Vuex store and localStorage for Plex user
-  const plexUserId = computed(() => {
-    // First try Vuex store
-    const storeId = store.getters["user/plexUserId"];
-    if (storeId) return storeId;
-
-    // Fallback to localStorage
-    const userData = localStorage.getItem("plex_user_data");
-    if (userData) {
-      try {
-        return JSON.parse(userData).id;
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  });
-
-  const plexUsername = computed(() => {
-    const userData = localStorage.getItem("plex_user_data");
-    if (userData) {
-      try {
-        return JSON.parse(userData).username;
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  });
 
   const graphValueViewMode = [
     {
@@ -193,14 +129,6 @@
     graphValueViewMode.find(viewMode => viewMode.type === graphViewMode.value)
   );
 
-  const {
-    fetchHomeStats,
-    fetchPlaysByDate,
-    fetchPlaysByDayOfWeek,
-    fetchPlaysByHourOfDay,
-    fetchTopContent
-  } = useTautulliStats();
-
   function convertDateStringToDayMonth(date: string, short = true): string {
     if (!date.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)) {
       return date;
@@ -210,30 +138,8 @@
     return short ? `${month}.${day}` : `${day}.${month}.${year}`;
   }
 
-  async function fetchChartData() {
-    if (!plexUserId.value) return;
-
-    try {
-      const yAxis =
-        graphViewMode.value === GraphTypes.Plays ? "plays" : "duration";
-
-      // Fetch all data in parallel using efficient Tautulli APIs
-      const [homeStats, dayData, weekData, hourData, topContentData] =
-        await Promise.all([
-          fetchHomeStats(plexUserId.value, days.value, "duration"), // Need duration for hours
-          fetchPlaysByDate(days.value, yAxis, plexUserId.value),
-          fetchPlaysByDayOfWeek(days.value, yAxis, plexUserId.value),
-          fetchPlaysByHourOfDay(days.value, yAxis, plexUserId.value),
-          fetchTopContent(days.value, 10, plexUserId.value)
-        ]);
-
-      // Set overall stats
-      watchStats.value = homeStats;
-
-      // Set top content
-      topContent.value = topContentData;
-
-      // Activity per day
+  function activityPerDay(dataPromise: Promise<any>) {
+    dataPromise.then(dayData => {
       playsByDayData.value = {
         labels: dayData.map(d =>
           convertDateStringToDayMonth(d.date, dayData.length < 365)
@@ -248,8 +154,11 @@
           }
         ]
       };
+    });
+  }
 
-      // Activity by day of week (stacked by media type)
+  function playsByDayOfWeek(dataPromise: Promise<any>) {
+    dataPromise.then(weekData => {
       playsByDayofweekData.value = {
         labels: weekData.labels,
         series: [
@@ -258,22 +167,42 @@
           { name: "Music", data: weekData.music }
         ]
       };
+    });
+  }
 
-      // Hourly distribution
+  function hourly(hourlyPromise: Promise<any>) {
+    hourlyPromise.then(hourData => {
       hourlyData.value = {
         labels: hourData.labels,
         series: [{ name: "Plays", data: hourData.data }]
       };
+    });
+  }
+
+  async function fetchChartData() {
+    try {
+      const yAxis =
+        graphViewMode.value === GraphTypes.Plays ? "plays" : "duration";
+
+      // Fetch all data in parallel using efficient Tautulli APIs
+      fetchHomeStats(days.value, "duration").then(
+        (homeStats: WatchStats) => (watchStats.value = homeStats)
+      );
+
+      // Activity per day (line graph of last n days)
+      activityPerDay(fetchPlaysByDate(days.value, yAxis));
+
+      // Activity by day of week (stacked by media type)
+      playsByDayOfWeek(fetchPlaysByDayOfWeek(days.value, yAxis));
+
+      // Hourly distribution
+      hourly(fetchPlaysByHourOfDay(days.value, yAxis));
     } catch (error) {
       console.error("[ActivityPage] Error fetching chart data:", error);
     }
   }
 
-  onMounted(() => {
-    if (plexUsername.value) {
-      fetchChartData();
-    }
-  });
+  onMounted(fetchChartData);
 </script>
 
 <style lang="scss" scoped>
@@ -297,7 +226,7 @@
 
       @include mobile-only {
         font-size: 1.5rem;
-        margin: 0 0 1rem 0;
+        margin: 1rem 0;
       }
     }
 
@@ -310,36 +239,7 @@
         gap: 1rem;
       }
     }
-
-    &__top-content {
-      margin-top: 2rem;
-    }
   }
-
-  // .filter {
-  //   display: flex;
-  //   flex-direction: row;
-  //   flex-wrap: wrap;
-  //   align-items: center;
-  //   margin-bottom: 2rem;
-
-  //   h2 {
-  //     margin-bottom: 0.5rem;
-  //     width: 100%;
-  //     font-weight: 400;
-  //   }
-
-  //   &-item:not(:first-of-type) {
-  //     margin-left: 1rem;
-  //   }
-
-  //   .dayinput {
-  //     font-size: 1.2rem;
-  //     max-width: 3rem;
-  //     background-color: $background-ui;
-  //     color: $text-color;
-  //   }
-  // }
 
   .chart-card {
     background: var(--background-ui);
@@ -351,7 +251,7 @@
       padding: 1rem;
     }
 
-    &__title {
+    h3 {
       margin: 0 0 1rem 0;
       font-size: 1.2rem;
       font-weight: 500;
@@ -372,13 +272,6 @@
         min-height: 250px;
       }
     }
-  }
-
-  .section-title {
-    margin: 0 0 1rem 0;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: $text-color;
   }
 
   .controls {
@@ -449,145 +342,5 @@
     font-size: 0.9rem;
     color: var(--text-color-60);
     user-select: none;
-  }
-
-  .stats-overview {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-
-    @include mobile-only {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
-  }
-
-  .stat-card {
-    background: var(--background-ui);
-    padding: 1.5rem;
-    border-radius: 12px;
-    text-align: center;
-    transition: transform 0.2s;
-
-    &:hover {
-      transform: translateY(-4px);
-    }
-
-    @include mobile-only {
-      padding: 1rem;
-    }
-  }
-
-  .stat-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--highlight-color);
-    margin-bottom: 0.5rem;
-
-    @include mobile-only {
-      font-size: 2rem;
-    }
-  }
-
-  .stat-label {
-    font-size: 0.9rem;
-    color: var(--text-color-60);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 300;
-
-    @include mobile-only {
-      font-size: 0.8rem;
-    }
-  }
-
-  .top-content-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-
-    @include mobile-only {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .top-content-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background: var(--background-ui);
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--text-color-50);
-    transition: all 0.2s;
-
-    &:hover {
-      border-color: var(--text-color);
-      transform: translateY(-2px);
-    }
-  }
-
-  .content-rank {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--highlight-color);
-    min-width: 2.5rem;
-    text-align: center;
-  }
-
-  .content-details {
-    flex: 1;
-  }
-
-  .content-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 0.25rem;
-  }
-
-  .content-meta {
-    font-size: 0.85rem;
-    color: var(--text-color-60);
-  }
-
-  .not-authenticated {
-    padding: 2rem;
-    text-align: center;
-
-    h1 {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      margin-bottom: 1rem;
-
-      svg {
-        margin-right: 1rem;
-        height: 3rem;
-        width: 3rem;
-      }
-    }
-
-    p {
-      font-size: 1.2rem;
-      color: var(--text-color-60);
-    }
-
-    @include mobile {
-      padding: 1rem;
-      padding-right: 0;
-
-      h1 {
-        font-size: 1.65rem;
-
-        svg {
-          margin-right: 1rem;
-          height: 2rem;
-          width: 2rem;
-        }
-      }
-    }
   }
 </style>

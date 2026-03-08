@@ -56,12 +56,6 @@
   const graphCanvas: Ref<HTMLCanvasElement | null> = ref(null);
   let graphInstance: Chart | null = null;
 
-  /*
-|--------------------------------------------------------------------------
-| Modern Color System
-|--------------------------------------------------------------------------
-*/
-
   const graphTemplates = [
     {
       borderColor: "#6366F1",
@@ -77,24 +71,12 @@
     }
   ];
 
-  /*
-|--------------------------------------------------------------------------
-| Lifecycle
-|--------------------------------------------------------------------------
-*/
-
   onMounted(() => generateGraph());
   watch(() => props.data, generateGraph, { deep: true });
 
   onBeforeUnmount(() => {
     if (graphInstance) graphInstance.destroy();
   });
-
-  /*
-|--------------------------------------------------------------------------
-| Helpers
-|--------------------------------------------------------------------------
-*/
 
   function removeEmptyDataset(dataset: IGraphDataset) {
     return dataset;
@@ -145,12 +127,6 @@
       pointBorderWidth: 0
     };
   }
-
-  /*
-|--------------------------------------------------------------------------
-| Chart Generator
-|--------------------------------------------------------------------------
-*/
 
   function generateGraph() {
     if (!graphCanvas.value) return;
