@@ -13,8 +13,6 @@
     <!-- Popup that will show above existing rendered content -->
     <popup />
 
-    <darkmode-toggle />
-
     <!-- Command Palette -->
     <command-palette />
   </div>
@@ -25,7 +23,6 @@
   import NavigationHeader from "@/components/header/NavigationHeader.vue";
   import NavigationIcons from "@/components/header/NavigationIcons.vue";
   import Popup from "@/components/Popup.vue";
-  import DarkmodeToggle from "@/components/ui/DarkmodeToggle.vue";
   import CommandPalette from "@/components/ui/CommandPalette.vue";
 
   const router = useRouter();
