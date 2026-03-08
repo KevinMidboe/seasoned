@@ -1,68 +1,69 @@
 <template>
-  <table>
-    <thead class="table__header noselect">
-      <tr>
-        <th
-          v-for="column in visibleColumns"
-          :key="column"
-          :class="column === selectedColumn ? 'active' : null"
-          @click="sortTable(column)"
+  <div class="torrent-table">
+    <div class="sort-toggle">
+      <span class="sort-label">Sort by:</span>
+      <div class="sort-options">
+        <button
+          v-for="option in sortOptions"
+          :key="option.value"
+          :class="['sort-btn', { active: selectedSort === option.value }]"
+          @click="changeSort(option.value)"
         >
-          {{ column }}
-          <span v-if="prevCol === column && direction">↑</span>
-          <span v-if="prevCol === column && !direction">↓</span>
-        </th>
-      </tr>
-    </thead>
+          {{ option.label }}
+        </button>
+      </div>
+    </div>
 
-    <tbody>
-      <tr
-        v-for="torrent in torrents"
-        :key="torrent.magnet"
-        class="table__content"
-      >
-        <td
-          class="torrent-info"
-          @click="expand($event, torrent.name)"
-          @keydown.enter="expand($event, torrent.name)"
+    <table>
+      <thead class="table__header noselect">
+        <tr>
+          <th
+            class="name-header"
+            :class="selectedSort === 'name' ? 'active' : null"
+            @click="changeSort('name')"
+          >
+            Name
+            <span v-if="selectedSort === 'name'">{{
+              direction ? "↑" : "↓"
+            }}</span>
+          </th>
+          <th class="add-header">Add</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr
+          v-for="torrent in sortedTorrents"
+          :key="torrent.magnet"
+          class="table__content"
         >
-          <div class="torrent-title">{{ torrent.name }}</div>
-          <div v-if="isMobile" class="torrent-meta">
-            <span class="meta-item">{{ torrent.size }}</span>
-            <span class="meta-separator">•</span>
-            <span class="meta-item">{{ torrent.seed }} seeders</span>
-          </div>
-        </td>
-        <td
-          v-if="!isMobile"
-          class="torrent-seed"
-          @click="expand($event, torrent.name)"
-          @keydown.enter="expand($event, torrent.name)"
-        >
-          {{ torrent.seed }}
-        </td>
-        <td
-          v-if="!isMobile"
-          class="torrent-size"
-          @click="expand($event, torrent.name)"
-          @keydown.enter="expand($event, torrent.name)"
-        >
-          {{ torrent.size }}
-        </td>
-        <td
-          class="download"
-          @click="() => emit('magnet', torrent)"
-          @keydown.enter="() => emit('magnet', torrent)"
-        >
-          <IconMagnet />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          <td
+            class="torrent-info"
+            @click="expand($event, torrent.name)"
+            @keydown.enter="expand($event, torrent.name)"
+          >
+            <div class="torrent-title">{{ torrent.name }}</div>
+            <div class="torrent-meta">
+              <span class="meta-item">{{ torrent.size }}</span>
+              <span class="meta-separator">•</span>
+              <span class="meta-item">{{ torrent.seed }} seeders</span>
+            </div>
+          </td>
+          <td
+            class="download"
+            @click="() => emit('magnet', torrent)"
+            @keydown.enter="() => emit('magnet', torrent)"
+          >
+            <IconMagnet />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted, onUnmounted } from "vue";
+  import { ref, computed } from "vue";
   import IconMagnet from "@/icons/IconMagnet.vue";
   import type { Ref } from "vue";
   import { sortableSize } from "../../utils";
@@ -79,31 +80,55 @@
   const props = defineProps<Props>();
   const emit = defineEmits<Emit>();
 
-  const columns: string[] = ["name", "seed", "size", "add"];
-  const windowWidth = ref(window.innerWidth);
-  const isMobile = computed(() => windowWidth.value <= 768);
-  const visibleColumns = computed(() =>
-    isMobile.value ? ["name", "add"] : columns
-  );
+  const sortOptions = [
+    { value: "name", label: "Name" },
+    { value: "size", label: "Size" },
+    { value: "seed", label: "Seeders" }
+  ];
 
   const torrents: Ref<ITorrent[]> = ref(props.torrents);
   const direction: Ref<boolean> = ref(false);
-  const selectedColumn: Ref<string> = ref(columns[0]);
-  const prevCol: Ref<string> = ref("");
+  const selectedSort: Ref<string> = ref("size");
+  const prevSort: Ref<string> = ref("");
 
-  function handleResize() {
-    windowWidth.value = window.innerWidth;
+  const sortedTorrents = computed(() => {
+    const sorted = [...torrents.value];
+
+    if (selectedSort.value === "name") {
+      sorted.sort((a, b) =>
+        direction.value
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name)
+      );
+    } else if (selectedSort.value === "size") {
+      sorted.sort((a, b) =>
+        direction.value
+          ? sortableSize(a.size) - sortableSize(b.size)
+          : sortableSize(b.size) - sortableSize(a.size)
+      );
+    } else if (selectedSort.value === "seed") {
+      sorted.sort((a, b) =>
+        direction.value
+          ? parseInt(a.seed, 10) - parseInt(b.seed, 10)
+          : parseInt(b.seed, 10) - parseInt(a.seed, 10)
+      );
+    }
+
+    return sorted;
+  });
+
+  function changeSort(sortBy: string) {
+    if (prevSort.value === sortBy) {
+      direction.value = !direction.value;
+    } else {
+      direction.value = false;
+      selectedSort.value = sortBy;
+    }
+    prevSort.value = sortBy;
   }
 
-  onMounted(() => {
-    window.addEventListener("resize", handleResize);
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener("resize", handleResize);
-  });
-
   function expand(event: MouseEvent, text: string) {
+    return
     const elementClicked = event.target as HTMLElement;
     const tableRow = elementClicked.parentElement;
     const scopedStyleDataVariable = Object.keys(tableRow.dataset)[0];
@@ -116,8 +141,6 @@
     if (existingExpandedElement) {
       existingExpandedElement.remove();
 
-      // Clicked the same element twice, remove and return
-      // not recreate and collapse
       if (clickedSameTwice) return;
     }
 
@@ -128,58 +151,10 @@
     expandedRow.className = "expanded";
     expandedCol.innerText = text;
 
-    // Colspan: 2 on mobile (name + add), 4 on desktop (name + seed + size + add)
-    expandedCol.colSpan = isMobile.value ? 2 : 4;
+    expandedCol.colSpan = 2;
 
     expandedRow.appendChild(expandedCol);
     tableRow.insertAdjacentElement("afterend", expandedRow);
-  }
-
-  function sortName() {
-    const torrentsCopy = [...torrents.value];
-    if (direction.value) {
-      torrents.value = torrentsCopy.sort((a, b) => (a.name < b.name ? 1 : -1));
-    } else {
-      torrents.value = torrentsCopy.sort((a, b) => (a.name > b.name ? 1 : -1));
-    }
-  }
-
-  function sortSeed() {
-    const torrentsCopy = [...torrents.value];
-    if (direction.value) {
-      torrents.value = torrentsCopy.sort(
-        (a, b) => parseInt(a.seed, 10) - parseInt(b.seed, 10)
-      );
-    } else {
-      torrents.value = torrentsCopy.sort(
-        (a, b) => parseInt(b.seed, 10) - parseInt(a.seed, 10)
-      );
-    }
-  }
-
-  function sortSize() {
-    const torrentsCopy = [...torrents.value];
-    if (direction.value) {
-      torrents.value = torrentsCopy.sort((a, b) =>
-        sortableSize(a.size) > sortableSize(b.size) ? 1 : -1
-      );
-    } else {
-      torrents.value = torrentsCopy.sort((a, b) =>
-        sortableSize(a.size) < sortableSize(b.size) ? 1 : -1
-      );
-    }
-  }
-
-  function sortTable(col, sameDirection = false) {
-    if (prevCol.value === col && sameDirection === false) {
-      direction.value = !direction.value;
-    }
-
-    if (col === "name") sortName();
-    else if (col === "seed") sortSeed();
-    else if (col === "size") sortSize();
-
-    prevCol.value = col;
   }
 </script>
 
@@ -188,6 +163,58 @@
   @import "scss/media-queries";
   @import "scss/elements";
 
+  .torrent-table {
+    width: 100%;
+  }
+
+  .sort-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+
+    .sort-label {
+      font-size: 0.85rem;
+      color: var(--text-color-70);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .sort-btn {
+      border: 1px solid var(--highlight-bg, var(--background-color-40));
+      color: var(--text-color-70);
+      padding: 0.35rem 0.65rem;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &:hover {
+        background: var(--highlight-bg, var(--background-color));
+        color: var(--text-color);
+      }
+
+      &.active {
+        background: var(--highlight-color);
+        color: var(--text-color);
+        border-color: var(--highlight-color, $green);
+      }
+
+      @include mobile {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+      }
+    }
+  }
+
   table {
     border-spacing: 0;
     margin-top: 0.5rem;
@@ -195,16 +222,11 @@
     max-width: 100%;
     border-radius: 0.5rem;
     overflow: hidden;
-    table-layout: fixed;
-
-    @include mobile {
-      table-layout: auto;
-    }
+    table-layout: auto;
   }
 
   th,
   td {
-    border: 0.5px solid var(--background-color-40);
     overflow: hidden;
     text-overflow: ellipsis;
 
@@ -217,16 +239,16 @@
     position: relative;
     user-select: none;
     -webkit-user-select: none;
-    color: var(--table-header-text-color);
+    color: var(--highlight-bg, var(--table-header-text-color));
     text-transform: uppercase;
     cursor: pointer;
-    background-color: var(--table-background-color);
-    background-color: var(--highlight-color);
+    background-color: var(--highlight-color, var(--highlight-color));
     letter-spacing: 0.8px;
     font-size: 1rem;
 
     th:last-of-type {
-      padding-right: 0.4rem;
+      padding: 0 0.4rem;
+      border-left: 1px solid var(--highlight-bg, var(--background-color));
     }
   }
 
@@ -237,7 +259,7 @@
       padding: 0.5rem 0.6rem;
       cursor: default;
       word-break: break-word;
-      border-left: 1px solid var(--table-background-color);
+      border-left: 1px solid var(--highlight-secondary, var(--highlight-color));
 
       @include mobile {
         width: 100%;
@@ -258,8 +280,8 @@
 
       .torrent-meta {
         font-size: 0.85rem;
-        color: var(--text-color-60);
         display: flex;
+        opacity: 70%;
         align-items: center;
         gap: 0.5rem;
         flex-wrap: wrap;
@@ -275,20 +297,12 @@
       }
     }
 
-    // seed and size columns (desktop only)
-    .torrent-seed,
-    .torrent-size {
-      text-align: center;
-      white-space: nowrap;
-      padding: 0.5rem;
-    }
-
     // last column - action
     tr td:last-of-type {
       vertical-align: middle;
       cursor: pointer;
-      border-right: 1px solid var(--table-background-color);
-      width: 60px;
+      border-right: 1px solid var(--highlight-secondary, var(--highlight-color));
+      max-width: 60px;
       text-align: center;
 
       @include mobile {
@@ -300,7 +314,7 @@
         display: block;
         margin: auto;
         padding: 0.3rem 0;
-        fill: var(--text-color);
+        fill: var(inherit, var(--text-color));
 
         @include mobile {
           width: 18px;
@@ -310,16 +324,30 @@
 
     // alternate background color per row
     tr {
-      background-color: var(--background-color);
+      background-color: var(--highlight-bg, var(--background-90));
+      color: var(--text-color);
+
+      td {
+        border-left: 1px solid
+          var(--highlight-secondary, var(--highlight-color));
+        fill: var(--text-color);
+      }
     }
-    tr:nth-child(even) {
-      background-color: var(--background-70);
+    tr:nth-child(odd) {
+      background-color: var(--highlight-secondary, var(--background-color));
+      color: var(--highlight-bg, var(--text-color));
+
+      td {
+        fill: var(--highlight-bg, var(--text-color)) !important;
+      }
     }
 
     // last element rounded corner border
     tr:last-of-type {
       td {
-        border-bottom: 1px solid var(--table-background-color);
+        border-bottom: 1px solid
+          var(--highlight-secondary, var(--highlight-color));
+        border-left: 1px solid var(--highlight-bg, var(--text-color));
       }
 
       td:first-of-type {
@@ -335,15 +363,16 @@
   .expanded {
     padding: 0.25rem 1rem;
     max-width: 100%;
-    border-left: 1px solid $text-color;
-    border-right: 1px solid $text-color;
-    border-bottom: 1px solid $text-color;
+    border-left: 1px solid var(--text-color);
+    border-right: 1px solid var(--text-color);
+    border-bottom: 1px solid var(--text-color);
 
     td {
       white-space: normal;
       word-break: break-all;
       padding: 0.5rem 0.15rem;
       width: 100%;
+      color: var(--text-color);
     }
   }
 </style>

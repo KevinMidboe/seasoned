@@ -1,9 +1,25 @@
 <template>
-  <li class="card">
-    <a @click="openCastItem" @keydown.enter="openCastItem">
-      <img :src="pictureUrl" alt="Movie or person poster image" />
-      <p class="name">{{ creditItem.name || creditItem.title }}</p>
-      <p class="meta">{{ creditItem.character || creditItem.year }}</p>
+  <li class="cast-card">
+    <a
+      class="cast-card__link"
+      role="button"
+      tabindex="0"
+      :aria-label="ariaLabel"
+      @click="openCastItem"
+      @keydown.enter="openCastItem"
+    >
+      <div class="cast-card__image-wrapper">
+        <img
+          class="cast-card__image"
+          :src="pictureUrl"
+          :alt="imageAltText"
+          loading="lazy"
+        />
+      </div>
+      <div class="cast-card__content">
+        <p class="cast-card__name">{{ creditItem.name || creditItem.title }}</p>
+        <p v-if="metaText" class="cast-card__meta">{{ metaText }}</p>
+      </div>
     </a>
   </li>
 </template>
@@ -33,85 +49,139 @@
     return "/assets/no-image_small.svg";
   });
 
+  const metaText = computed(() => {
+    if ("character" in props.creditItem && props.creditItem.character) {
+      return props.creditItem.character;
+    }
+    if ("job" in props.creditItem && props.creditItem.job) {
+      return props.creditItem.job;
+    }
+    if ("year" in props.creditItem && props.creditItem.year) {
+      return props.creditItem.year;
+    }
+    return "";
+  });
+
+  const imageAltText = computed(() => {
+    const name = props.creditItem.name || (props.creditItem as any).title || "";
+    if ("character" in props.creditItem) {
+      return `${name} as ${props.creditItem.character}`;
+    }
+    if ("job" in props.creditItem) {
+      return `${name}, ${props.creditItem.job}`;
+    }
+    return name ? `Poster for ${name}` : "No image available";
+  });
+
+  const ariaLabel = computed(() => {
+    const name = props.creditItem.name || (props.creditItem as any).title || "";
+    if ("character" in props.creditItem && props.creditItem.character) {
+      return `View ${name}, played ${props.creditItem.character}`;
+    }
+    if ("job" in props.creditItem && props.creditItem.job) {
+      return `View ${name}, ${props.creditItem.job}`;
+    }
+    return `View ${name}`;
+  });
+
   function openCastItem() {
     store.dispatch("popup/open", { ...props.creditItem });
   }
 </script>
 
-<style lang="scss">
-  li a p:first-of-type {
-    padding-top: 10px;
-  }
+<style lang="scss" scoped>
+  @import "scss/variables";
 
-  li.card p {
-    font-size: 1em;
-    padding: 0 10px;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-height: calc(10px + ((16px * var(--line-height)) * 3));
-  }
-
-  li.card {
-    margin: 10px;
-    margin-right: 4px;
-    padding-bottom: 10px;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-
-    min-width: 140px;
-    width: 140px;
-    background-color: var(--background-color-secondary);
-    color: var(--text-color);
-
-    transition: all 0.3s ease;
-    transform: scale(0.97) translateZ(0);
-
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  .cast-card {
+    list-style: none;
+    margin: 0 10px 10px 0;
+    width: 150px;
+    flex-shrink: 0;
 
     &:first-of-type {
       margin-left: 0;
     }
+  }
 
-    &:hover {
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      transform: scale(1.03);
+  .cast-card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(
+      --highlight-secondary,
+      var(--background-color-secondary)
+    );
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    &:hover,
+    &:focus {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      outline: none;
     }
 
-    .name {
-      font-weight: 500;
+    &:focus-visible {
+      outline: 2px solid var(--highlight-color);
+      outline-offset: 2px;
     }
+  }
 
-    .character {
-      font-size: 0.9em;
-    }
+  .cast-card__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: linear-gradient(
+      135deg,
+      var(--background-color) 0%,
+      var(--background-color-secondary) 100%
+    );
+  }
 
-    .meta {
-      font-size: 0.9em;
-      color: var(--text-color-70);
-      display: -webkit-box;
-      overflow: hidden;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      // margin-top: auto;
-      max-height: calc((0.9em * var(--line-height)) * 1);
-    }
+  .cast-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 
-    a {
-      display: block;
-      text-decoration: none;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
+  .cast-card__content {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 60px;
+  }
 
-    img {
-      width: 100%;
-      height: auto;
-      max-height: 210px;
-      background-color: var(--background-color);
-      object-fit: cover;
-    }
+  .cast-card__name {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--highlight-bg, var(--text-color));
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cast-card__meta {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--highlight-bg, var(--text-color-70));
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>

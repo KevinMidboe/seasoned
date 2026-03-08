@@ -257,6 +257,7 @@
       text-align: center;
       z-index: 10;
       padding: 2rem;
+      margin-top: calc(-1 * var(--header-size));
 
       @include mobile {
         padding: 1rem;

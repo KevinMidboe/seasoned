@@ -3,14 +3,14 @@
     <div class="plex-details">
       <div class="detail-row">
         <span class="detail-label">
-          <IconServer class="label-icon" />
+          <IconServer class="label-icon" style="fill: var(--text-color)" />
           Plex server name
         </span>
         <span class="detail-value">{{ serverName || "Unknown" }}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">
-          <IconSync class="label-icon" />
+          <IconSync class="label-icon" style="stroke: var(--text-color)" />
           Last Sync
         </span>
         <span class="detail-value">{{ lastSync || "Never" }}</span>
@@ -82,7 +82,6 @@
     }
 
     svg {
-      color: var(--text-color-60);
       flex-shrink: 0;
     }
 
