@@ -129,3 +129,17 @@ export function convertSecondsToHumanReadable(_value, values = null) {
 
   return value;
 }
+
+export function formatNumber(n: number) {
+  if (!n?.toString()) return n;
+
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+export function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+}

@@ -2,7 +2,7 @@
   <button
     type="button"
     :class="{ active: active, fullwidth: fullWidth }"
-    @click="emit('click')"
+    @click="event => emit('click', event)"
   >
     <slot></slot>
   </button>
@@ -15,7 +15,7 @@
   }
 
   interface Emit {
-    (e: "click");
+    (e: "click", event?: MouseEvent);
   }
 
   defineProps<Props>();

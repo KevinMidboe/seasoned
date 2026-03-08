@@ -139,7 +139,6 @@
   import IconMovie from "@/icons/IconMovie.vue";
   import IconActivity from "@/icons/IconActivity.vue";
   import IconProfile from "@/icons/IconProfile.vue";
-  import IconRequest from "@/icons/IconRequest.vue";
   import IconInbox from "@/icons/IconInbox.vue";
   import IconSearch from "@/icons/IconSearch.vue";
   import IconEdit from "@/icons/IconEdit.vue";

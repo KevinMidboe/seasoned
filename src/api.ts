@@ -413,6 +413,20 @@ const unlinkPlexAccount = async () => {
     });
 };
 
+const plexRecentlyAddedInLibrary = async (id: number) => {
+  const url = new URL(`/api/v2/plex/recently_added/${id}`, API_HOSTNAME);
+  const options: RequestInit = {
+    credentials: "include"
+  };
+
+  return fetch(url.href, options)
+    .then(resp => resp.json())
+    .catch(error => {
+      console.error(`api error fetch plex recently added`); // eslint-disable-line no-console
+      throw error;
+    });
+};
+
 // - - - User graphs - - -
 
 const fetchGraphData = async (
@@ -543,6 +557,7 @@ const elasticSearchMoviesAndShows = async (query: string, count = 22) => {
 };
 
 export {
+  API_HOSTNAME,
   getMovie,
   getShow,
   getPerson,
@@ -559,6 +574,7 @@ export {
   getRequestStatus,
   linkPlexAccount,
   unlinkPlexAccount,
+  plexRecentlyAddedInLibrary,
   register,
   login,
   logout,
