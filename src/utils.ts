@@ -89,8 +89,9 @@ export function setUrlQueryParameter(parameter: string, value: string): void {
   const params = new URLSearchParams();
   params.append(parameter, value);
 
-  const url = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ""
-    }${window.location.pathname}${params.toString().length ? `?${params}` : ""}`;
+  const url = `${window.location.protocol}//${window.location.hostname}${
+    window.location.port ? `:${window.location.port}` : ""
+  }${window.location.pathname}${params.toString().length ? `?${params}` : ""}`;
 
   window.history.pushState({}, "search", url);
 }
@@ -141,5 +142,5 @@ export function formatBytes(bytes: number): string {
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+  return `${Math.round((bytes / k ** i) * 100) / 100} ${sizes[i]}`;
 }

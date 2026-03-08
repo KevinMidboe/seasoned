@@ -128,7 +128,7 @@
   }
 
   function expand(event: MouseEvent, text: string) {
-    return
+    return;
     const elementClicked = event.target as HTMLElement;
     const tableRow = elementClicked.parentElement;
     const scopedStyleDataVariable = Object.keys(tableRow.dataset)[0];

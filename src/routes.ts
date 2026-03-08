@@ -4,6 +4,7 @@ import type { RouteRecordRaw, RouteLocationNormalized } from "vue-router";
 /* eslint-disable-next-line import-x/no-cycle */
 import store from "./store";
 import { usePlexAuth } from "./composables/usePlexAuth";
+
 const { getPlexAuthCookie } = usePlexAuth();
 
 declare global {

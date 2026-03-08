@@ -17,7 +17,7 @@ export interface CookieOptions {
  * Read a cookie value.
  */
 export function getAuthorizationCookie(): string | null {
-  const key = 'authorization';
+  const key = "authorization";
   const array = document.cookie.split(";");
   let match = null;
 

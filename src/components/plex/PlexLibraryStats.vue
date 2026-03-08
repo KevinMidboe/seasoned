@@ -9,14 +9,19 @@
         unclickable: !!!stat.clickable
       }"
       @click="
-        stat.clickable && stat.value?.total > 0 && !loading && handleClick(stat.key)
+        stat.clickable &&
+        stat.value?.total > 0 &&
+        !loading &&
+        handleClick(stat.key)
       "
     >
       <div class="stat-icon">
         <component :is="stat.icon" />
       </div>
       <div class="stat-content">
-        <div class="stat-value" v-if="!loading">{{ formatNumber(stat.value?.total) }}</div>
+        <div class="stat-value" v-if="!loading">
+          {{ formatNumber(stat.value?.total) }}
+        </div>
         <div class="stat-value loading-dots" v-else>...</div>
         <div class="stat-label">{{ stat.label }}</div>
       </div>
@@ -26,7 +31,7 @@
 
 <script setup lang="ts">
   import { computed } from "vue";
-  import { formatNumber } from '@/utils'
+  import { formatNumber } from "@/utils";
   import IconMovie from "@/icons/IconMovie.vue";
   import IconShow from "@/icons/IconShow.vue";
   import IconMusic from "@/icons/IconMusic.vue";

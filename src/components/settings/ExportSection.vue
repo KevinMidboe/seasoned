@@ -72,8 +72,6 @@
   function convertToCSV(data: any): string {
     return `Username,Total Requests,Approved,Pending,Export Date\n${data.username},${data.requests.total},${data.requests.approved},${data.requests.pending},${data.exportDate}`;
   }
-
-
 </script>
 
 <style lang="scss" scoped>

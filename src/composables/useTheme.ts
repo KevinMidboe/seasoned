@@ -22,9 +22,9 @@ function applyTheme(theme: Theme) {
 }
 
 export function useTheme() {
-  const savedTheme = computed(() => {
-    return (localStorage.getItem("theme-preference") as Theme) || "auto";
-  });
+  const savedTheme = computed(
+    () => (localStorage.getItem("theme-preference") as Theme) || "auto"
+  );
 
   function initTheme() {
     const theme = savedTheme.value;

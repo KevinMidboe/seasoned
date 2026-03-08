@@ -24,8 +24,8 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import StorageManager from "./StorageManager.vue";
-  import ExportSection from "./ExportSection.vue"
-  import RequestHistory from "./RequestHistory.vue"
+  import ExportSection from "./ExportSection.vue";
+  import RequestHistory from "./RequestHistory.vue";
   import DangerZoneAction from "./DangerZoneAction.vue";
 
   const requestStats = ref({
