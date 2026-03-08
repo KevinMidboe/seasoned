@@ -15,8 +15,6 @@
 
     <!-- Command Palette for quick navigation -->
     <command-palette />
-
-    <darkmode-toggle />
   </div>
 </template>
 
@@ -26,7 +24,6 @@
   import NavigationIcons from "@/components/header/NavigationIcons.vue";
   import Popup from "@/components/Popup.vue";
   import CommandPalette from "@/components/ui/CommandPalette.vue";
-  import DarkmodeToggle from "@/components/ui/DarkmodeToggle.vue";
 
   const router = useRouter();
 </script>
