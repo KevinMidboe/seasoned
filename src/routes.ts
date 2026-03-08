@@ -3,6 +3,8 @@ import type { RouteRecordRaw, RouteLocationNormalized } from "vue-router";
 
 /* eslint-disable-next-line import-x/no-cycle */
 import store from "./store";
+import { usePlexAuth } from "./composables/usePlexAuth";
+const { getPlexAuthCookie } = usePlexAuth();
 
 declare global {
   interface Window {
@@ -96,7 +98,14 @@ const router = createRouter({
 });
 
 const loggedIn = () => store.getters["user/loggedIn"];
-const hasPlexAccount = () => store.getters["user/plexUserId"] !== null;
+const hasPlexAccount = () => {
+  // Check Vuex store first
+  if (store.getters["user/plexUserId"] !== null) return true;
+
+  // Fallback to localStorage/cookie for page refreshes
+  const authToken = getPlexAuthCookie();
+  return !!authToken;
+};
 const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
 router.beforeEach(
