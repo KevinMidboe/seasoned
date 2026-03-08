@@ -95,7 +95,8 @@
   }
 
   function parseElasticResponse(elasticResponse: IAutocompleteSearchResults) {
-    const data = elasticResponse.hits.hits;
+    const { hits } = elasticResponse.hits;
+    const data = hits.length > 0 ? hits : (searchResults.value ?? []);
 
     const results: Array<IAutocompleteResult> = [];
 
