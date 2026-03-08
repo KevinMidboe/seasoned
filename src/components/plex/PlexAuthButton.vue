@@ -9,18 +9,9 @@
     </div>
     <div class="signin-container">
       <button @click="handleAuth" :disabled="loading" class="plex-signin-btn">
-        <svg
-          v-if="!loading"
-          width="20"
-          height="20"
-          viewBox="0 0 256 256"
-          fill="currentColor"
-        >
-          <path
-            d="M128 0C57.3 0 0 57.3 0 128s57.3 128 128 128 128-57.3 128-128S198.7 0 128 0zm57.7 128.7l-48 48c-.4.4-.9.7-1.4.9-.5.2-1.1.4-1.6.4s-1.1-.1-1.6-.4c-.5-.2-1-.5-1.4-.9l-48-48c-1.6-1.6-1.6-4.1 0-5.7 1.6-1.6 4.1-1.6 5.7 0l41.1 41.1V80c0-2.2 1.8-4 4-4s4 1.8 4 4v84.1l41.1-41.1c1.6-1.6 4.1-1.6 5.7 0 .8.8 1.2 1.8 1.2 2.8s-.4 2.1-1.2 2.9z"
-          />
-        </svg>
         {{ loading ? "Connecting..." : "Sign in with Plex" }}
+
+        <IconPlex v-if="!loading" class="plex-icon" />
       </button>
       <p class="popup-note">A popup window will open for authentication</p>
     </div>
@@ -30,6 +21,7 @@
 <script setup lang="ts">
   import { usePlexAuth } from "@/composables/usePlexAuth";
   import IconInfo from "@/icons/IconInfo.vue";
+  import IconPlex from "@/icons/IconPlex.vue";
 
   const emit = defineEmits<{
     authSuccess: [token: string];
@@ -134,10 +126,12 @@
       cursor: not-allowed;
     }
 
-    svg {
+    .plex-icon {
       flex-shrink: 0;
-      width: 22px;
-      height: 22px;
+      --size: 24px;
+      width: var(--size);
+      height: var(--size);
+      fill: currentColor;
     }
   }
 

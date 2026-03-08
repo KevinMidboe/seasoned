@@ -21,19 +21,33 @@
         <div class="library-stats-overview">
           <div class="overview-stat">
             <span class="overview-label">Total Items</span>
-            <span class="overview-value">{{ details.total }}</span>
+            <span class="overview-value">{{
+              formatNumber(details.total)
+            }}</span>
           </div>
-          <div class="overview-stat" v-if="libraryType === 'shows'">
+
+          <div class="overview-stat" v-if="libraryType === 'tv shows'">
+            <span class="overview-label">Seasons</span>
+            <span class="overview-value">{{
+              formatNumber(details?.childCount)
+            }}</span>
+          </div>
+          <div class="overview-stat" v-if="libraryType === 'tv shows'">
             <span class="overview-label">Episodes</span>
-            <span class="overview-value">{{ details.totalEpisodes }}</span>
+            <span class="overview-value">{{
+              formatNumber(details?.leafCount)
+            }}</span>
           </div>
+
           <div class="overview-stat" v-if="libraryType === 'music'">
             <span class="overview-label">Tracks</span>
-            <span class="overview-value">{{ details.totalTracks }}</span>
+            <span class="overview-value">{{ details?.totalTracks }}</span>
           </div>
           <div class="overview-stat">
             <span class="overview-label">Duration</span>
-            <span class="overview-value">{{ details.totalDuration }}</span>
+            <span class="overview-value">{{
+              convertSecondsToHumanReadable(details?.duration / 1000)
+            }}</span>
           </div>
         </div>
 
@@ -42,10 +56,12 @@
           <h4 class="section-title">Recently Added</h4>
           <div class="recent-items-grid">
             <PlexLibraryItem
-              v-for="(item, index) in details.recentlyAdded"
+              v-for="(item, index) in recentlyAdded"
               :key="index"
               :item="item"
-              :show-extras="libraryType === 'music' || libraryType === 'shows'"
+              :show-extras="
+                libraryType === 'music' || libraryType === 'tv shows'
+              "
             />
           </div>
         </div>
@@ -78,29 +94,44 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onBeforeUnmount } from "vue";
+  import { computed, onMounted, onBeforeUnmount, ref } from "vue";
   import IconClose from "@/icons/IconClose.vue";
   import IconMovie from "@/icons/IconMovie.vue";
   import IconShow from "@/icons/IconShow.vue";
   import IconMusic from "@/icons/IconMusic.vue";
   import PlexLibraryItem from "@/components/plex/PlexLibraryItem.vue";
   import { getLibraryTitle } from "@/utils/plexHelpers";
+  import { plexRecentlyAddedInLibrary } from "@/api";
+  import { processLibraryItem } from "@/utils/plexHelpers";
+  import { formatNumber, convertSecondsToHumanReadable } from "@/utils";
+  import { usePlexAuth } from "@/composables/usePlexAuth";
+
+  const { getPlexAuthCookie } = usePlexAuth();
+  const authToken = getPlexAuthCookie();
 
   interface LibraryDetails {
+    id: number;
+    title: string;
     total: number;
-    recentlyAdded: any[];
-    genres: { name: string; count: number }[];
-    totalDuration: string;
-    totalEpisodes?: number;
-    totalTracks?: number;
+    childCount?: number;
+    leafCount?: number;
+    duration: number;
+    genres: Array<{
+      name: string;
+      count: number;
+    }>;
   }
 
   interface Props {
     libraryType: string;
     details: LibraryDetails;
+    serverUrl: string;
+    serverMachineId: string;
   }
 
   const props = defineProps<Props>();
+
+  let recentlyAdded = ref([]);
 
   const emit = defineEmits<{
     (e: "close"): void;
@@ -108,10 +139,24 @@
 
   const libraryIconComponent = computed(() => {
     if (props.libraryType === "movies") return IconMovie;
-    if (props.libraryType === "shows") return IconShow;
+    if (props.libraryType === "tv shows") return IconShow;
     if (props.libraryType === "music") return IconMusic;
     return IconMovie;
   });
+
+  function fetchRecentlyAdded() {
+    plexRecentlyAddedInLibrary(props.details.id).then(added => {
+      recentlyAdded.value = added?.MediaContainer?.Metadata.map(el =>
+        processLibraryItem(
+          el,
+          props.libraryType,
+          authToken,
+          props.serverUrl,
+          props.serverMachineId
+        )
+      );
+    });
+  }
 
   function checkEventForEscapeKey(event: KeyboardEvent) {
     if (event.key !== "Escape") return;
@@ -120,12 +165,18 @@
 
   window.addEventListener("keyup", checkEventForEscapeKey);
 
+  onMounted(() => {
+    fetchRecentlyAdded();
+  });
+
   onBeforeUnmount(() => {
     window.removeEventListener("keyup", checkEventForEscapeKey);
   });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  @import "scss/media-queries.scss";
+
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -139,6 +190,10 @@
     justify-content: center;
     z-index: 1000;
     padding: 20px;
+
+    @include mobile {
+      padding: 0;
+    }
   }
 
   .library-modal-content {
@@ -150,6 +205,11 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+
+    @include mobile {
+      max-height: 100vh;
+      border-radius: unset;
+    }
   }
 
   .library-modal-header {
@@ -198,12 +258,16 @@
     border: none;
     color: #888;
     cursor: pointer;
-    padding: 8px;
+    padding: 0.5rem;
     height: var(--size);
     width: var(--size);
     border-radius: 6px;
     fill: white;
     transition: all 0.2s;
+
+    @include mobile {
+      margin: auto 0;
+    }
   }
 
   .close-btn:hover {

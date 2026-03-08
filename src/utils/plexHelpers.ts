@@ -1,7 +1,7 @@
 export function getLibraryIcon(type: string): string {
   const icons: Record<string, string> = {
     movies: "🎬",
-    shows: "📺",
+    "tv shows": "📺",
     music: "🎵"
   };
   return icons[type] || "📁";
@@ -10,7 +10,7 @@ export function getLibraryIcon(type: string): string {
 export function getLibraryIconComponent(type: string): string {
   const components: Record<string, string> = {
     movies: "IconMovie",
-    shows: "IconShow",
+    "tv shows": "IconShow",
     music: "IconMusic"
   };
   return components[type] || "IconMovie";
@@ -19,7 +19,7 @@ export function getLibraryIconComponent(type: string): string {
 export function getLibraryTitle(type: string): string {
   const titles: Record<string, string> = {
     movies: "Movies",
-    shows: "TV Shows",
+    "tv shows": "TV Shows",
     music: "Music"
   };
   return titles[type] || type;
@@ -62,8 +62,8 @@ export function processLibraryItem(
   // Get poster/thumbnail URL
   let posterUrl = null;
 
-  // For TV shows, prefer grandparentThumb (show poster) over thumb (episode thumbnail)
-  if (libraryType === "shows") {
+  // For TV tv shows, prefer grandparentThumb (show poster) over thumb (episode thumbnail)
+  if (libraryType === "tv shows") {
     if (item.grandparentThumb) {
       posterUrl = `${serverUrl}${item.grandparentThumb}?X-Plex-Token=${authToken}`;
     } else if (item.thumb) {
@@ -92,14 +92,14 @@ export function processLibraryItem(
     plexUrl = `https://app.plex.tv/desktop/#!/server/${machineIdentifier}/details?key=${encodedKey}`;
   }
 
-  // For shows, use grandparent data (show info) instead of episode info
+  // For tv shows, use grandparent data (show info) instead of episode info
   const title =
-    libraryType === "shows" && item.grandparentTitle
+    libraryType === "tv shows" && item.grandparentTitle
       ? item.grandparentTitle
       : item.title;
 
   const year =
-    libraryType === "shows" && item.grandparentYear
+    libraryType === "tv shows" && item.grandparentYear
       ? item.grandparentYear
       : item.year || item.parentYear || new Date().getFullYear();
 
@@ -109,11 +109,12 @@ export function processLibraryItem(
     poster: posterUrl,
     fallbackIcon: getLibraryIcon(libraryType),
     rating: item.rating ? Math.round(item.rating * 10) / 10 : null,
+    type: libraryType,
     ratingKey,
     plexUrl
   };
 
-  if (libraryType === "shows") {
+  if (libraryType === "tv shows") {
     return {
       ...baseItem,
       episodes: item.leafCount || 0
@@ -157,7 +158,7 @@ export function calculateDuration(metadata: any[], libraryType: string) {
       totalDuration += item.duration;
     }
 
-    if (libraryType === "shows" && item.leafCount) {
+    if (libraryType === "tv shows" && item.leafCount) {
       totalEpisodes += item.leafCount;
     } else if (libraryType === "music" && item.leafCount) {
       totalTracks += item.leafCount;

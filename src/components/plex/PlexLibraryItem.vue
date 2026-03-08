@@ -6,7 +6,7 @@
     rel="noopener noreferrer"
     class="plex-library-item"
   >
-    <figure class="item-poster">
+    <figure :class="`item-poster ${item.type}`">
       <img
         v-if="item.poster"
         :src="item.poster"
@@ -113,7 +113,7 @@
   }
 </script>
 
-<style scoped>
+<style style="scss" scoped>
   .plex-library-item {
     display: flex;
     flex-direction: column;
@@ -144,6 +144,10 @@
     overflow: hidden;
     background: #333;
     margin: 0;
+
+    &.music {
+      aspect-ratio: 1/1;
+    }
   }
 
   .poster-image {

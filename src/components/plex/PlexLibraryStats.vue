@@ -5,18 +5,18 @@
       :key="stat.key"
       class="stat-card"
       :class="{
-        disabled: stat.value === 0 || loading,
+        disabled: stat.value === undefined || stat.value === 0 || loading,
         unclickable: !!!stat.clickable
       }"
       @click="
-        stat.clickable && stat.value > 0 && !loading && handleClick(stat.key)
+        stat.clickable && stat.value?.total > 0 && !loading && handleClick(stat.key)
       "
     >
       <div class="stat-icon">
         <component :is="stat.icon" />
       </div>
       <div class="stat-content">
-        <div class="stat-value" v-if="!loading">{{ stat.value }}</div>
+        <div class="stat-value" v-if="!loading">{{ formatNumber(stat.value?.total) }}</div>
         <div class="stat-value loading-dots" v-else>...</div>
         <div class="stat-label">{{ stat.label }}</div>
       </div>
@@ -26,15 +26,24 @@
 
 <script setup lang="ts">
   import { computed } from "vue";
+  import { formatNumber } from '@/utils'
   import IconMovie from "@/icons/IconMovie.vue";
   import IconShow from "@/icons/IconShow.vue";
   import IconMusic from "@/icons/IconMusic.vue";
   import IconClock from "@/icons/IconClock.vue";
 
+  interface LibraryStat {
+    id: number;
+    title: string;
+    total: number;
+    childCount?: number;
+    leafCount?: number;
+  }
+
   interface Props {
-    movies: number;
-    shows: number;
-    music: number;
+    movies: LibraryStat;
+    shows: LibraryStat;
+    music: LibraryStat;
     watchtime: number;
     loading?: boolean;
   }
@@ -54,7 +63,7 @@
       clickable: true
     },
     {
-      key: "shows",
+      key: "tv shows",
       icon: IconShow,
       value: props.shows,
       label: "TV Shows",

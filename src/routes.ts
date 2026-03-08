@@ -3,6 +3,8 @@ import type { RouteRecordRaw, RouteLocationNormalized } from "vue-router";
 
 /* eslint-disable-next-line import-x/no-cycle */
 import store from "./store";
+import { usePlexAuth } from "./composables/usePlexAuth";
+const { getPlexAuthCookie } = usePlexAuth();
 
 declare global {
   interface Window {
@@ -84,6 +86,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("./pages/AdminPage.vue")
   },
   {
+    name: "missing-plex-auth",
+    path: "/missing/plex",
+    component: () => import("./pages/MissingPlexAuthPage.vue")
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: () => import("./pages/404Page.vue")
@@ -111,16 +118,8 @@ const hasPlexAccount = () => {
   if (store.getters["user/plexUserId"] !== null) return true;
 
   // Fallback to localStorage
-  const userData = localStorage.getItem("plex_user_data");
-  if (userData) {
-    try {
-      const parsed = JSON.parse(userData);
-      return parsed.id !== null && parsed.id !== undefined;
-    } catch {
-      return false;
-    }
-  }
-  return false;
+  const authToken = getPlexAuthCookie();
+  return !!authToken;
 };
 const hamburgerIsOpen = () => store.getters["hamburger/isOpen"];
 
@@ -136,15 +135,14 @@ router.beforeEach(
     // send user to signin page.
     if (to.matched.some(record => record.meta.requiresAuth)) {
       if (!loggedIn()) {
-        next({ path: "/signin" });
+        next({ path: "/login" });
       }
     }
 
     if (to.matched.some(record => record.meta.requiresPlexAccount)) {
       if (!hasPlexAccount()) {
         next({
-          path: "/settings",
-          query: { missingPlexAccount: true }
+          path: "/missing/plex"
         });
       }
     }

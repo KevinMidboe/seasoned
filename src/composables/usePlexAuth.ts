@@ -9,15 +9,17 @@ export function usePlexAuth() {
   // Generate a PIN for Plex OAuth
   async function generatePlexPin() {
     try {
-      const response = await fetch("https://plex.tv/api/v2/pins?strong=true", {
+      const url = "https://plex.tv/api/v2/pins?strong=true";
+      const options = {
         method: "POST",
         headers: {
           accept: "application/json",
           "X-Plex-Product": APP_NAME,
           "X-Plex-Client-Identifier": CLIENT_IDENTIFIER
         }
-      });
+      };
 
+      const response = await fetch(url, options);
       if (!response.ok) throw new Error("Failed to generate PIN");
       const data = await response.json();
       return { id: data.id, code: data.code };
@@ -30,15 +32,15 @@ export function usePlexAuth() {
   // Check PIN status
   async function checkPin(pinId: number, pinCode: string) {
     try {
-      const response = await fetch(
-        `https://plex.tv/api/v2/pins/${pinId}?code=${pinCode}`,
-        {
-          headers: {
-            accept: "application/json",
-            "X-Plex-Client-Identifier": CLIENT_IDENTIFIER
-          }
+      const url = `https://plex.tv/api/v2/pins/${pinId}?code=${pinCode}`;
+      const options = {
+        headers: {
+          accept: "application/json",
+          "X-Plex-Client-Identifier": CLIENT_IDENTIFIER
         }
-      );
+      };
+
+      const response = await fetch(url, options);
 
       if (!response.ok) return null;
       const data = await response.json();
@@ -93,9 +95,10 @@ export function usePlexAuth() {
   }
 
   // Get cookie
-  function getCookie(name: string): string | null {
+  function getPlexAuthCookie(): string | null {
+    const key = "plex_auth_token";
     const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
+    const parts = value.split(`; ${key}=`);
     if (parts.length === 2) {
       return parts.pop()?.split(";").shift() || null;
     }
@@ -171,9 +174,10 @@ export function usePlexAuth() {
       if (plexPopup.value && plexPopup.value.closed) {
         clearInterval(popupChecker);
         stopPolling();
+
         if (loading.value) {
           loading.value = false;
-          onError("Plex authentication window was closed");
+          // onError("Plex authentication window was closed");
         }
       }
     }, 500);
@@ -190,7 +194,7 @@ export function usePlexAuth() {
   return {
     loading,
     setPlexAuthCookie,
-    getCookie,
+    getPlexAuthCookie,
     openAuthPopup,
     cleanup
   };

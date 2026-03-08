@@ -3,37 +3,14 @@
     <div class="plex-details">
       <div class="detail-row">
         <span class="detail-label">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-          </svg>
-          Server
+          <IconServer class="label-icon" />
+          Plex server name
         </span>
         <span class="detail-value">{{ serverName || "Unknown" }}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <polyline points="1 20 1 14 7 14"></polyline>
-            <path
-              d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
-            ></path>
-          </svg>
+          <IconSync class="label-icon" />
           Last Sync
         </span>
         <span class="detail-value">{{ lastSync || "Never" }}</span>
@@ -42,21 +19,7 @@
 
     <div class="plex-actions">
       <seasoned-button @click="$emit('sync')" :disabled="syncing">
-        <svg
-          v-if="!syncing"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <polyline points="23 4 23 10 17 10"></polyline>
-          <polyline points="1 20 1 14 7 14"></polyline>
-          <path
-            d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
-          ></path>
-        </svg>
+        <IconSync v-if="!syncing" class="button-icon" />
         {{ syncing ? "Syncing..." : "Sync Library" }}
       </seasoned-button>
       <seasoned-button @click="$emit('unlink')">
@@ -68,6 +31,8 @@
 
 <script setup lang="ts">
   import SeasonedButton from "@/components/ui/SeasonedButton.vue";
+  import IconServer from "@/icons/IconServer.vue";
+  import IconSync from "@/icons/IconSync.vue";
 
   interface Props {
     serverName: string;
@@ -120,6 +85,11 @@
       color: var(--text-color-60);
       flex-shrink: 0;
     }
+
+    .label-icon {
+      width: 16px;
+      height: 16px;
+    }
   }
 
   .detail-value {
@@ -146,6 +116,11 @@
 
       svg {
         flex-shrink: 0;
+      }
+
+      .button-icon {
+        width: 16px;
+        height: 16px;
       }
     }
   }
