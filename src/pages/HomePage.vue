@@ -2,38 +2,40 @@
   <section>
     <LandingBanner />
 
-    <div v-for="list in lists" :key="list.title">
-      <ResultsSection
-        :api-function="list.apiFunction"
-        :title="list.title"
-        :short-list="true"
-      />
-    </div>
+    <ResultsSection
+      :api-function="getRequests"
+      title="Requests"
+      :short-list="true"
+    />
+
+    <ResultsSection
+      :api-function="() => getTmdbMovieListByName('now_playing')"
+      title="Now playing"
+      :short-list="true"
+      section-type="list"
+    />
+
+    <DiscoverMinimal />
+
+    <ResultsSection
+      :api-function="() => getTmdbMovieListByName('upcoming')"
+      title="Upcoming"
+      :short-list="true"
+      section-type="list"
+    />
+
+    <ResultsSection
+      :api-function="() => getTmdbMovieListByName('popular')"
+      title="Popular"
+      :short-list="true"
+      section-type="list"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
   import LandingBanner from "@/components/LandingBanner.vue";
   import ResultsSection from "@/components/ResultsSection.vue";
+  import DiscoverMinimal from "@/components/DiscoverMinimal.vue";
   import { getRequests, getTmdbMovieListByName } from "../api";
-  import type ISection from "../interfaces/ISection";
-
-  const lists: ISection[] = [
-    {
-      title: "Requests",
-      apiFunction: getRequests
-    },
-    {
-      title: "Now playing",
-      apiFunction: () => getTmdbMovieListByName("now_playing")
-    },
-    {
-      title: "Upcoming",
-      apiFunction: () => getTmdbMovieListByName("upcoming")
-    },
-    {
-      title: "Popular",
-      apiFunction: () => getTmdbMovieListByName("popular")
-    }
-  ];
 </script>
