@@ -39,7 +39,17 @@ const routes: RouteRecordRaw[] = [
   {
     name: "list",
     path: "/list/:name",
-    component: () => import("./pages/ListPage.vue")
+    component: () => import("./pages/SectionPage.vue")
+  },
+  {
+    name: "discover-section",
+    path: "/discover/:name",
+    component: () => import("./pages/SectionPage.vue")
+  },
+  {
+    name: "discover",
+    path: "/discover",
+    component: () => import("./pages/DiscoverPage.vue")
   },
   {
     name: "search",
@@ -104,7 +114,13 @@ const router = createRouter({
   history: createWebHistory("/"),
   // base: "/",
   routes,
-  linkActiveClass: "is-active"
+  linkActiveClass: "is-active",
+  scrollBehavior(to, from, savedPosition) {
+    if (to.name !== "discover") return;
+
+    console.log("scrolling top");
+    return { top: 0 };
+  }
 });
 
 const loggedIn = () => store.getters["user/loggedIn"];
