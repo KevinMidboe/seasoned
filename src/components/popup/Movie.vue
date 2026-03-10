@@ -32,9 +32,7 @@
             <IconThumbsUp v-if="media?.exists_in_plex" />
             <IconThumbsDown v-else />
             {{
-              !media?.exists_in_plex
-                ? "Not yet available"
-                : "Already available 🎉"
+              !media?.exists_in_plex ? "Not yet available" : "Already available"
             }}
           </action-button>
 
@@ -44,6 +42,11 @@
               <div v-else key="requested"><IconRequested /></div>
             </transition>
             {{ !requested ? `Request ${type}?` : "Already requested" }}
+          </action-button>
+
+          <action-button v-if="admin && requested" :active="false">
+            <IconTombstone />
+            Remove request
           </action-button>
 
           <action-button
@@ -66,9 +69,15 @@
           <action-button
             v-if="admin === true"
             :active="showTorrents"
-            @click="showTorrents = !showTorrents"
+            @click="
+              showTorrents = !showTorrents;
+              helmKey++;
+            "
           >
-            <IconBinoculars />
+            <IconHelm
+              :key="helmKey"
+              :class="showTorrents ? 'helm-spin-forward' : 'helm-spin-reverse'"
+            />
             Search for torrents
             <span v-if="numberOfTorrentResults" class="meta">{{
               numberOfTorrentResults
@@ -176,8 +185,9 @@
   import IconInfo from "../../icons/IconInfo.vue";
   import IconRequest from "../../icons/IconRequest.vue";
   import IconRequested from "../../icons/IconRequested.vue";
-  import IconBinoculars from "../../icons/IconBinoculars.vue";
+  import IconHelm from "../../icons/IconHelm.vue";
   import IconPlay from "../../icons/IconPlay.vue";
+  import IconTombstone from "../../icons/IconTombstone.vue";
   import TorrentList from "../torrent/TruncatedTorrentResults.vue";
   import CastList from "../CastList.vue";
   import Detail from "./Detail.vue";
@@ -226,6 +236,7 @@
   const compact: Ref<boolean> = ref();
   const loading: Ref<boolean> = ref();
   const backdropElement: Ref<HTMLElement> = ref();
+  const helmKey: Ref<number> = ref(0);
 
   const store = useStore();
 
@@ -589,5 +600,31 @@
   .fade-enter,
   .fade-leave-to {
     opacity: 0;
+  }
+
+  .helm-spin-forward {
+    animation: helm-spin-forward 0.6s ease-in-out;
+  }
+
+  .helm-spin-reverse {
+    animation: helm-spin-reverse 0.6s ease-in-out;
+  }
+
+  @keyframes helm-spin-forward {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(270deg);
+    }
+  }
+
+  @keyframes helm-spin-reverse {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(-270deg);
+    }
   }
 </style>
