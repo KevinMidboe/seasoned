@@ -91,7 +91,8 @@ export function usePlexAuth() {
   function setPlexAuthCookie(authToken: string) {
     const expires = new Date();
     expires.setDate(expires.getDate() + 30);
-    document.cookie = `plex_auth_token=${authToken}; path=/; expires=${expires.toUTCString()}; SameSite=Strict`;
+    const domain = window.location.hostname;
+    document.cookie = `plex_auth_token=${authToken}; domain=.${domain}; path=/; expires=${expires.toUTCString()}; SameSite=Strict`;
   }
 
   // Get cookie

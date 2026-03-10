@@ -135,6 +135,17 @@ const getTmdbMovieListByName = async (
   // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error }) // eslint-disable-line no-console
 };
 
+const getTmdbMovieDiscoverByName = async (
+  name: string,
+  page = 1
+): Promise<IList> => {
+  const url = new URL(`/api/v2/movie/discover/${name}`, API_HOSTNAME);
+  url.searchParams.append("page", page.toString());
+
+  return fetch(url.href).then(resp => resp.json());
+  // .catch(error => { console.error(`api error getting list: ${name}, page: ${page}`); throw error }) // eslint-disable-line no-console
+};
+
 // Fetches requested items.
 const getRequests = async (page = 1) => {
   const url = new URL("/api/v2/request", API_HOSTNAME);
@@ -565,6 +576,7 @@ export {
   getShowCredits,
   getPersonCredits,
   getTmdbMovieListByName,
+  getTmdbMovieDiscoverByName,
   searchTmdb,
   getUserRequests,
   getRequests,

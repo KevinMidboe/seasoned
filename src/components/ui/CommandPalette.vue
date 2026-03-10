@@ -147,6 +147,7 @@
   import IconMagnet from "@/icons/IconMagnet.vue";
   import IconProfileLock from "@/icons/IconProfileLock.vue";
   import IconShow from "@/icons/IconShow.vue";
+  import IconBinoculars from "@/icons/IconBinoculars.vue";
   import { elasticSearchMoviesAndShows } from "@/api";
   import type { IAutocompleteResult } from "@/interfaces/IAutocompleteSearch";
   import { trackCommand, getCommandScore } from "@/utils/commandTracking";
@@ -180,6 +181,10 @@
     }
   > = {
     home: { icon: IconMovie, description: "Browse movies and TV shows" },
+    discover: {
+      icon: IconBinoculars,
+      description: "Discover movies by category"
+    },
     activity: { icon: IconActivity, description: "View Plex server activity" },
     profile: { icon: IconProfile, description: "Manage your profile" },
     "requests-list": null,

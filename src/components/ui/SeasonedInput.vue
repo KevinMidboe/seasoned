@@ -29,7 +29,7 @@
   import { ref, computed } from "vue";
   import IconKey from "@/icons/IconKey.vue";
   import IconEmail from "@/icons/IconEmail.vue";
-  import IconBinoculars from "@/icons/IconBinoculars.vue";
+  import IconSearch from "@/icons/IconSearch.vue";
   import type { Ref } from "vue";
 
   interface Props {
@@ -53,7 +53,7 @@
   const inputIcon = computed(() => {
     if (props.type === "password") return IconKey;
     if (props.type === "email") return IconEmail;
-    if (props.type === "torrents") return IconBinoculars;
+    if (props.type === "torrents") return IconSearch;
     return false;
   });
 
