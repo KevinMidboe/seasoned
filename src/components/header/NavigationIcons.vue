@@ -15,13 +15,14 @@
   import { ref, watch } from "vue";
   import { useRoute } from "vue-router";
   import NavigationIcon from "@/components/header/NavigationIcon.vue";
-  import IconInbox from "@/icons/IconInbox.vue";
+  import IconMailboxFull from "@/icons/IconMailboxFull.vue";
   import IconNowPlaying from "@/icons/IconNowPlaying.vue";
   import IconPopular from "@/icons/IconPopular.vue";
   import IconUpcoming from "@/icons/IconUpcoming.vue";
   import IconSettings from "@/icons/IconSettings.vue";
   import IconActivity from "@/icons/IconActivity.vue";
-  import IconBinoculars from "@/icons/IconBinoculars.vue";
+  import IconHelm from "@/icons/IconHelm.vue";
+  import IconDiscover from "@/icons/IconDiscover.vue";
   import type INavigationIcon from "../../interfaces/INavigationIcon";
 
   const route = useRoute();
@@ -30,12 +31,17 @@
     {
       title: "Requests",
       route: "/list/requests",
-      icon: IconInbox
+      icon: IconMailboxFull
     },
     {
       title: "Now Playing",
       route: "/list/now_playing",
       icon: IconNowPlaying
+    },
+    {
+      title: "Discover",
+      route: "/discover",
+      icon: IconDiscover
     },
     {
       title: "Popular",
@@ -58,7 +64,7 @@
       title: "Torrents",
       route: "/torrents",
       requiresAuth: true,
-      icon: IconBinoculars
+      icon: IconHelm
     },
     {
       title: "Settings",
