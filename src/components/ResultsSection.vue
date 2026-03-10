@@ -1,6 +1,8 @@
 <template>
   <div ref="resultSection" class="resultSection">
-    <page-header v-bind="{ title, info, shortList }" />
+    <page-header
+      v-bind="{ title, info, shortList, sectionType: props.sectionType }"
+    />
 
     <div
       v-if="!loadedPages.includes(1) && loading == false"
@@ -40,9 +42,12 @@
     title: string;
     apiFunction: (page: number) => Promise<IList>;
     shortList?: boolean;
+    sectionType?: "list" | "discover";
   }
 
-  const props = defineProps<Props>();
+  const props = withDefaults(defineProps<Props>(), {
+    sectionType: "list"
+  });
 
   const results: Ref<ListResults> = ref([]);
   const page: Ref<number> = ref(1);

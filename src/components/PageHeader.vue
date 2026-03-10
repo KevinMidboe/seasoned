@@ -31,12 +31,22 @@
     info?: string | Array<string>;
     link?: string;
     shortList?: boolean;
+    sectionType?: "list" | "discover";
   }
 
-  const props = defineProps<Props>();
+  const props = withDefaults(defineProps<Props>(), {
+    sectionType: "list"
+  });
 
   const urlify = computed(() => {
-    return `/list/${props.title.toLowerCase().replace(" ", "_")}`;
+    const normalizedTitle = props.title
+      .toLowerCase()
+      .replace(/'s\b/g, "") // Remove possessive 's
+      .replace(/[^\w\d\s-]/g, "") // Remove special characters (keep word chars, dashes, digits, spaces)
+      .replace(/\s+/g, "_") // Replace spaces with underscores
+      .replace(/-/g, "_") // Replace dash with underscore
+      .replace(/_+/g, "_"); // Replace multiple underscores with single underscore
+    return `/${props.sectionType}/${normalizedTitle}`;
   });
 
   const prettify = computed(() => {
