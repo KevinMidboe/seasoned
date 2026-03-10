@@ -127,6 +127,9 @@ const userModule: Module<UserState, RootState> = {
       state.settings = null;
       state.admin = false;
       deleteCookie("authorization");
+      deleteCookie("plex_auth_token");
+      localStorage.clear();
+      sessionStorage.clear();
     }
   },
 
