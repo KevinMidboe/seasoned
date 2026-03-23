@@ -69,7 +69,7 @@
     cursor: pointer;
     background: linear-gradient(
       to top,
-      var(--background-color) 20%,
+      var(--highlight-bg, var(--background-color)) 20%,
       var(--background-0) 100%
     );
   }

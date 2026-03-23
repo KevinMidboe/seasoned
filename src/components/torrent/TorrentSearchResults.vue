@@ -129,6 +129,7 @@
     font-size: 20px;
     color: var(--text-color);
     text-align: center;
+    padding-bottom: 1rem;
     margin: 0;
 
     .query {

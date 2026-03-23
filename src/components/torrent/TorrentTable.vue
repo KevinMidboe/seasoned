@@ -259,7 +259,7 @@
       padding: 0.5rem 0.6rem;
       cursor: default;
       word-break: break-word;
-      border-left: 1px solid var(--highlight-secondary, var(--highlight-color));
+      border-left: 1px solid var(--highlight-color);
 
       @include mobile {
         width: 100%;
@@ -301,7 +301,7 @@
     tr td:last-of-type {
       vertical-align: middle;
       cursor: pointer;
-      border-right: 1px solid var(--highlight-secondary, var(--highlight-color));
+      border-right: 1px solid var(--highlight-color);
       max-width: 60px;
       text-align: center;
 
@@ -328,26 +328,19 @@
       color: var(--text-color);
 
       td {
-        border-left: 1px solid
-          var(--highlight-secondary, var(--highlight-color));
+        border-left: 1px solid var(--highlight-color);
         fill: var(--text-color);
       }
     }
     tr:nth-child(odd) {
-      background-color: var(--highlight-secondary, var(--background-color));
-      color: var(--highlight-bg, var(--text-color));
-
-      td {
-        fill: var(--highlight-bg, var(--text-color)) !important;
-      }
+      background: rgba(0, 0, 0, 0.15);
     }
 
     // last element rounded corner border
     tr:last-of-type {
       td {
-        border-bottom: 1px solid
-          var(--highlight-secondary, var(--highlight-color));
-        border-left: 1px solid var(--highlight-bg, var(--text-color));
+        border-bottom: 1px solid var(--highlight-color);
+        border-left: 1px solid var(--highlight-color);
       }
 
       td:first-of-type {

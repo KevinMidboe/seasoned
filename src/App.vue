@@ -50,11 +50,12 @@
 
     .navigation-icons-gutter {
       position: fixed;
-      height: 100vh;
+      height: calc(100vh - var(--header-size));
       margin: 0;
       top: var(--header-size);
       width: var(--header-size);
       background-color: var(--background-color-secondary);
+      overflow-y: scroll;
     }
 
     .content {
@@ -62,7 +63,6 @@
       grid-column: 2 / 3;
       width: calc(100% - var(--header-size));
       grid-row: 2;
-      z-index: 5;
 
       @include mobile {
         grid-column: 1 / 3;

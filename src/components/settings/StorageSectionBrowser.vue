@@ -29,19 +29,20 @@
             }}</span>
             <span class="storage-section__size">{{ section.totalSize }}</span>
           </div>
-          <svg
-            class="storage-section__chevron"
-            :class="{
-              'storage-section__chevron--expanded':
-                expandedSections[section.type]
-            }"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
+          <div class="chevron-container">
+            <transition name="fade">
+              <IconExpandVertical
+                v-if="!expandedSections[section.type]"
+                key="expand"
+                class="storage-section__chevron"
+              />
+              <IconShrinkVertical
+                v-else
+                key="shrink"
+                class="storage-section__chevron"
+              />
+            </transition>
+          </div>
         </button>
         <div
           v-if="expandedSections[section.type]"
@@ -80,6 +81,8 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import IconClose from "@/icons/IconClose.vue";
+  import IconExpandVertical from "@/icons/IconExpandVertical.vue";
+  import IconShrinkVertical from "@/icons/IconShrinkVertical.vue";
 
   interface StorageItem {
     key: string;
@@ -210,15 +213,14 @@
       color: var(--text-color-50);
       font-family: monospace;
     }
+
     &__chevron {
+      position: absolute;
       width: 20px;
       height: 20px;
-      stroke: var(--text-color-70);
-      transition: transform 0.2s ease;
-      &--expanded {
-        transform: rotate(180deg);
-      }
+      fill: var(--text-color-70);
     }
+
     &__content {
       border-top: 1px solid var(--background-40);
     }
@@ -361,5 +363,23 @@
         transform: scale(0.9);
       }
     }
+  }
+
+  .chevron-container {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Simple crossfade transition
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.3s;
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
   }
 </style>

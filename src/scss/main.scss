@@ -1,12 +1,18 @@
 @import "scss/variables";
 
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently */
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently */
 }
 
 * {
@@ -16,6 +22,7 @@
 html {
   height: unset;
 }
+
 body {
   margin: 0;
   padding: 0;
@@ -24,27 +31,61 @@ body {
   background: var(--background-color);
   color: var(--text-color);
 
-  // TODO probably explicitly define
   * {
-    transition: 0.5s ease;
+    transition:
+      transform 500ms ease,
+      background-color 500ms ease,
+      background-image 500ms ease,
+      opacity 500ms ease,
+      box-shadow 500ms ease,
+      border-color 500ms ease,
+      filter 500ms ease,
+      clip-path 500ms ease,
+      outline-color 500ms ease;
+  }
+
+  a,
+  button,
+  label,
+  span,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    transition-property: color;
+    transition-duration: 500ms;
+    transition-timing-function: ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition-duration: 1ms !important;
+    }
   }
 
   &.hidden {
     overflow: hidden;
   }
 }
+
 a:any-link {
   color: inherit;
 }
+
 input,
 textarea,
 button {
   font-family: "Roboto", sans-serif;
 }
+
 figure {
   padding: 0;
   margin: 0;
 }
+
 img {
   display: block;
   height: auto;
@@ -55,8 +96,10 @@ img {
 }
 
 @mixin noscrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
 
   &::-webkit-scrollbar {
     /* WebKit */
@@ -68,15 +111,16 @@ img {
 .button--group {
   display: flex;
 
-  > div:not(:first-child) {
+  >div:not(:first-child) {
     margin-left: 1rem;
   }
 }
 
 .form {
-  > div,
-  > input,
-  > button {
+
+  >div,
+  >input,
+  >button {
     margin-bottom: 1rem;
 
     &:last-child {

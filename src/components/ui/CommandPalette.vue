@@ -15,6 +15,8 @@
             @keydown.enter.prevent="navigateToSelected"
             @keydown.esc.prevent="close"
             @keydown="handleInputKeydown"
+            @keydown.ctrl.j.prevent="selectNext"
+            @keydown.ctrl.k.prevent="selectPrevious"
           />
           <input
             v-else
